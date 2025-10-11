@@ -14,9 +14,15 @@ interface GoogleMapsLoaderProps {
 
 const GoogleMapsLoader: React.FC<GoogleMapsLoaderProps> = ({ children }) => {
   useEffect(() => {
-    // Se não há chave da API, não tenta carregar
-    if (!GOOGLE_MAPS_CONFIG.apiKey || GOOGLE_MAPS_CONFIG.apiKey.trim() === '') {
-      console.error('Google Maps API key not found. Please check your environment variables.');
+    // Se não há chave da API ou é um placeholder, não tenta carregar
+    const isInvalidKey = !GOOGLE_MAPS_CONFIG.apiKey || 
+                        GOOGLE_MAPS_CONFIG.apiKey.trim() === '' ||
+                        GOOGLE_MAPS_CONFIG.apiKey.includes('your_') ||
+                        GOOGLE_MAPS_CONFIG.apiKey.includes('placeholder') ||
+                        GOOGLE_MAPS_CONFIG.apiKey.includes('PLACEHOLDER');
+    
+    if (isInvalidKey) {
+      console.warn('Google Maps API key not configured. Map features will be unavailable. Please set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in your environment variables.');
       window.googleMapsApiLoaded = 'error';
       return;
     }

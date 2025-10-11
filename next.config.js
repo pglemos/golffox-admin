@@ -8,10 +8,25 @@ const nextConfig = {
   },
   images: {
     domains: ['localhost'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.replit.dev',
+      },
+    ],
+  },
+  allowedDevOrigins: [
+    'https://*.replit.dev',
+    'https://*.repl.co',
+    'https://0049f172-4806-447f-8b15-0e7c179c03ef-00-wntq1vd5fy6r.janeway.replit.dev',
+    '0049f172-4806-447f-8b15-0e7c179c03ef-00-wntq1vd5fy6r.janeway.replit.dev'
+  ],
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['https://*.replit.dev', 'https://*.repl.co']
+    }
   },
   eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
   webpack: (config) => {

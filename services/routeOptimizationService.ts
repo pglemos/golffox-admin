@@ -59,11 +59,17 @@ export class RouteOptimizationService {
             return; // Não inicializar no servidor
         }
 
-        // Aguarda o carregamento da API do Google Maps
-        await this.waitForGoogleMapsAPI();
-        
-        if (window.google?.maps?.DirectionsService) {
-            this.directionsService = new google.maps.DirectionsService();
+        try {
+            // Aguarda o carregamento da API do Google Maps
+            await this.waitForGoogleMapsAPI();
+            
+            if (window.google?.maps?.DirectionsService) {
+                this.directionsService = new google.maps.DirectionsService();
+            }
+        } catch (error) {
+            // Google Maps não disponível - serviço funcionará em modo degradado
+            console.warn('Google Maps API not available. Route optimization features will be limited.');
+            this.directionsService = null;
         }
     }
 
