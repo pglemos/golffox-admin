@@ -139,6 +139,19 @@ O diretório [`supabase/migrations`](./supabase/migrations) contém scripts SQL 
 
 > 💡 Dica rápida: abra o SQL Editor do Supabase, cole o conteúdo do arquivo de migração e execute-o no banco de dados `postgres`. Em seguida, verifique as publicações realtime no menu Database > Replication.
 
+## 🔄 Publicando no GitHub
+
+Para replicar este código no repositório oficial do GitHub (`https://github.com/pglemos/golffox-replit`), utilize o script auxiliar incluído em [`scripts/push-to-github.sh`](./scripts/push-to-github.sh):
+
+1. Gere um token pessoal do GitHub com permissão `repo` e autentique-se com `gh auth login` (ou configure seu `git` com `git config --global user.name` e `git config --global user.email`).
+2. Do diretório raiz do projeto, execute:
+
+   ```bash
+   ./scripts/push-to-github.sh https://github.com/pglemos/golffox-replit.git
+   ```
+
+O script garante que o `remote` `origin` aponte para o repositório informado e executa `git push -u origin HEAD`, publicando o branch atual diretamente no GitHub.
+
 ## 🤝 Contribuição
 
 Consulte o arquivo [CONTRIBUTING.md](CONTRIBUTING.md) para obter informações sobre como contribuir para o projeto.
