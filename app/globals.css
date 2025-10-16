@@ -3,74 +3,68 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --golffox-background: #ffffff;
+  --golffox-surface: #f9fafb;
+  --golffox-text: #111827;
+  --golffox-muted: #6b7280;
+  --golffox-border: rgba(17, 24, 39, 0.08);
+  --golffox-primary: #5b2eff;
+  --golffox-secondary: #00e0ff;
+  --golffox-accent: #ffd700;
+  --golffox-gradient: linear-gradient(135deg, #5b2eff 0%, #00e0ff 100%);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+.dark {
+  --golffox-background: #0b0b0f;
+  --golffox-surface: #1f2937;
+  --golffox-text: #e5e7eb;
+  --golffox-muted: #9ca3af;
+  --golffox-border: rgba(229, 231, 235, 0.12);
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  min-height: 100vh;
+  color: var(--golffox-text);
+  background: radial-gradient(circle at 20% 20%, rgba(91, 46, 255, 0.16), transparent 45%),
+    radial-gradient(circle at 80% 10%, rgba(0, 224, 255, 0.12), transparent 50%),
+    linear-gradient(180deg, rgba(10, 10, 10, 0.08), transparent 40%),
+    var(--golffox-background);
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+@layer base {
+  html {
+    font-family: 'Inter', 'SF Pro Display', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--golffox-background);
+  }
+
+  * {
+    @apply antialiased;
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
-}
 
-/* Golffox custom styles */
-.golffox-blue-dark {
-  color: #1e40af;
-}
-
-.golffox-gray-medium {
-  color: #6b7280;
-}
-
-/* CSS Variables for Golffox Theme */
-:root {
-  --golffox-primary: #3b82f6;
-  --golffox-secondary: #60a5fa;
-  --golffox-accent: #22d3ee;
-  --golffox-dark: #1e293b;
-  --golffox-gray-light: #f1f5f9;
-  --golffox-gray-medium: #64748b;
-  
-  /* Status Colors */
-  --success: #10b981;
-  --warning: #f59e0b;
-  --error: #ef4444;
-  --info: #3b82f6;
-}
-
-/* Dark theme adjustments */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --golffox-primary: #60a5fa;
-    --golffox-secondary: #93c5fd;
-    --golffox-accent: #67e8f9;
-    --golffox-dark: #f8fafc;
-    --golffox-gray-light: #334155;
-    --golffox-gray-medium: #94a3b8;
-    
-    /* Status Colors - Adjusted for dark theme */
-    --success: #34d399;
-    --warning: #fbbf24;
-    --error: #f87171;
-    --info: #60a5fa;
+  .glass-panel {
+    @apply rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl;
   }
+}
+
+.golffox-gradient-border {
+  position: relative;
+}
+
+.golffox-gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 1.75rem;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(91, 46, 255, 0.65), rgba(0, 224, 255, 0.65));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
 }

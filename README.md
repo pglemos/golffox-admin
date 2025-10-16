@@ -30,19 +30,22 @@ O GolfFox é uma plataforma web desenvolvida com Next.js e TypeScript para geren
 
 ## 🛠️ Tecnologias
 
-- **Frontend**: Next.js 13, React 18, TypeScript
-- **Estilização**: Tailwind CSS, Framer Motion
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Estilização**: Tailwind CSS 4, Framer Motion, Design System unificado em [`packages/shared/ui`](./packages/shared/ui)
 - **Autenticação**: Supabase Auth
 - **Banco de Dados**: Supabase (PostgreSQL)
 - **Mapas e Geolocalização**: Google Maps API
+- **IA Generativa**: Google Gemini via [`lib/ai-client.ts`](./lib/ai-client.ts) com fallback automático
 - **Gráficos**: Chart.js
 
 ## 📋 Pré-requisitos
 
-- Node.js 18.x ou superior
-- npm 8.x ou superior
+- Node.js 20.x ou superior
+- pnpm 9.x ou npm 10.x
 - Conta no Supabase
 - Chave de API do Google Maps (com Maps JavaScript API, Geocoding API e Directions API habilitadas)
+
+Para habilitar os módulos premium (Gemini e realtime multi-painel) copie o arquivo [.env.example](./.env.example) e preencha as chaves indicadas.
 
 ## 🔧 Instalação e Configuração
 
@@ -56,7 +59,7 @@ cd golffox
 
 2. Instale as dependências
 ```bash
-npm install
+pnpm install
 ```
 
 3. Configure as variáveis de ambiente
@@ -67,7 +70,7 @@ cp .env.example .env.local
 
 4. Execute o projeto em modo de desenvolvimento
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 A aplicação estará disponível em `http://localhost:3000`
@@ -91,7 +94,9 @@ A aplicação estará disponível em `http://localhost:3000`
 │   ├── layout.tsx        # Layout principal
 │   ├── page.tsx          # Página inicial
 │   └── providers.tsx     # Provedores de contexto
-├── components/           # Componentes React
+├── components/           # Componentes React legados
+├── packages/
+│   └── shared/ui/        # Design System premium compartilhado (tokens, temas e componentes)
 ├── hooks/                # Hooks personalizados
 ├── services/             # Serviços e APIs
 ├── public/               # Arquivos estáticos
@@ -105,31 +110,34 @@ A aplicação estará disponível em `http://localhost:3000`
 
 ```bash
 # Desenvolvimento
-npm run dev
+pnpm dev
 
 # Build para produção
-npm run build
+pnpm build
 
 # Iniciar em modo produção
-npm run start
+pnpm start
 
 # Verificar e corrigir problemas de código
-npm run lint
-
-# Formatar código com Prettier
-npm run format
+pnpm lint
 
 # Verificar conexão com Supabase
-npm run verify-supabase
-npm run db:status
+pnpm verify-supabase
+pnpm db:status
 
-# Configurar projeto
-npm run setup-project
-npm run db:setup
+# Configurar projeto (scripts utilitários)
+pnpm setup-project
+pnpm db:setup
 
-# Criar banco de dados
-npm run db:create
+# Criar banco de dados (verifica dependências)
+pnpm db:create
 ```
+
+## 🗄️ Migrações do Supabase
+
+O diretório [`supabase/migrations`](./supabase/migrations) contém scripts SQL prontos para serem executados no projeto Supabase oficial. O arquivo [`20250125_golffox_core.sql`](./supabase/migrations/20250125_golffox_core.sql) cria as tabelas principais (companies, carriers, drivers, passengers, vehicles, routes, trips, driver_positions e checklists), ativa o RLS com políticas baseadas em papéis e adiciona as tabelas de realtime à publicação padrão.
+
+> 💡 Dica rápida: abra o SQL Editor do Supabase, cole o conteúdo do arquivo de migração e execute-o no banco de dados `postgres`. Em seguida, verifique as publicações realtime no menu Database > Replication.
 
 ## 🤝 Contribuição
 
