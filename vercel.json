@@ -1,0 +1,10 @@
+{
+  "buildCommand": "pnpm install && pnpm run build:all",
+  "outputDirectory": "dist",
+  "framework": null,
+  "ignoreCommand": "echo Always build in CI",
+  "github": {
+    "silent": true
+  }
+}
+

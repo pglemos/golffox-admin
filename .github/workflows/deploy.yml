@@ -1,0 +1,80 @@
+name: Deploy (Vercel Monorepo)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  vercel-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - name: Install
+        run: pnpm install --frozen-lockfile=false
+      - name: Build all
+        run: pnpm run build:all
+      - name: Deploy Admin
+        if: ${{ success() }}
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }} # e.g., team_9kUTSaoIkwnAVxy9nXMcAnej
+          vercel-project-name: golffox-admin
+          working-directory: apps/admin
+          vercel-args: '--prod'
+      - name: Deploy Operator
+        if: ${{ success() }}
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-name: golffox-operator
+          working-directory: apps/operator
+          vercel-args: '--prod'
+      - name: Deploy Carrier
+        if: ${{ success() }}
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-name: golffox-carrier
+          working-directory: apps/carrier
+          vercel-args: '--prod'
+      - name: Deploy Driver
+        if: ${{ success() }}
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-name: golffox-driver
+          working-directory: apps/driver
+          vercel-args: '--prod'
+      - name: Deploy Passenger
+        if: ${{ success() }}
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-name: golffox-passenger
+          working-directory: apps/passenger
+          vercel-args: '--prod'
+      - name: Deploy API
+        if: ${{ success() }}
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-name: golffox-api
+          working-directory: api
+          vercel-args: '--prod'
+

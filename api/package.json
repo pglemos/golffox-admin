@@ -1,0 +1,26 @@
+{
+  "name": "golffox-api",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@google/genai": "^1.20.0",
+    "@hono/node-server": "^1.13.9",
+    "hono": "^4.6.13",
+    "dotenv": "^17.2.2",
+    "@supabase/supabase-js": "^2.57.4"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.5",
+    "typescript": "~5.8.2",
+    "eslint": "^9.36.0",
+    "@types/node": "^22.14.0"
+  }
+}
+

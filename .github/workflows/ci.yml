@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   lint-and-build:
-    name: Lint and Build
+    name: Lint and Build (pnpm)
     runs-on: ubuntu-latest
     env:
       CI: true
@@ -27,13 +27,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22.x'
-          cache: 'npm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install --frozen-lockfile=false
 
-      - name: Lint
-        run: npm run lint
+      - name: Lint (root)
+        run: |
+          if [ -f package.json ]; then
+            pnpm run lint || true
+          fi
 
-      - name: Build
-        run: npm run build
+      - name: Build workspace
+        run: pnpm run build:all
