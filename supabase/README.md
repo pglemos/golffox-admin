@@ -1,169 +1,70 @@
-# Configuração do Supabase para Golffox
+# Configuração do Supabase — Golffox
 
-Este diretório contém os scripts SQL necessários para configurar o banco de dados Supabase para o projeto Golffox.
+Este diretório concentra os artefatos oficiais para manter o projeto Supabase **Golf Fox** (`oulwcijxeklxllufyofb`) alinhado com a nova arquitetura Next.js 14.
 
 ## 📋 Informações do Projeto
 
-- **Nome**: Golffox
-- **Project ID**: afnlsvaswsokofldoqsf
-- **URL**: https://afnlsvaswsokofldoqsf.supabase.co
+- **Nome**: Golf Fox
+- **Project ID**: `oulwcijxeklxllufyofb`
+- **URL**: https://oulwcijxeklxllufyofb.supabase.co
+- **Chaves**:
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91bHdjaWp4ZWtseGxsdWZ5b2ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAzOTIzOTMsImV4cCI6MjA3NTk2ODM5M30.J_I1nU3JfZ6GoDWCIwOD4zSK041YwtkdVCjOBRYv1Q4`
+  - `SUPABASE_SERVICE_ROLE_KEY`: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91bHdjaWp4ZWtseGxsdWZ5b2ZiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDM5MjM5MywiZXhwIjoyMDc1OTY4MzkzfQ.SDOXBPWV2DTCb8mQGm-ScGCtr4recU9a6GQdjO7hx9g`
+  - `SUPABASE_JWT_SECRET`: `cB94dthDvtYPfXyZLthr4ZyNbWwuAB9RUTUMJNY2J/PBylawMGNuY74H+jwm9jBG9n/2Btn9JNAmrDCREM3D+A==`
+
+> ⚠️ Execute uma rotação de chaves em **Settings › API** sempre que promover ambientes ou suspeitar de vazamento.
 
 ## 📁 Arquivos
 
-- `schema.sql` - Schema completo do banco de dados com todas as tabelas, índices e dados iniciais
-- `rls_policies.sql` - Políticas de Row Level Security (RLS) para controle de acesso
-- `fixed_rls_policies.sql` - Versão corrigida das políticas RLS sem recursão
-- `missing_tables.sql` - Script para criar tabelas faltantes
+| Arquivo | Função |
+|---------|--------|
+| `schema.sql` | Redefine todo o schema público (tabelas, tipos, índices e seed para o dashboard) |
+| `fixed_rls_policies.sql` | Recria as políticas de RLS compatíveis com a aplicação atual |
 
-## 🚀 Configuração Passo a Passo
+## 🚀 Passo a passo de provisionamento
 
-### 1. Acesse o Supabase Dashboard
+1. Acesse https://app.supabase.com/project/oulwcijxeklxllufyofb.
+2. Abra **SQL Editor** › **New query**.
+3. Execute `schema.sql` para recriar as tabelas `companies`, `users`, `drivers`, `vehicles`, `routes` e `passengers`.
+   - O script é destrutivo: remove a estrutura antiga antes de criar a nova.
+   - Registros de exemplo são inseridos automaticamente para alimentar o dashboard (contagem de frota, rotas e passageiros).
+4. Execute `fixed_rls_policies.sql` para aplicar as políticas de acesso.
 
-1. Vá para [https://supabase.com/dashboard](https://supabase.com/dashboard)
-2. Faça login na sua conta
-3. Selecione o projeto **Golffox** (ID: `afnlsvaswsokofldoqsf`)
+### Configurações adicionais
 
-### 2. Execute o Schema Principal
+- **Auth › Settings**
+  - `Site URL`: `https://golffox.vercel.app`
+  - `Redirect URLs`: `https://golffox.vercel.app/auth/callback`, `http://localhost:3000/auth/callback`
+- **Auth › Providers**: mantenha e-mail/senha habilitado.
+- **Storage** (opcional): bucket `avatars` para fotos de motoristas/usuários.
 
-1. No dashboard, vá para **SQL Editor** (ícone de código no menu lateral)
-2. Clique em **New Query**
-3. Copie todo o conteúdo do arquivo `schema.sql` e cole no editor
-4. Clique em **Run** para executar o script
+### Criando o administrador
 
-**⚠️ Importante**: Execute este script primeiro, pois ele cria todas as tabelas, tipos e estruturas necessárias.
+1. Em **Authentication › Users**, clique em **Add user** e cadastre `admin@golffox.com` com a senha desejada.
+2. Anote o `User ID` gerado.
+3. Insira um registro correspondente na tabela `users` via SQL ou Table Editor:
+   ```sql
+   INSERT INTO users (id, email, name, role, company_id)
+   VALUES ('<USER_ID>', 'admin@golffox.com', 'Administrador Golffox', 'admin', 'c3b7f0e8-8c3f-4b2f-a112-06c3d04a0b10')
+   ON CONFLICT (id) DO UPDATE
+     SET role = EXCLUDED.role,
+         company_id = EXCLUDED.company_id,
+         name = EXCLUDED.name;
+   ```
+4. Faça login na aplicação usando `/sign-in` para validar o fluxo.
 
-### 3. Configure as Políticas RLS
+## 🧪 Verificações rápidas
 
-1. Ainda no **SQL Editor**, crie uma nova query
-2. Copie todo o conteúdo do arquivo `rls_policies.sql` e cole no editor
-3. Clique em **Run** para executar o script
+Execute a rota `/api/health` após configurar o ambiente. A resposta deve retornar `ok: true` e `hasServiceRole: true` quando a chave de serviço estiver presente.
 
-**⚠️ Importante**: Execute este script após o schema, pois ele depende das tabelas criadas anteriormente.
-
-### 4. Verificação da Configuração
-
-Após executar ambos os scripts, verifique se tudo foi criado corretamente:
-
-#### Verificar Tabelas
-```sql
-SELECT table_name 
-FROM information_schema.tables 
-WHERE table_schema = 'public' 
-ORDER BY table_name;
+```bash
+curl https://golffox.vercel.app/api/health
 ```
 
-Você deve ver as seguintes tabelas:
-- `alerts`
-- `companies`
-- `cost_control`
-- `driver_performance`
-- `drivers`
-- `passengers`
-- `permission_profiles`
-- `route_history`
-- `route_passengers`
-- `routes`
-- `users`
-- `vehicle_locations`
-- `vehicles`
+## 🔒 Boas práticas
 
-#### Verificar RLS
-```sql
-SELECT schemaname, tablename, rowsecurity 
-FROM pg_tables 
-WHERE schemaname = 'public' 
-AND rowsecurity = true;
-```
+- Sincronize `.env.example` sempre que rotacionar credenciais.
+- Limite o acesso às tabelas diretamente pelo Supabase Studio usando os papéis `admin`/`operator` definidos nas políticas.
+- Utilize chaves separadas para ambientes `preview` e `production` na Vercel (`vercel env add`).
 
-Todas as tabelas devem ter `rowsecurity = true`.
-
-#### Verificar Políticas
-```sql
-SELECT schemaname, tablename, policyname, permissive, roles, cmd, qual 
-FROM pg_policies 
-WHERE schemaname = 'public' 
-ORDER BY tablename, policyname;
-```
-
-### 5. Configuração de Autenticação
-
-1. Vá para **Authentication** > **Settings**
-2. Em **Site URL**, adicione: `http://localhost:3000` (para desenvolvimento)
-3. Em **Redirect URLs**, adicione: `http://localhost:3000/auth/callback`
-4. Salve as configurações
-
-### 6. Configuração de Storage (Opcional)
-
-Se precisar de upload de arquivos:
-
-1. Vá para **Storage**
-2. Crie um bucket chamado `uploads`
-3. Configure as políticas de acesso conforme necessário
-
-## Estrutura do Banco de Dados
-
-### Principais Entidades
-
-1. **Companies** - Empresas do sistema
-2. **Users** - Usuários do sistema (vinculados ao Supabase Auth)
-3. **Drivers** - Motoristas
-4. **Vehicles** - Veículos
-5. **Passengers** - Passageiros
-6. **Routes** - Rotas
-7. **Route_Passengers** - Relacionamento entre rotas e passageiros
-8. **Alerts** - Alertas do sistema
-9. **Route_History** - Histórico de execução de rotas
-10. **Vehicle_Locations** - Localizações dos veículos
-11. **Driver_Performance** - Performance dos motoristas
-12. **Cost_Control** - Controle de custos
-13. **Permission_Profiles** - Perfis de permissão
-
-### Hierarquia de Roles
-
-1. **Admin** - Acesso total ao sistema
-2. **Operator** - Gerenciamento operacional
-3. **Driver** - Acesso limitado para motoristas
-4. **Passenger** - Acesso limitado para passageiros
-
-## Dados Iniciais
-
-O script `schema.sql` já inclui alguns dados iniciais:
-
-### Permission Profiles
-- Admin, Operator, Driver, Passenger com suas respectivas permissões
-
-### Company Padrão
-- Uma empresa exemplo para testes iniciais
-
-## Troubleshooting
-
-### Erro de Permissão
-Se encontrar erros de permissão, certifique-se de estar usando uma conta com privilégios de administrador no projeto Supabase.
-
-### Erro de Extensão
-Se houver erro com extensões (`uuid-ossp`, `postgis`), verifique se elas estão habilitadas:
-1. Vá para **Database** > **Extensions**
-2. Procure e habilite `uuid-ossp` e `postgis`
-
-### Erro de RLS
-Se as políticas RLS não funcionarem:
-1. Verifique se o RLS está habilitado nas tabelas
-2. Confirme se as funções auxiliares foram criadas corretamente
-3. Teste as políticas com diferentes roles
-
-## Próximos Passos
-
-Após a configuração do banco:
-
-1. ✅ Configurar variáveis de ambiente no projeto
-2. ✅ Testar conexão com o banco
-3. ✅ Implementar autenticação
-4. ✅ Testar operações CRUD
-5. ✅ Configurar deploy em produção
-
-## Suporte
-
-Para dúvidas ou problemas:
-1. Consulte a [documentação do Supabase](https://supabase.com/docs)
-2. Verifique os logs no dashboard do Supabase
-3. Teste as queries SQL diretamente no SQL Editor
+Com esses scripts o Supabase fica alinhado à nova base de código e fornece os dados necessários para o dashboard em produção.
