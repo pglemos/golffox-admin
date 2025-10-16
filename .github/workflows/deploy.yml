@@ -32,40 +32,40 @@ jobs:
           vercel-project-name: golffox-admin
           working-directory: apps/admin
           vercel-args: '--prod'
-      - name: Deploy Operator
+      - name: Deploy Operador
         if: ${{ success() }}
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-name: golffox-operator
+          vercel-project-name: golffox-operador
           working-directory: apps/operator
           vercel-args: '--prod'
-      - name: Deploy Carrier
+      - name: Deploy Transportadora
         if: ${{ success() }}
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-name: golffox-carrier
+          vercel-project-name: golffox-transportadora
           working-directory: apps/carrier
           vercel-args: '--prod'
-      - name: Deploy Driver
+      - name: Deploy Motorista
         if: ${{ success() }}
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-name: golffox-driver
+          vercel-project-name: golffox-motorista
           working-directory: apps/driver
           vercel-args: '--prod'
-      - name: Deploy Passenger
+      - name: Deploy Passageiro
         if: ${{ success() }}
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-name: golffox-passenger
+          vercel-project-name: golffox-passageiro
           working-directory: apps/passenger
           vercel-args: '--prod'
       - name: Deploy API
@@ -77,4 +77,3 @@ jobs:
           vercel-project-name: golffox-api
           working-directory: api
           vercel-args: '--prod'
-
