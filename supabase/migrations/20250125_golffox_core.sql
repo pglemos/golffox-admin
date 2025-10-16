@@ -246,7 +246,7 @@ alter publication supabase_realtime add table public.routes;
 -- Seed data --------------------------------------------------------------
 insert into public.companies (name)
 values ('Golffox Tech'), ('SynVolt Logistics')
-on conflict (name) do nothing;
+on conflict do nothing;
 
 insert into public.carriers (name, company_id)
 select 'TransFox', id from public.companies where name = 'Golffox Tech'
@@ -256,13 +256,13 @@ insert into public.drivers (name, phone, status)
 values
   ('João Motorista', '(31) 99999-1111', 'active'),
   ('Carlos Freitas', '(31) 88888-2222', 'active')
-on conflict (name) do nothing;
+on conflict do nothing;
 
 insert into public.passengers (name, phone)
 values
   ('Maria Lima', '(31) 99999-4444'),
   ('Lucas Silva', '(31) 97777-5555')
-on conflict (name) do nothing;
+on conflict do nothing;
 
 insert into public.vehicles (plate, capacity)
 values
@@ -274,5 +274,5 @@ insert into public.routes (name, status)
 values
   ('Rota A - Centro', 'scheduled'),
   ('Rota B - Industrial', 'scheduled')
-on conflict (name) do nothing;
+on conflict do nothing;
 
