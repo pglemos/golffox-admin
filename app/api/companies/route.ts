@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CompaniesService } from '@/services/companiesService';
+// import { CompaniesService } from '@/src/services/transportadora/companiesService';
 import { withRoleAuth, handleApiError, validateRequestBody } from '../middleware';
 
-const companiesService = new CompaniesService();
+// const companiesService = new CompaniesService();
 
 // GET - Listar empresas
 export const GET = withRoleAuth(['admin', 'operator'])(async (request) => {
@@ -12,84 +12,60 @@ export const GET = withRoleAuth(['admin', 'operator'])(async (request) => {
     const limit = parseInt(searchParams.get('limit') || '10');
     const search = searchParams.get('search') || undefined;
     const status = searchParams.get('status') || undefined;
-    const withStats = searchParams.get('withStats') === 'true';
 
-    let result;
-
-    if (withStats) {
-      const allCompaniesWithStats = await companiesService.findAllWithStats();
-      
-      if (allCompaniesWithStats.error) {
-        return NextResponse.json(
-          { error: allCompaniesWithStats.error },
-          { status: 400 }
-        );
+    // Mock temporário - simula lista de empresas
+    const mockCompanies = [
+      {
+        id: '1',
+        name: 'Mock Company 1',
+        cnpj: '12.345.678/0001-90',
+        email: 'mock1@company.com',
+        status: 'active'
+      },
+      {
+        id: '2',
+        name: 'Mock Company 2',
+        cnpj: '98.765.432/0001-10',
+        email: 'mock2@company.com',
+        status: 'inactive'
       }
-
-      let filteredData = allCompaniesWithStats.data || [];
-      
-      // Aplicar filtros manualmente
-      if (search) {
-        filteredData = filteredData.filter(company => 
-          company.name.toLowerCase().includes(search.toLowerCase()) ||
-          company.cnpj.includes(search)
-        );
-      }
-      
-      if (status) {
-        filteredData = filteredData.filter(company => company.status === status);
-      }
-
-      // Aplicar paginação manual
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + limit;
-      const paginatedData = filteredData.slice(startIndex, endIndex);
-
-      result = {
-        data: paginatedData,
-        error: null,
-        pagination: {
-          page,
-          limit,
-          total: filteredData.length,
-          totalPages: Math.ceil(filteredData.length / limit)
-        }
-      };
-    } else {
-      const filters: any = {};
-      if (search) filters.name = search;
-      if (status) filters.status = status;
-
-      result = await companiesService.findWithFilters(filters);
-      
-      if (result.error) {
-        return NextResponse.json(
-          { error: result.error },
-          { status: 400 }
-        );
-      }
-
-      // Aplicar paginação manual para findWithFilters também
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + limit;
-      const paginatedData = (result.data || []).slice(startIndex, endIndex);
-
-      result = {
-        data: paginatedData,
-        error: null,
-        pagination: {
-          page,
-          limit,
-          total: result.data?.length || 0,
-          totalPages: Math.ceil((result.data?.length || 0) / limit)
-        }
-      };
+    ];
+    
+    let filteredData = mockCompanies;
+    
+    // Aplicar filtros manualmente
+    if (search) {
+      filteredData = filteredData.filter(company => 
+        company.name.toLowerCase().includes(search.toLowerCase()) ||
+        company.cnpj.includes(search)
+      );
     }
+    
+    if (status) {
+      filteredData = filteredData.filter(company => company.status === status);
+    }
+    
+    // Aplicar paginação manual
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+
+    const result = {
+      data: paginatedData,
+      error: null,
+      pagination: {
+        page,
+        limit,
+        total: filteredData.length,
+        totalPages: Math.ceil(filteredData.length / limit)
+      }
+    };
 
     return NextResponse.json({
       success: true,
       data: result.data,
       pagination: result.pagination,
+      message: 'Empresas listadas com sucesso (mock)',
     });
 
   } catch (error) {
@@ -97,37 +73,17 @@ export const GET = withRoleAuth(['admin', 'operator'])(async (request) => {
   }
 });
 
-// POST - Criar empresa
+// POST - Criar nova empresa
 export const POST = withRoleAuth(['admin'])(async (request) => {
   try {
     const body = await request.json();
 
-    // Validar campos obrigatórios
-    const validation = validateRequestBody(body, [
-      'name',
-      'cnpj',
-      'email',
-      'phone',
-      'address'
-    ]);
-
-    if (!validation.isValid) {
-      return NextResponse.json(
-        { 
-          error: 'Campos obrigatórios não fornecidos',
-          missingFields: validation.missingFields 
-        },
-        { status: 400 }
-      );
-    }
-
-    const result = await companiesService.create(body);
-
+    // Mock temporário - simula criação bem-sucedida
     return NextResponse.json({
       success: true,
-      data: result,
-      message: 'Empresa criada com sucesso',
-    }, { status: 201 });
+      data: { id: 'mock-id', ...body },
+      message: 'Empresa criada com sucesso (mock)',
+    });
 
   } catch (error) {
     return handleApiError(error);

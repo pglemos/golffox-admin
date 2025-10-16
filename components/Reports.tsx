@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { generateReport } from '../services/geminiService';
+import { generateReport } from '../src/services/ai/geminiService';
 import { MOCK_ROUTES, MOCK_ALERTS, MOCK_VEHICLES } from '../constants';
 import { PaperAirplaneIcon } from './icons/Icons';
 

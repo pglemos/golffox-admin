@@ -1,12 +1,7 @@
 import React, { useEffect } from 'react';
 import { GOOGLE_MAPS_CONFIG } from '../config';
 
-declare global {
-  interface Window {
-    gm_authFailure?: () => void;
-    initMap?: () => void;
-  }
-}
+// Tipagens globais estão definidas em src/types/global.d.ts
 
 interface GoogleMapsLoaderProps {
   children: React.ReactNode;
@@ -29,9 +24,10 @@ const GoogleMapsLoader: React.FC<GoogleMapsLoaderProps> = ({ children }) => {
 
     // Verificar se já existe um script do Google Maps carregado
     const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
-    if (existingScript || window.googleMapsApiLoaded === true || window.google?.maps) {
+    const mapsAlreadyLoaded = !!(existingScript || window.googleMapsApiLoaded === true || window.google?.maps);
+    if (mapsAlreadyLoaded) {
       window.googleMapsApiLoaded = true;
-      return;
+      // Não retornamos aqui para garantir que o MarkerClusterer seja carregado abaixo
     }
 
     // Se está em processo de carregamento, aguardar
@@ -40,7 +36,9 @@ const GoogleMapsLoader: React.FC<GoogleMapsLoaderProps> = ({ children }) => {
     }
 
     // Marcar como carregando
-    window.googleMapsApiLoaded = 'loading';
+    if (!mapsAlreadyLoaded) {
+      window.googleMapsApiLoaded = 'loading';
+    }
 
     // Configurar timeout para evitar carregamento infinito
     const timeoutId = setTimeout(() => {
@@ -75,20 +73,22 @@ const GoogleMapsLoader: React.FC<GoogleMapsLoaderProps> = ({ children }) => {
       };
     }
 
-    // Carregar o script do Google Maps
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_CONFIG.apiKey}&libraries=${GOOGLE_MAPS_CONFIG.libraries.join(',')}&callback=initMap`;
-    script.async = true;
-    script.defer = true;
-    script.id = 'google-maps-script';
-    
-    script.onerror = () => {
-      clearTimeout(timeoutId);
-      console.error('Failed to load Google Maps script');
-      window.googleMapsApiLoaded = 'error';
-    };
+    // Carregar o script do Google Maps somente se ainda não estiver carregado
+    if (!mapsAlreadyLoaded) {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_CONFIG.apiKey}&libraries=${GOOGLE_MAPS_CONFIG.libraries.join(',')}&callback=initMap`;
+      script.async = true;
+      script.defer = true;
+      script.id = 'google-maps-script';
+      
+      script.onerror = () => {
+        clearTimeout(timeoutId);
+        console.error('Failed to load Google Maps script');
+        window.googleMapsApiLoaded = 'error';
+      };
 
-    document.head.appendChild(script);
+      document.head.appendChild(script);
+    }
 
     // Carregar MarkerClusterer apenas se não estiver carregado
     const existingMarkerScript = document.querySelector('script[src*="markerclusterer"]');
@@ -108,15 +108,11 @@ const GoogleMapsLoader: React.FC<GoogleMapsLoaderProps> = ({ children }) => {
 
     // Função de limpeza
     return () => {
-      // Limpar handlers globais apenas se o Maps já foi carregado
-      if (window.googleMapsApiLoaded === true) {
-        if (window.gm_authFailure) {
-          window.gm_authFailure = undefined;
-        }
-        if (window.initMap) {
-          window.initMap = undefined;
-        }
-      }
+      clearTimeout(timeoutId);
+      // Limpa os handlers globais para evitar memory leaks,
+      // a lógica de carregamento já lida com a sua recriação se necessário.
+      window.gm_authFailure = undefined;
+      window.initMap = undefined;
     };
   }, []);
 

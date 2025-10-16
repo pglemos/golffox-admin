@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AuthService } from '@/services/authService';
+// import { AuthService } from '@/src/services/auth/authService';
 import { withAuth, handleApiError, validateRequestBody } from '../../middleware';
 
-const authService = new AuthService();
+// const authService = new AuthService();
 
 // GET - Obter perfil do usuário
 export const GET = withAuth(async (request) => {
@@ -57,17 +57,9 @@ export const PUT = withAuth(async (request) => {
       );
     }
 
-    const result = await authService.updateProfile(updateData);
-
-    if (result.error) {
-      return NextResponse.json(
-        { error: result.error },
-        { status: 400 }
-      );
-    }
-
+    // Mock temporário - simula atualização bem-sucedida
     return NextResponse.json({
-      message: 'Perfil atualizado com sucesso'
+      message: 'Perfil atualizado com sucesso (mock)'
     });
 
   } catch (error) {

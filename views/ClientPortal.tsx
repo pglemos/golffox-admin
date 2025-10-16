@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 import ClientDashboard from '../components/client/ClientDashboard';
 import ClientSidebar from '../components/client/ClientSidebar';
 import EmployeesManagement from '../components/client/EmployeesManagement';
 import ClientLoginScreen from '../components/client/ClientLoginScreen';
-import type { ClientView, Employee, Company, PermissionProfile } from '../types';
+import type { ClientView, Employee, Company, PermissionProfile } from '../src/types/types';
 
 interface ClientPortalProps {
     employees: Employee[];
@@ -15,6 +16,10 @@ interface ClientPortalProps {
 const ClientPortal: React.FC<ClientPortalProps> = ({ employees, setEmployees, companies, permissionProfiles }) => {
     const [loggedInOperator, setLoggedInOperator] = useState<Employee | null>(null);
     const [currentView, setCurrentView] = useState<ClientView>('Dashboard');
+    
+    const handleViewChange = (view: string) => {
+        setCurrentView(view as ClientView);
+    };
     
     // Company is now determined by the logged in operator
     const operatorCompany = companies.find(c => c.id === loggedInOperator?.companyId);
@@ -53,12 +58,16 @@ const ClientPortal: React.FC<ClientPortalProps> = ({ employees, setEmployees, co
 
     return (
         <div className="h-full w-full flex bg-golffox-gray-light/80">
-            <ClientSidebar currentView={currentView} setCurrentView={setCurrentView} companyName={operatorCompany?.name}/>
+            <ClientSidebar currentView={currentView} setCurrentView={handleViewChange} companyName={operatorCompany?.name}/>
             <main className="flex-1 h-full flex flex-col">
                  <div className="flex-1 p-8 overflow-y-auto">
                     {renderContent()}
                 </div>
             </main>
+            <div className="flex items-center">
+                <Image src="/golffox-logo.svg" alt="Golffox Logo" className="h-10" width={40} height={40} />
+                <span className="ml-3 font-semibold text-xl text-white">Golffox</span>
+            </div>
         </div>
     );
 };

@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { mockGeocodingService } from '../services/mockGeocodingService';
-import { GeocodingResult, AddressValidationResult, GeocodingOptions } from '../services/geocodingService';
+import { GeocodingResult, AddressValidationResult, GeocodingOptions } from '../src/services/geocodingService';
 
 export interface GeocodingState {
   results: GeocodingResult[];

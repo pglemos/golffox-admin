@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { MOCK_VEHICLES, MOCK_ROUTES } from '../constants';
-import type { Vehicle, Route, Passenger } from '../types';
-import { VehicleStatus } from '../types';
+import type { Vehicle, Route, Passenger } from '../src/types/types';
+import { VehicleStatus } from '../src/types/types';
 import { TruckIcon, XMarkIcon, ClockIcon, UsersIcon } from './icons/Icons';
 import MapApiKeyWarning from './MapApiKeyWarning';
 import BusIcon3D, { BusStatus } from './BusIcon3D';
-import { getDriverStatus, getStatusColor, getStatusDescription, DriverLocation } from '../utils/driverStatus';
-import { createBusMapIcon, vehicleStatusToBusStatus } from '../utils/mapIcons';
+import { getDriverStatus, getStatusColor, getStatusDescription, DriverLocation } from '../src/utils/helpers/driverStatus';
+import { createBusMapIcon, vehicleStatusToBusStatus } from '../src/utils/helpers/mapIcons';
 
 // Tipagens globais agora estão em src/types/global.d.ts
 
@@ -147,7 +147,7 @@ const RealTimeMap: React.FC = () => {
 
 
 
-  const displayGarageBuses = () => {
+  const displayGarageBuses = useCallback(() => {
     if (!mapInstanceRef.current) return;
 
     // Posição da garagem (centro aproximado da cidade)
@@ -198,7 +198,7 @@ const RealTimeMap: React.FC = () => {
 
       markersRef.current.push(garageMarker);
     });
-  };
+  }, [createTrackedInfoWindow]);
 
   const cleanupResources = useCallback(() => {
     debugLog('🧹 Iniciando limpeza de recursos');
@@ -275,6 +275,57 @@ const RealTimeMap: React.FC = () => {
     debugLog('✅ Limpeza de recursos concluída');
   }, []);
 
+  const startSimulation = useCallback((directionsResult: any, route: Route, vehicle: Vehicle) => {
+    const overviewPath = directionsResult.routes[0].overview_path;
+    let step = 0;
+    let tripStartTime = Date.now();
+    const totalDuration = directionsResult.routes[0].legs.reduce((acc: number, leg: any) => acc + leg.duration.value, 0);
+
+    // Usar o status do veículo convertido para busStatus
+    const busStatus = vehicleStatusToBusStatus(vehicle.status);
+    const animatedBusIcon = createBusMapIcon(busStatus, 36);
+    
+    animatedVehicleMarkerRef.current = new window.google.maps.Marker({
+        position: overviewPath[0],
+        map: mapInstanceRef.current,
+        zIndex: 1000,
+        icon: animatedBusIcon
+    });
+    
+    simulationIntervalRef.current = setInterval(() => {
+        step++;
+        if (step >= overviewPath.length) {
+            if(simulationIntervalRef.current) clearInterval(simulationIntervalRef.current);
+            return;
+        }
+
+        // CORREÇÃO: Usar setPosition em vez de atribuição direta
+        if (animatedVehicleMarkerRef.current) {
+          animatedVehicleMarkerRef.current.setPosition(overviewPath[step]);
+        }
+        
+        const passengersOnboard = route.passengers.list.filter(p => {
+             const dist = window.google.maps.geometry.spherical.computeDistanceBetween(
+                overviewPath[step], p.position
+             );
+             return dist < 2000; // approximation
+        }).length;
+
+        const tripDuration = Math.floor((Date.now() - tripStartTime) / 1000);
+        const elapsedRatio = step / overviewPath.length;
+        const eta = Math.ceil((totalDuration * (1 - elapsedRatio)) / 60);
+
+        setTripStatus({
+            speed: Math.floor(Math.random() * (60 - 40 + 1) + 40),
+            passengersOnboard,
+            tripDuration,
+            eta,
+            route: route
+        });
+
+    }, 1000);
+  }, []);
+
   const handleVehicleSelect = useCallback((vehicle: Vehicle) => {
     debugLog('🚌 Selecionando veículo:', vehicle.plate);
     
@@ -299,7 +350,7 @@ const RealTimeMap: React.FC = () => {
       }
 
       // Criar pontos de parada apenas para a rota selecionada
-      route.passengers.list.forEach((passenger, passengerIndex) => {
+      route.passengers.list.forEach((passenger: Passenger, passengerIndex: number) => {
         const busStopIcon = {
           url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -350,7 +401,7 @@ const RealTimeMap: React.FC = () => {
       directionsRenderer.setMap(mapInstanceRef.current);
       directionsRendererRef.current = directionsRenderer;
 
-      const waypoints = route.passengers.list.slice(0, -1).map(p => ({
+      const waypoints = route.passengers.list.slice(0, -1).map((p: Passenger) => ({
         location: p.position,
         stopover: true,
       }));
@@ -372,58 +423,7 @@ const RealTimeMap: React.FC = () => {
         }
       });
     }, 100);
-  }, [selectedVehicle, mapStatus.status, cleanupResources, createTrackedInfoWindow]);
-
-  const startSimulation = (directionsResult: any, route: Route, vehicle: Vehicle) => {
-    const overviewPath = directionsResult.routes[0].overview_path;
-    let step = 0;
-    let tripStartTime = Date.now();
-    const totalDuration = directionsResult.routes[0].legs.reduce((acc: number, leg: any) => acc + leg.duration.value, 0);
-
-    // Usar o status do veículo convertido para busStatus
-    const busStatus = vehicleStatusToBusStatus(vehicle.status);
-    const animatedBusIcon = createBusMapIcon(busStatus, 36);
-    
-    animatedVehicleMarkerRef.current = new window.google.maps.Marker({
-        position: overviewPath[0],
-        map: mapInstanceRef.current,
-        zIndex: 1000,
-        icon: animatedBusIcon
-    });
-    
-    simulationIntervalRef.current = setInterval(() => {
-        step++;
-        if (step >= overviewPath.length) {
-            if(simulationIntervalRef.current) clearInterval(simulationIntervalRef.current);
-            return;
-        }
-
-        // CORREÇÃO: Usar setPosition em vez de atribuição direta
-        if (animatedVehicleMarkerRef.current) {
-          animatedVehicleMarkerRef.current.setPosition(overviewPath[step]);
-        }
-        
-        const passengersOnboard = route.passengers.list.filter(p => {
-             const dist = window.google.maps.geometry.spherical.computeDistanceBetween(
-                overviewPath[step], p.position
-             );
-             return dist < 2000; // approximation
-        }).length;
-
-        const tripDuration = Math.floor((Date.now() - tripStartTime) / 1000);
-        const elapsedRatio = step / overviewPath.length;
-        const eta = Math.ceil((totalDuration * (1 - elapsedRatio)) / 60);
-
-        setTripStatus({
-            speed: Math.floor(Math.random() * (60 - 40 + 1) + 40),
-            passengersOnboard,
-            tripDuration,
-            eta,
-            route: route
-        });
-
-    }, 1000);
-  }
+  }, [mapStatus.status, cleanupResources, createTrackedInfoWindow, startSimulation]);
 
   const handleDeselectVehicle = () => {
     cleanupResources();
@@ -462,7 +462,7 @@ const RealTimeMap: React.FC = () => {
 
     // Exibir ônibus na garagem
         displayGarageBuses();
-  }, [mapStatus.status]);
+  }, [mapStatus.status, handleVehicleSelect, displayGarageBuses]);
   
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);

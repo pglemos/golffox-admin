@@ -1,13 +1,10 @@
-import type { Route, Alert, Vehicle, Passenger, ChecklistItem, Direction, AppView, View, Driver, Company, Employee, PermissionProfile } from './types';
-import { RouteStatus, AlertType, VehicleStatus } from './types';
+import type { Route, Alert, Vehicle, Passenger, ChecklistItem, Direction, AppView, View, Driver, Company, Employee, PermissionProfile } from './src/types/types';
+import { RouteStatus, AlertType, VehicleStatus } from './src/types/types';
 
-export const GOLFFOX_LOGO_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAYAAAB5fY51AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAB3RJTUUH6AYbDCgI12uT+QAAIABJREFUeJzsvcuS5Miy5/u+7+nqnqrqnpme+d7oM5JIAiTMA2yBfJ38BPgR8Bdgj2AL2GNEkiRBQJLRMz3V1VXV1d33/d7/++0PABwAOH7+/v7+/v7+d7f/++1vAJwAxAAI8L+7r69f//b2djUajWq12mq12uvr6+vr62s0GlWr1arVaqPRqKurq6urq9fr9Xq9Xq/Xa7Va/S8Af5/ValWr1Wq1Wq1WKxaLhUIhFosFg8FgMBgMBoPh4eFwOBwOh8PhcEgmk0wmk8FgEAgEAoFALpfL5XK5XC6Xy+VyuVwul8vlcrvdbpVKpVKpVIqFQqFQKBYKhUKhUCgUCgUCgUAgEAgEAoFAIBBIJBKJRCKRSCQSiUQikUgkEolEIpFIJBwOh8PhcDgOh8PhcDiRSCSDwQSDQSAQCASC/wHg/zYajdbW1qanp6enp6enp2e1Wq1WKxQKhUKhUAgEAoFAIBAIBAKBQCDY7XY/Pz+/vb3d7/f7fD7f7/f7/X7fbrfZbDabzWaz2Ww2m81ms9lsNpvNZrfb7Xa73W632+12u93u9/t9Pp/P5/P5fD4ej4fD4XA4HA6Hw+FwOByOQqFQKBQKhUKhUCgUCgUCgUAgEAoEAoFAIBAIBAIBAKBQCAQiUQikUgkEolEIpFIJBJJJBKJRAKBQCDw+voqEAhUVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWVlZX/H/r/A4EAgUBAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV...';
+export const GOLFFOX_LOGO_BASE64 = '/golffox-logo.svg';
 
 export const APP_VIEWS = {
-  MANAGEMENT: 'Painel de Gestão (Golffox)',
-  DRIVER: 'App do Motorista',
-  PASSENGER: 'App do Passageiro',
-  CLIENT: 'Portal do Operador',
+  MANAGEMENT: 'Painel de Gestão (Golffox)'
 } as const;
 
 export const VIEWS = {
@@ -28,18 +25,12 @@ export const VIEWS = {
 // Added a constant for all possible access areas for the permissions modal.
 export const ALL_ACCESS_AREAS = [
     'Painel de Gestão (Completo)',
-    'Painel de Gestão (Visualização)',
-    'Portal do Operador',
-    'App do Motorista',
-    'App do Passageiro'
+    'Painel de Gestão (Visualização)'
 ];
 
 export const MOCK_PERMISSION_PROFILES: PermissionProfile[] = [
-    { id: 'p_admin', name: 'Admin', description: 'Acesso total a todas as áreas do sistema, incluindo gerenciamento de usuários e permissões.', access: ['Painel de Gestão (Completo)', 'Portal do Operador', 'App do Motorista', 'App do Passageiro'], isAdminFeature: true },
+    { id: 'p_admin', name: 'Admin', description: 'Acesso total a todas as áreas do sistema, incluindo gerenciamento de usuários e permissões.', access: ['Painel de Gestão (Completo)'], isAdminFeature: true },
     { id: 'p_support', name: 'Suporte', description: 'Acesso às principais funcionalidades do Painel de Gestão para monitoramento e suporte, sem permissão para editar usuários.', access: ['Painel de Gestão (Visualização)'] },
-    { id: 'p_driver', name: 'Motorista', description: 'Acesso exclusivo ao aplicativo do motorista para visualização de rotas, checklists e navegação.', access: ['App do Motorista'] },
-    { id: 'p_passenger', name: 'Passageiro', description: 'Acesso exclusivo ao aplicativo do passageiro para rastreamento de rotas em tempo real.', access: ['App do Passageiro'] },
-    { id: 'p_operator', name: 'Operador', description: 'Acesso ao portal da empresa para gerenciar os funcionários e acompanhar as rotas contratadas.', access: ['Portal do Operador'] },
 ];
 
 export const MOCK_COMPANIES: Company[] = [

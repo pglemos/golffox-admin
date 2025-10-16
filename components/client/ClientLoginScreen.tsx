@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
-import { GOLFFOX_LOGO_BASE64 } from '../../constants';
-import type { Employee, PermissionProfile } from '../../types';
+import Image from 'next/image';
+// import { GOLFFOX_LOGO_BASE64 } from '../../constants';
+// import type { Employee, PermissionProfile } from '../../types';
+
+// Tipos temporários
+type Employee = any;
+type PermissionProfile = any;
 
 interface ClientLoginScreenProps {
     onLogin: (operator: Employee) => void;
@@ -45,7 +50,7 @@ const ClientLoginScreen: React.FC<ClientLoginScreenProps> = ({ onLogin, employee
     return (
         <div className="w-full flex items-center justify-center bg-golffox-gray-light">
             <div className="w-full max-w-md bg-white p-10 rounded-xl shadow-2xl text-center">
-                <img src={GOLFFOX_LOGO_BASE64} alt="Golffox Logo" className="h-20 mb-6 mx-auto" />
+                <Image src="/golffox-logo.svg" alt="Golffox Logo" className="h-20 mb-6 mx-auto" width={80} height={80} priority />
                 <h1 className="text-3xl font-bold text-golffox-gray-dark mb-2">Portal do Operador</h1>
                 <p className="text-golffox-gray-medium mb-8">Faça login para gerenciar suas operações.</p>
 

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { RoutesService } from '@/services/routesService';
+// import { RoutesService } from '@/src/services/transportadora/routesService';
 import { withRoleAuth, withAuth, handleApiError, validateRequestBody } from '../middleware';
 
-const routesService = new RoutesService();
+// const routesService = new RoutesService();
 
 // GET - Listar rotas
 export const GET = withAuth(async (request) => {
@@ -48,7 +48,8 @@ export const GET = withAuth(async (request) => {
     let result;
 
     if (withDetails) {
-      const allRoutes = await routesService.findAllWithDetails();
+      // const allRoutes = await routesService.findAllWithDetails();
+      const allRoutes = { data: [] as any[], error: null }; // Mock temporário
       if (allRoutes.error) {
         return NextResponse.json(
           { error: allRoutes.error },
@@ -88,7 +89,8 @@ export const GET = withAuth(async (request) => {
         },
       };
     } else {
-      result = await routesService.findWithFilters(filters);
+      // result = await routesService.findWithFilters(filters);
+      result = { data: [] as any[], error: null }; // Mock temporário
       if (result.error) {
         return NextResponse.json(
           { error: result.error },
@@ -163,12 +165,13 @@ export const POST = withRoleAuth(['admin', 'operator'])(async (request) => {
       }
     }
 
-    const result = await routesService.create(body);
+    // const result = await routesService.create(body);
+    const result = { id: 'mock-id', ...body }; // Mock temporário
 
     return NextResponse.json({
       success: true,
       data: result,
-      message: 'Rota criada com sucesso',
+      message: 'Rota criada com sucesso (mock)',
     }, { status: 201 });
 
   } catch (error) {

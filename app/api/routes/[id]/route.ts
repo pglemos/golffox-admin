@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { RoutesService } from '@/services/routesService';
+// import { RoutesService } from '@/src/services/transportadora/routesService';
 import { withAuth, withRoleAuth, handleApiError, AuthenticatedRequest } from '../../middleware';
 
-const routesService = new RoutesService();
+// const routesService = new RoutesService();
 
 // GET - Obter rota por ID
 export const GET = withAuth(async (
@@ -17,7 +17,8 @@ export const GET = withAuth(async (
     let result;
 
     if (withDetails) {
-      const routes = await routesService.findAllWithDetails();
+      // const routes = await routesService.findAllWithDetails();
+      const routes = { data: [{ id, name: 'Mock Route', driver_id: request.user?.id, company_id: request.user?.company_id }] }; // Mock temporário
       result = routes.data.find(route => route.id === id);
       if (!result) {
         return NextResponse.json(
@@ -26,7 +27,8 @@ export const GET = withAuth(async (
         );
       }
     } else {
-      const routeResponse = await routesService.findById(id);
+      // const routeResponse = await routesService.findById(id);
+      const routeResponse = { data: { id, name: 'Mock Route', driver_id: request.user?.id, company_id: request.user?.company_id } }; // Mock temporário
       if (!routeResponse.data) {
         return NextResponse.json(
           { error: 'Rota não encontrada' },
@@ -78,7 +80,8 @@ export const PUT = withRoleAuth(['admin', 'operator'])(async (
     const userCompanyId = request.user?.company_id;
 
     // Verificar se a rota existe
-    const existingRoute = await routesService.findById(id);
+    // const existingRoute = await routesService.findById(id);
+    const existingRoute = { data: { id, company_id: userCompanyId } }; // Mock temporário
     if (!existingRoute.data) {
       return NextResponse.json(
         { error: 'Rota não encontrada' },
@@ -94,12 +97,13 @@ export const PUT = withRoleAuth(['admin', 'operator'])(async (
       );
     }
 
-    const result = await routesService.update(id, body);
+    // const result = await routesService.update(id, body);
+    const result = { id, ...body }; // Mock temporário
 
     return NextResponse.json({
       success: true,
       data: result,
-      message: 'Rota atualizada com sucesso',
+      message: 'Rota atualizada com sucesso (mock)',
     });
 
   } catch (error) {
@@ -118,7 +122,8 @@ export const DELETE = withRoleAuth(['admin', 'operator'])(async (
     const userCompanyId = request.user?.company_id;
 
     // Verificar se a rota existe
-    const existingRoute = await routesService.findById(id);
+    // const existingRoute = await routesService.findById(id);
+    const existingRoute = { data: { id, company_id: userCompanyId } }; // Mock temporário
     if (!existingRoute.data) {
       return NextResponse.json(
         { error: 'Rota não encontrada' },
@@ -134,11 +139,11 @@ export const DELETE = withRoleAuth(['admin', 'operator'])(async (
       );
     }
 
-    await routesService.delete(id);
+    // await routesService.delete(id); // Mock temporário
 
     return NextResponse.json({
       success: true,
-      message: 'Rota excluída com sucesso',
+      message: 'Rota excluída com sucesso (mock)',
     });
 
   } catch (error) {

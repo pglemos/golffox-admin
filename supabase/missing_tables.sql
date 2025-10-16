@@ -163,7 +163,7 @@ CREATE TABLE IF NOT EXISTS vehicle_locations (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Índices para melhor performance (apenas para as novas tabelas)
+-- Índices para melhor performance
 CREATE INDEX IF NOT EXISTS idx_vehicles_driver_id ON vehicles(driver_id);
 CREATE INDEX IF NOT EXISTS idx_vehicles_status ON vehicles(status);
 CREATE INDEX IF NOT EXISTS idx_passengers_company_id ON passengers(company_id);
@@ -178,28 +178,3 @@ CREATE INDEX IF NOT EXISTS idx_route_history_route_id ON route_history(route_id)
 CREATE INDEX IF NOT EXISTS idx_route_history_execution_date ON route_history(execution_date);
 CREATE INDEX IF NOT EXISTS idx_vehicle_locations_vehicle_id ON vehicle_locations(vehicle_id);
 CREATE INDEX IF NOT EXISTS idx_vehicle_locations_timestamp ON vehicle_locations(timestamp);
-
--- Triggers para atualizar updated_at automaticamente (apenas para as novas tabelas)
--- Primeiro removemos os triggers se já existirem, depois criamos novos
-DROP TRIGGER IF EXISTS update_vehicles_updated_at ON vehicles;
-DROP TRIGGER IF EXISTS update_passengers_updated_at ON passengers;
-DROP TRIGGER IF EXISTS update_routes_updated_at ON routes;
-DROP TRIGGER IF EXISTS update_cost_control_updated_at ON cost_control;
-DROP TRIGGER IF EXISTS update_driver_performance_updated_at ON driver_performance;
-
-CREATE TRIGGER update_vehicles_updated_at BEFORE UPDATE ON vehicles FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_passengers_updated_at BEFORE UPDATE ON passengers FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_routes_updated_at BEFORE UPDATE ON routes FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_cost_control_updated_at BEFORE UPDATE ON cost_control FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_driver_performance_updated_at BEFORE UPDATE ON driver_performance FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
--- Comentários nas tabelas
-COMMENT ON TABLE vehicles IS 'Veículos da frota';
-COMMENT ON TABLE passengers IS 'Passageiros/funcionários das empresas';
-COMMENT ON TABLE routes IS 'Rotas de transporte';
-COMMENT ON TABLE route_passengers IS 'Relacionamento entre rotas e passageiros';
-COMMENT ON TABLE alerts IS 'Alertas e notificações do sistema';
-COMMENT ON TABLE route_history IS 'Histórico de execução das rotas';
-COMMENT ON TABLE cost_control IS 'Controle de custos operacionais';
-COMMENT ON TABLE driver_performance IS 'Performance e gamificação dos motoristas';
-COMMENT ON TABLE vehicle_locations IS 'Localizações em tempo real dos veículos';

@@ -1,5 +1,5 @@
-import type { Alert, Route, Vehicle, Passenger } from '../types';
-import { AlertType, RouteStatus, VehicleStatus } from '../types';
+import type { Alert, Route, Vehicle, Passenger } from '../src/types/types';
+import { AlertType, RouteStatus, VehicleStatus } from '../src/types/types';
 
 export interface NotificationRule {
     id: string;

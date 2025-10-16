@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Route } from '../types';
+import { Route } from '../src/types/types';
 import { useTravelTime } from '../hooks/useTravelTime';
 import { mockTravelTimeService } from '../services/mockTravelTimeService';
 import { TrafficCondition } from '../services/travelTimeService';
@@ -309,7 +309,7 @@ const TravelTimeEstimator: React.FC<TravelTimeEstimatorProps> = ({
                       <div className="space-y-2">
                         <h4 className="font-medium text-gray-900">Segmentos da Rota</h4>
                         <div className="space-y-2 max-h-40 overflow-y-auto">
-                          {estimate.segments.map((segment, index) => (
+                          {estimate.segments.map((segment: any, index: number) => (
                             <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm">
                               <div className="flex items-center space-x-2">
                                 <MapPin className="w-3 h-3 text-gray-500" />
@@ -334,7 +334,7 @@ const TravelTimeEstimator: React.FC<TravelTimeEstimatorProps> = ({
                       <div className="space-y-2">
                         <h4 className="font-medium text-gray-900">Rotas Alternativas</h4>
                         <div className="space-y-2">
-                          {estimate.alternativeRoutes.map((altRoute, index) => (
+                          {estimate.alternativeRoutes.map((altRoute: any, index: number) => (
                             <div key={index} className="flex items-center justify-between p-2 bg-blue-50 rounded text-sm">
                               <span className="font-medium">{altRoute.name}</span>
                               <div className="flex items-center space-x-2">

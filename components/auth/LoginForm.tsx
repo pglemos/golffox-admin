@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../app/hooks/useAuth';
 import { Eye, EyeOff, LogIn, Mail, Lock, AlertCircle } from 'lucide-react';
 
 interface LoginFormProps {
@@ -40,7 +40,7 @@ export function LoginForm({ onSuccess, onForgotPassword, className = '' }: Login
 
     // Validação básica
     if (!formData.email.trim()) {
-      setError('Email é obrigatório');
+      setError('Usuário ou Email é obrigatório');
       return;
     }
 
@@ -49,10 +49,11 @@ export function LoginForm({ onSuccess, onForgotPassword, className = '' }: Login
       return;
     }
 
-    if (!formData.email.includes('@')) {
-      setError('Email inválido');
-      return;
-    }
+    // Remove validação de formato de email para permitir usuário "admin"
+    // if (!formData.email.includes('@')) {
+    //   setError('Email inválido');
+    //   return;
+    // }
 
     setIsSubmitting(true);
     setError(null);
@@ -110,7 +111,7 @@ export function LoginForm({ onSuccess, onForgotPassword, className = '' }: Login
           {/* Email Field */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-              Email
+              Usuário ou Email
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -119,13 +120,13 @@ export function LoginForm({ onSuccess, onForgotPassword, className = '' }: Login
               <input
                 id="email"
                 name="email"
-                type="email"
+                type="text"
                 autoComplete="email"
                 required
                 value={formData.email}
                 onChange={handleInputChange}
                 className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                placeholder="seu@email.com"
+                placeholder="admin ou seu@email.com"
                 disabled={isSubmitting || loading}
               />
             </div>

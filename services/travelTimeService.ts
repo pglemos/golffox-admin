@@ -1,4 +1,4 @@
-import { Route, Passenger } from '../types';
+import { Route, Passenger } from '../src/types/types';
 
 export interface TravelTimeEstimate {
   routeId: string;
@@ -261,7 +261,7 @@ class TravelTimeService {
 
     for (let i = 0; i < legs.length; i++) {
       const leg = legs[i];
-      const duration = Math.round(leg.duration.value / 60);
+      const duration = leg.duration ? Math.round(leg.duration.value / 60) : 0;
       const durationInTraffic = leg.duration_in_traffic 
         ? Math.round(leg.duration_in_traffic.value / 60) 
         : duration;
@@ -274,7 +274,7 @@ class TravelTimeService {
         from: leg.start_address,
         to: leg.end_address,
         duration: durationInTraffic,
-        distance: leg.distance.value,
+        distance: leg.distance ? leg.distance.value : 0,
         trafficDelay,
         passengerPickup
       });

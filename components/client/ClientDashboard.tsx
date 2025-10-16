@@ -1,10 +1,23 @@
 import React from 'react';
-import { MOCK_ROUTES, GOLFFOX_LOGO_BASE64 } from '../../constants';
-import type { Route } from '../../types';
-import { RouteStatus } from '../../types';
+import Image from 'next/image';
+// import { MOCK_ROUTES } from '../../constants';
+// import type { Route } from '../../types';
+// import { RouteStatus } from '../../types';
+
+// Tipos temporários
+type Route = any;
+type RouteStatusType = 'ontime' | 'delayed' | 'problem';
+const RouteStatus = {
+  OnTime: 'ontime' as RouteStatusType,
+  Delayed: 'delayed' as RouteStatusType,
+  Problem: 'problem' as RouteStatusType
+};
+
+// Mock data temporário
+const MOCK_ROUTES: Route[] = [];
 import { UserGroupIcon, ChartBarIcon, ClockIcon } from '../icons/Icons';
 
-const getStatusBadgeClass = (status: RouteStatus) => {
+const getStatusBadgeClass = (status: RouteStatusType) => {
   switch (status) {
     case RouteStatus.OnTime:
       return 'bg-golffox-blue-dark/80 text-white';
@@ -43,7 +56,8 @@ const ClientDashboard: React.FC = () => {
         <div className="h-full w-full bg-golffox-gray-light/80 flex flex-col">
             <header className="bg-white p-4 shadow-sm flex justify-between items-center border-b border-golffox-gray-light">
                 <div className="flex items-center">
-                    <img src={GOLFFOX_LOGO_BASE64} alt="Client Logo" className="h-10 mr-4" />
+                    <Image src="/golffox-logo.svg" alt="Client Logo" className="h-10 mr-4" width={40} height={40} />
+                    <h1 className="text-xl font-semibold">Bem-vindo, Cliente</h1>
                      <div>
                         <h1 className="text-2xl font-bold text-golffox-gray-dark">Portal do Operador</h1>
                         <p className="text-sm text-golffox-gray-medium">Contrato: Minerva Foods</p>
@@ -52,7 +66,7 @@ const ClientDashboard: React.FC = () => {
                  <div className="flex items-center text-sm text-golffox-gray-medium">
                     <span className="mr-2">Powered by</span> 
                     {/* FIX: Use Base64 logo to prevent broken image icon. */}
-                    <img src={GOLFFOX_LOGO_BASE64} alt="Golffox Logo" className="h-6" />
+                    <Image src="/golffox-logo.svg" alt="Golffox Logo" className="h-6" width={24} height={24} />
                 </div>
             </header>
 

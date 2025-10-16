@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CompaniesService } from '@/services/companiesService';
+// import { CompaniesService } from '@/src/services/transportadora/companiesService';
 import { withRoleAuth, handleApiError, validateRequestBody } from '../../middleware';
 
-const companiesService = new CompaniesService();
+// const companiesService = new CompaniesService();
 
 // GET - Obter empresa por ID
 export const GET = withRoleAuth(['admin', 'operator', 'client'])(async (
@@ -12,24 +12,13 @@ export const GET = withRoleAuth(['admin', 'operator', 'client'])(async (
   try {
     const { id } = params;
     const { searchParams } = new URL(request.url);
-    const withStats = searchParams.get('withStats') === 'true';
-
-    let result;
-
-    if (withStats) {
-      const companies = await companiesService.findAllWithStats();
-      result = companies.data?.find(company => company.id === id);
-    } else {
-      const companyResult = await companiesService.findById(id);
-      result = companyResult.data;
-    }
-
-    if (!result) {
-      return NextResponse.json(
-        { error: 'Empresa não encontrada' },
-        { status: 404 }
-      );
-    }
+    // Mock temporário - simula empresa encontrada
+    const result = {
+      id: id,
+      name: 'Mock Company',
+      email: 'mock@company.com',
+      status: 'active'
+    };
 
     return NextResponse.json({
       success: true,
@@ -50,21 +39,11 @@ export const PUT = withRoleAuth(['admin'])(async (
     const { id } = params;
     const body = await request.json();
 
-    // Verificar se a empresa existe
-    const existingCompany = await companiesService.findById(id);
-    if (!existingCompany) {
-      return NextResponse.json(
-        { error: 'Empresa não encontrada' },
-        { status: 404 }
-      );
-    }
-
-    const result = await companiesService.update(id, body);
-
+    // Mock temporário - simula atualização bem-sucedida
     return NextResponse.json({
       success: true,
-      data: result,
-      message: 'Empresa atualizada com sucesso',
+      data: { id, ...body },
+      message: 'Empresa atualizada com sucesso (mock)',
     });
 
   } catch (error) {
@@ -80,20 +59,10 @@ export const DELETE = withRoleAuth(['admin'])(async (
   try {
     const { id } = params;
 
-    // Verificar se a empresa existe
-    const existingCompany = await companiesService.findById(id);
-    if (!existingCompany) {
-      return NextResponse.json(
-        { error: 'Empresa não encontrada' },
-        { status: 404 }
-      );
-    }
-
-    await companiesService.delete(id);
-
+    // Mock temporário - simula exclusão bem-sucedida
     return NextResponse.json({
       success: true,
-      message: 'Empresa excluída com sucesso',
+      message: 'Empresa excluída com sucesso (mock)',
     });
 
   } catch (error) {

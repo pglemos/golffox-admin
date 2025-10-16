@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouteOptimization } from '../hooks/useRouteOptimization';
-import { RouteOptimizationOptions, Coordinates } from '../services/mockRouteOptimizationService';
-import type { Passenger } from '../types';
+import { RouteOptimizationOptions, Coordinates, RouteSegment } from '../services/mockRouteOptimizationService';
+import type { Passenger } from '../src/types/types';
 import {
   Route,
   MapPin,
@@ -381,8 +381,8 @@ const RouteOptimizer: React.FC<RouteOptimizerProps> = ({ onRouteOptimized }) => 
           <div>
             <h4 className="font-medium text-gray-900 mb-3">Ordem de Coleta Otimizada</h4>
             <div className="space-y-2">
-              {state.optimizedRoute.orderedPassengers.map((passenger, index) => {
-                const pickupTime = state.optimizedRoute?.pickupTimes.find(pt => pt.passenger.id === passenger.id);
+              {state.optimizedRoute.orderedPassengers.map((passenger: Passenger, index: number) => {
+                const pickupTime = state.optimizedRoute?.pickupTimes.find((pt: { passenger: Passenger; estimatedPickupTime: Date }) => pt.passenger.id === passenger.id);
                 return (
                   <div key={passenger.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                     <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium">
@@ -449,7 +449,7 @@ const RouteOptimizer: React.FC<RouteOptimizerProps> = ({ onRouteOptimized }) => 
           <div>
             <h4 className="font-medium text-gray-900 mb-3">Segmentos da Rota</h4>
             <div className="space-y-2">
-              {state.multiStopRoute.segments.map((segment, index) => (
+              {state.multiStopRoute.segments.map((segment: RouteSegment, index: number) => (
                 <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                     segment.type === 'pickup' ? 'bg-green-100 text-green-600' :

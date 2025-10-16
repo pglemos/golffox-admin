@@ -1,5 +1,6 @@
 import React from 'react';
-import { GOLFFOX_LOGO_BASE64 } from '../../constants';
+// import { GOLFFOX_LOGO_BASE64 } from '../../constants';
+import Image from 'next/image';
 
 interface LoginScreenProps {
     onLogin: () => void;
@@ -9,7 +10,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
     return (
         <div className="flex flex-col items-center justify-center h-full bg-white p-4 sm:p-6 md:p-8">
             <div className="w-full max-w-sm mx-auto flex flex-col items-center justify-center min-h-full">
-                <img src={GOLFFOX_LOGO_BASE64} alt="Golffox Logo" className="h-16 sm:h-20 md:h-24 mb-6 sm:mb-8" />
+                <Image src="/golffox-logo.svg" alt="Golffox Logo" className="h-16 sm:h-20 md:h-24 mb-6 sm:mb-8" width={96} height={96} priority />
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-golffox-gray-dark mb-2 text-center">Bem-vindo, Motorista</h1>
                 <p className="text-sm sm:text-base text-golffox-gray-medium mb-6 sm:mb-8 md:mb-10 text-center">Faça login para iniciar sua rota.</p>
 

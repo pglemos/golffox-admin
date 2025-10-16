@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Route } from '../types';
+import { Route } from '../src/types/types';
 import { mockTravelTimeService } from '../services/mockTravelTimeService';
 import { 
   TravelTimeEstimate, 
@@ -54,7 +54,7 @@ export const useTravelTime = (): TravelTimeHookReturn => {
   // Função principal para calcular tempo de viagem
   const calculateRouteTime = useCallback(async (route: Route, options: TravelTimeOptions = {}) => {
     const routeId = route.id;
-    setLoading(prev => new Set([...prev, routeId]));
+    setLoading(prev => new Set(Array.from(prev).concat(routeId)));
     setErrors(prev => {
       const newErrors = new Map(prev);
       newErrors.delete(routeId);
@@ -67,11 +67,11 @@ export const useTravelTime = (): TravelTimeHookReturn => {
     try {
       const estimate = await mockTravelTimeService.calculateRouteTime(routeId, options);
       
-      setEstimates(prev => new Map([...prev, [routeId, estimate]]));
-      setLastUpdated(prev => new Map([...prev, [routeId, new Date()]]));
+      setEstimates(prev => new Map(Array.from(prev).concat([[routeId, estimate]])));
+      setLastUpdated(prev => new Map(Array.from(prev).concat([[routeId, new Date()]])));
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-      setErrors(prev => new Map([...prev, [routeId, errorMessage]]));
+      setErrors(prev => new Map(Array.from(prev).concat([[routeId, errorMessage]])));
     } finally {
       setLoading(prev => {
         const newLoading = new Set(prev);
@@ -103,8 +103,8 @@ export const useTravelTime = (): TravelTimeHookReturn => {
     const interval = setInterval(async () => {
       try {
         const estimate = await mockTravelTimeService.calculateRouteTime(routeId);
-        setEstimates(prev => new Map([...prev, [routeId, estimate]]));
-        setLastUpdated(prev => new Map([...prev, [routeId, new Date()]]));
+        setEstimates(prev => new Map(Array.from(prev).concat([[routeId, estimate]])));
+        setLastUpdated(prev => new Map(Array.from(prev).concat([[routeId, new Date()]])));
       } catch (error) {
         console.warn(`Erro ao atualizar monitoramento da rota ${routeId}:`, error);
       }

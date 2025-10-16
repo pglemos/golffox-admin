@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
-import type { Alert } from '../types';
-import { AlertType } from '../types';
-import type { ToastNotification } from '../components/NotificationToast';
+import type { Alert } from '../src/types/types';
+import { AlertType } from '../src/types/types';
+import type { ToastNotification } from '../src/components/ui/NotificationToast';
 import { useNotifications } from './useNotifications';
 
 export interface ToastOptions {

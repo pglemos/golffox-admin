@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { ReportExportService, ReportData, ExportOptions } from '../services/reportExportService';
+import { ReportExportService, ReportData, ExportOptions } from '../src/services/reportExportService';
 
 interface ExportState {
   isExporting: boolean;

@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CompaniesService } from '@/services/companiesService';
-import { DriversService } from '@/services/driversService';
-import { VehiclesService } from '@/services/vehiclesService';
-import { PassengersService } from '@/services/passengersService';
-import { RoutesService } from '@/services/routesService';
-import { AlertsService } from '@/services/alertsService';
+// import { CompaniesService } from '@/src/services/transportadora/companiesService';
+// import { DriversService } from '@/src/services/drivers/driversService';
+// import { VehiclesService } from '@/src/services/vehicles/vehiclesService';
+// import { PassengersService } from '@/src/services/passengers/passengersService';
+// import { RoutesService } from '@/src/services/transportadora/routesService';
+// import { AlertsService } from '@/src/services/notifications/alertsService';
 import { withAuth, handleApiError } from '../middleware';
 
-const companiesService = new CompaniesService();
-const driversService = new DriversService();
-const vehiclesService = new VehiclesService();
-const passengersService = new PassengersService();
-const routesService = new RoutesService();
-const alertsService = new AlertsService();
+// const companiesService = new CompaniesService();
+// const driversService = new DriversService();
+// const vehiclesService = new VehiclesService();
+// const passengersService = new PassengersService();
+// const routesService = new RoutesService();
+// const alertsService = new AlertsService();
 
 // GET - Obter estatísticas gerais
 export const GET = withAuth(async (request) => {
@@ -25,29 +25,31 @@ export const GET = withAuth(async (request) => {
     // Estatísticas baseadas no role
     if (userRole === 'admin') {
       // Admin pode ver todas as estatísticas
-      const [
-        companiesStats,
-        driversStats,
-        vehiclesStats,
-        passengersStats,
-        routesStats,
-        alertsStats
-      ] = await Promise.all([
-        companiesService.getStats(),
-        driversService.getStats(),
-        vehiclesService.getStats(),
-        passengersService.getStats(),
-        routesService.getStats(),
-        alertsService.getStats()
-      ]);
+      // const [
+      //   companiesStats,
+      //   driversStats,
+      //   vehiclesStats,
+      //   passengersStats,
+      //   routesStats,
+      //   alertsStats
+      // ] = await Promise.all([
+      //   companiesService.getStats(),
+      //   driversService.getStats(),
+      //   vehiclesService.getStats(),
+      //   passengersService.getStats(),
+      //   routesService.getStats(),
+      //   alertsService.getStats()
+      // ]);
 
+      // Mock temporário
+      const mockStats = { total: 0, active: 0, inactive: 0 };
       stats = {
-        companies: companiesStats,
-        drivers: driversStats,
-        vehicles: vehiclesStats,
-        passengers: passengersStats,
-        routes: routesStats,
-        alerts: alertsStats,
+        companies: mockStats,
+        drivers: mockStats,
+        vehicles: mockStats,
+        passengers: mockStats,
+        routes: mockStats,
+        alerts: mockStats,
       };
 
     } else if (userRole === 'operator' || userRole === 'client') {
@@ -59,26 +61,28 @@ export const GET = withAuth(async (request) => {
       }
 
       // Operadores e clientes veem apenas estatísticas da sua empresa
-      const [
-        driversStats,
-        vehiclesStats,
-        passengersStats,
-        routesStats,
-        alertsStats
-      ] = await Promise.all([
-        driversService.getStats(),
-        vehiclesService.getStats(),
-        passengersService.getStats(),
-        routesService.getStats(),
-        alertsService.getStats()
-      ]);
+      // const [
+      //   driversStats,
+      //   vehiclesStats,
+      //   passengersStats,
+      //   routesStats,
+      //   alertsStats
+      // ] = await Promise.all([
+      //   driversService.getStats(),
+      //   vehiclesService.getStats(),
+      //   passengersService.getStats(),
+      //   routesService.getStats(),
+      //   alertsService.getStats()
+      // ]);
 
+      // Mock temporário
+      const mockStats = { total: 0, active: 0, inactive: 0 };
       stats = {
-        drivers: driversStats,
-        vehicles: vehiclesStats,
-        passengers: passengersStats,
-        routes: routesStats,
-        alerts: alertsStats,
+        drivers: mockStats,
+        vehicles: mockStats,
+        passengers: mockStats,
+        routes: mockStats,
+        alerts: mockStats,
       };
 
     } else {

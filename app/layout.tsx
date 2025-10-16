@@ -1,8 +1,11 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
-import '../index.css'
+import './globals.css'
 import { AppProvider } from './providers'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { Roboto } from 'next/font/google'
+
+const roboto = Roboto({ subsets: ['latin'], weight: ['300', '400', '500', '700'] })
 
 export const metadata: Metadata = {
   title: 'Golffox Management Panel',
@@ -17,43 +20,16 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
-          rel="stylesheet"
-        />
+        {/* Removido link externo de fontes, usando next/font */}
       </head>
-      <body className="font-sans antialiased">
-        <Script src="https://cdn.tailwindcss.com" strategy="beforeInteractive" />
+      <body className={`${roboto.className} font-sans antialiased`}>
         <Script
-          id="tailwind-config"
+          id="process-polyfill"
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               // Polyfill for process.env to prevent app crash on load
               window.process = window.process || { env: {} };
-              
-              tailwind.config = {
-                theme: {
-                  extend: {
-                    colors: {
-                      golffox: {
-                        'orange-primary': '#FF5F00',
-                        'blue-dark': '#002D56',
-                        'blue-light': '#004A8D',
-                        'gray-dark': '#2C3E50',
-                        'gray-medium': '#7F8C8D',
-                        'gray-light': '#F4F4F4',
-                        'white': '#FFFFFF',
-                        'red': '#E74C3C',
-                        'yellow': '#F1C40F',
-                      },
-                    },
-                    fontFamily: {
-                      sans: ['Roboto', 'sans-serif'],
-                    },
-                  },
-                },
-              };
             `,
           }}
         />

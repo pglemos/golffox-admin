@@ -1,9 +1,22 @@
 'use client'
 
 import React, { createContext, useContext, useState, ReactNode } from 'react'
-import GoogleMapsLoader from '../components/GoogleMapsLoader'
-import type { Route as RouteType, Company, Employee, PermissionProfile } from '../types'
-import { MOCK_ROUTES, MOCK_COMPANIES, MOCK_EMPLOYEES, MOCK_PERMISSION_PROFILES } from '../constants'
+// import GoogleMapsLoader from '@/components/GoogleMapsLoader'
+// import type { Route as RouteType, Company, Employee, PermissionProfile } from '../types'
+// import { MOCK_ROUTES, MOCK_COMPANIES, MOCK_EMPLOYEES, MOCK_PERMISSION_PROFILES } from '../constants'
+
+// Tipos temporários
+type RouteType = any
+type Company = any
+type Employee = any
+type PermissionProfile = any
+
+// Mock data temporário
+const MOCK_ROUTES: RouteType[] = []
+const MOCK_COMPANIES: Company[] = []
+const MOCK_EMPLOYEES: Employee[] = []
+const MOCK_PERMISSION_PROFILES: PermissionProfile[] = []
+import { AuthProvider } from './hooks/useAuth'
 
 interface AppContextType {
   routes: RouteType[]
@@ -48,10 +61,10 @@ export function AppProvider({ children }: AppProviderProps) {
   }
 
   return (
-    <AppContext.Provider value={value}>
-      <GoogleMapsLoader>
+    <AuthProvider>
+      <AppContext.Provider value={value}>
         {children}
-      </GoogleMapsLoader>
-    </AppContext.Provider>
+      </AppContext.Provider>
+    </AuthProvider>
   )
 }

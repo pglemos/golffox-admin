@@ -1,6 +1,11 @@
 import React from 'react';
-import type { ClientView } from '../../types';
-import { GOLFFOX_LOGO_BASE64 } from '../../constants';
+import Image from 'next/image';
+// import type { View } from '../../types';
+
+// Tipos temporários
+type View = string;
+type ClientView = string;
+// import { GOLFFOX_LOGO_BASE64 } from '../../constants';
 import { DashboardIcon, UserGroupIcon } from '../icons/Icons';
 
 interface ClientSidebarProps {
@@ -34,7 +39,7 @@ const ClientSidebar: React.FC<ClientSidebarProps> = ({ currentView, setCurrentVi
   return (
     <aside className="w-64 bg-golffox-blue-dark text-white p-6 flex flex-col shadow-lg h-full">
       <div className="flex items-center mb-4">
-        <img src={GOLFFOX_LOGO_BASE64} alt="Golffox Logo" className="h-10" />
+        <Image src="/golffox-logo.svg" alt="Golffox Logo" className="h-10" width={40} height={40} />
       </div>
        <div className="mb-10">
             <h1 className="text-xl font-bold text-white">Portal do Operador</h1>

@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
-import type { Employee, PermissionProfile } from '../../types';
+// import type { Employee, PermissionProfile } from '../../types';
+
+// Tipos temporários
+type Employee = any;
+type PermissionProfile = any;
 import { PlusCircleIcon, PencilIcon, TrashIcon, XMarkIcon, KeyIcon } from '../icons/Icons';
 
 const getStatusClass = (status: 'Ativo' | 'Inativo') => {

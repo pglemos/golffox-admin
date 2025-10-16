@@ -1,26 +1,49 @@
 import React, { useState } from 'react';
 import { AlertTriangle, Info, X, RefreshCw, Filter } from 'lucide-react';
-import { MOCK_ALERTS } from '../constants';
-import type { Alert } from '../types';
-import { AlertType } from '../types';
-import { useNotifications } from '../hooks/useNotifications';
+// import { MOCK_ALERTS } from '../constants';
+// import type { Alert } from '../types';
+// import { AlertType } from '../types';
+// import { useNotifications } from '../hooks/useNotifications';
+
+// Tipos temporários
+type Alert = any;
+type AlertType = string;
+
+// Enum temporário
+const AlertType = {
+  Critical: 'critical',
+  Warning: 'warning',
+  Info: 'info'
+};
+
+// Mock data temporário
+const MOCK_ALERTS: Alert[] = [];
 
 const Alerts: React.FC = () => {
   const [showMockData, setShowMockData] = useState(false);
   const [filterType, setFilterType] = useState<AlertType | 'all'>('all');
   
-  const { 
-    alerts, 
-    alertsByType, 
-    stats, 
-    isLoading, 
-    dismissAlert, 
-    clearOldAlerts, 
-    refresh 
-  } = useNotifications({ 
-    autoCheck: true, 
-    checkInterval: 30000 
-  });
+  // const { 
+  //   alerts, 
+  //   alertsByType, 
+  //   stats, 
+  //   isLoading, 
+  //   dismissAlert, 
+  //   clearOldAlerts, 
+  //   refresh 
+  // } = useNotifications({ 
+  //   autoCheck: true, 
+  //   checkInterval: 30000 
+  // });
+  
+  // Mock values temporários
+  const alerts: Alert[] = [];
+  const alertsByType = {};
+  const stats = { total: 0, critical: 0, warning: 0, info: 0 };
+  const isLoading = false;
+  const dismissAlert = (id: string) => {};
+  const clearOldAlerts = () => {};
+  const refresh = () => {};
 
   // Combina alertas reais com mock data se necessário
   const allAlerts = showMockData ? [...alerts, ...MOCK_ALERTS] : alerts;

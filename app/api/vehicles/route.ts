@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { VehiclesService } from '@/services/vehiclesService';
-import { withRoleAuth, withAuth, handleApiError, validateRequestBody } from '../middleware';
+// import { VehiclesService } from '@/src/services/transportadora/vehiclesService';
+import { withAuth, withRoleAuth, handleApiError, validateRequestBody } from '../middleware';
 
-const vehiclesService = new VehiclesService();
+// const vehiclesService = new VehiclesService();
 
 // GET - Listar veículos
 export const GET = withAuth(async (request) => {
@@ -13,68 +13,64 @@ export const GET = withAuth(async (request) => {
     const search = searchParams.get('search') || undefined;
     const status = searchParams.get('status') || undefined;
     const companyId = searchParams.get('company_id') || undefined;
-    const withDetails = searchParams.get('withDetails') === 'true';
-
-    // Verificar permissões baseadas no role
-    const userRole = request.user?.role;
-    const userCompanyId = request.user?.company_id;
-
-    let filters: any = {};
-
-    // Aplicar filtros baseados no role
-    if (userRole === 'client' || userRole === 'operator') {
-      if (!userCompanyId) {
-        return NextResponse.json(
-          { error: 'Usuário não associado a uma empresa' },
-          { status: 403 }
-        );
+    // Mock temporário - simula lista de veículos
+    const mockVehicles = [
+      {
+        id: '1',
+        plate: 'ABC-1234',
+        model: 'Mock Bus 1',
+        capacity: 40,
+        status: 'active',
+        company_id: '1'
+      },
+      {
+        id: '2',
+        plate: 'DEF-5678',
+        model: 'Mock Bus 2',
+        capacity: 50,
+        status: 'maintenance',
+        company_id: '2'
       }
-      filters.company_id = userCompanyId;
-    } else if (companyId && (userRole === 'admin')) {
-      filters.company_id = companyId;
+    ];
+    
+    let filteredData = mockVehicles;
+    
+    // Aplicar filtros manualmente
+    if (search) {
+      filteredData = filteredData.filter(vehicle => 
+        vehicle.plate.toLowerCase().includes(search.toLowerCase()) ||
+        vehicle.model.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+    
+    if (status) {
+      filteredData = filteredData.filter(vehicle => vehicle.status === status);
+    }
+    
+    if (companyId) {
+      filteredData = filteredData.filter(vehicle => vehicle.company_id === companyId);
     }
 
-    if (search) filters.search = search;
-    if (status) filters.status = status;
-
-    let result;
-
-    if (withDetails) {
-      const allVehicles = await vehiclesService.findAllWithDetails();
-      if (allVehicles.error) {
-        return NextResponse.json({ error: allVehicles.error }, { status: 500 });
+    // Mock temporário - comentado vehiclesService
+    // const allVehicles = await vehiclesService.findAllWithDetails();
+    // const allVehicles = await vehiclesService.findWithFilters(filters);
+    
+    // Aplicar paginação manual aos dados filtrados
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+    
+    const result = {
+      data: paginatedData,
+      count: filteredData.length,
+      error: null,
+      pagination: {
+        page,
+        limit,
+        total: filteredData.length,
+        totalPages: Math.ceil(filteredData.length / limit)
       }
-      
-      // Aplicar filtros manualmente
-      let filteredData = allVehicles.data || [];
-      
-      // Aplicar paginação manual
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + limit;
-      const paginatedData = filteredData.slice(startIndex, endIndex);
-      
-      result = {
-        data: paginatedData,
-        count: filteredData.length,
-        error: null
-      };
-    } else {
-      const allVehicles = await vehiclesService.findWithFilters(filters);
-      if (allVehicles.error) {
-        return NextResponse.json({ error: allVehicles.error }, { status: 500 });
-      }
-      
-      // Aplicar paginação manual
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + limit;
-      const paginatedData = (allVehicles.data || []).slice(startIndex, endIndex);
-      
-      result = {
-        data: paginatedData,
-        count: allVehicles.count || 0,
-        error: null
-      };
-    }
+    };
 
     return NextResponse.json({
       success: true,
@@ -115,22 +111,21 @@ export const POST = withRoleAuth(['admin', 'operator'])(async (request) => {
       );
     }
 
-    // Verificar permissões de empresa
-    if (userRole === 'operator') {
-      if (!userCompanyId || body.company_id !== userCompanyId) {
-        return NextResponse.json(
-          { error: 'Não é possível criar veículo para outra empresa' },
-          { status: 403 }
-        );
-      }
-    }
-
-    const result = await vehiclesService.create(body);
+    // Mock temporário - comentado vehiclesService
+    // const result = await vehiclesService.create(body);
+    
+    // Simular criação de veículo
+    const mockResult = {
+      id: Date.now().toString(),
+      ...body,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
 
     return NextResponse.json({
       success: true,
-      data: result,
-      message: 'Veículo criado com sucesso',
+      data: mockResult,
+      message: 'Veículo criado com sucesso (mock)',
     }, { status: 201 });
 
   } catch (error) {

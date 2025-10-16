@@ -165,7 +165,7 @@ export const useVehicleTracking = (): UseVehicleTrackingReturn => {
   }, [state.selectedVehicle, loadLocationHistory, loadMetrics]);
 
   const selectVehicle = useCallback((vehicleId: string | null) => {
-    const vehicle = vehicleId ? mockVehicleTrackingService.getVehicle(vehicleId) : null;
+    const vehicle = vehicleId ? (mockVehicleTrackingService.getVehicle(vehicleId) ?? null) : null;
     setState(prev => ({ ...prev, selectedVehicle: vehicle }));
   }, []);
 

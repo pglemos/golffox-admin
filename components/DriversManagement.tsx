@@ -1,5 +1,62 @@
 import React, { useState, useMemo } from 'react';
-import { Driver, DriverPerformance } from '../types';
+import Image from 'next/image';
+// import { Driver, DriverPerformance } from '../types';
+
+// Temporary type definitions
+type Driver = {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  status?: string;
+  photoUrl?: string;
+  vehicleId?: string;
+  assignedRoutes?: any[];
+  performance?: DriverPerformance;
+  cpf?: string;
+  cnh?: string;
+  cnhCategory?: string;
+  cnhValidity?: string;
+  hasEAR?: boolean;
+  contractType?: string;
+  linkedCompany?: string;
+  credentialingDate?: string;
+  lastToxicologicalExam?: string;
+  transportCourseValidity?: string;
+  availability?: string;
+  lastUpdate?: string;
+  rg?: string;
+  birthDate?: string;
+  address?: string;
+  cep?: string;
+};
+
+type DriverPerformance = {
+  id?: string;
+  driverId?: string;
+  driverName?: string;
+  driverPhoto?: string;
+  totalTrips?: number;
+  completedTrips?: number;
+  rating?: number;
+  onTimePercentage?: number;
+  totalDistance?: number;
+  fuelEfficiency?: number;
+  averageSpeed?: number;
+  incidentCount?: number;
+  customerRating?: number;
+  punctualityScore?: number;
+  overallScore?: number;
+  totalSavings?: number;
+  routesCompleted?: number;
+  ranking?: number;
+  monthlyPoints?: number;
+  level?: string;
+  fuelEfficiencyScore?: number;
+  routeComplianceScore?: number;
+  badges?: string[];
+};
+
 import { MOCK_DRIVERS } from '../constants';
 import DriverRegistrationForm from './DriverRegistrationForm';
 import { TruckIcon, ChartBarIcon, FlagCheckeredIcon, ClockIcon } from './icons/Icons';
@@ -12,7 +69,7 @@ const DriversManagement: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'drivers' | 'ranking'>('drivers');
 
     // Mock data para performance dos motoristas
-    const MOCK_DRIVER_PERFORMANCE: DriverPerformance[] = [
+    const DRIVER_PERFORMANCE = useMemo<DriverPerformance[]>(() => [
         {
             id: 'dp1',
             driverId: 'd1',
@@ -81,11 +138,12 @@ const DriversManagement: React.FC = () => {
             level: 'Avançado',
             monthlyPoints: 2180
         }
-    ];
+    ], []);
 
-    const sortedPerformance = useMemo(() => {
-        return [...MOCK_DRIVER_PERFORMANCE].sort((a, b) => b.overallScore - a.overallScore);
-    }, []);
+    const topDrivers = useMemo(() => {
+        const sorted = [...DRIVER_PERFORMANCE].sort((a, b) => (b.overallScore ?? 0) - (a.overallScore ?? 0));
+        return sorted.slice(0, 3);
+    }, [DRIVER_PERFORMANCE]);
 
     const handleViewCNH = (driver: Driver) => {
         setSelectedDriver(driver);
@@ -189,7 +247,10 @@ const DriversManagement: React.FC = () => {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-golffox-blue-dark">Gestão de Motoristas</h2>
+                <div className="flex items-center space-x-2">
+                    <h2 className="text-2xl font-bold text-golffox-blue-dark">Gestão de Motoristas</h2>
+                    <Image src="/golffox-logo.svg" alt="Golffox Logo" className="h-6" width={24} height={24} />
+                </div>
                 <button 
                     onClick={handleAddDriver}
                     className="bg-golffox-orange-primary text-white px-4 py-2 rounded-lg hover:bg-golffox-orange-secondary transition-colors"
@@ -270,10 +331,12 @@ const DriversManagement: React.FC = () => {
                                 <tr key={driver.id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
-                                            <img
+                                            <Image
                                                 className="h-10 w-10 rounded-full"
-                                                src={driver.photoUrl}
-                                                alt={driver.name}
+                                                src="/golffox-logo.svg"
+                                                alt="Golffox Logo"
+                                                width={40}
+                                                height={40}
                                             />
                                             <div className="ml-4">
                                                 <div className="text-sm font-medium text-gray-900">
@@ -295,7 +358,7 @@ const DriversManagement: React.FC = () => {
                                         {driver.cnhCategory}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {formatDate(driver.cnhValidity)}
+                                        {driver.cnhValidity ? formatDate(driver.cnhValidity) : '-'}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(driver.status)}`}>
@@ -345,7 +408,7 @@ const DriversManagement: React.FC = () => {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-yellow-100 text-sm">Motoristas Ativos</p>
-                                    <p className="text-2xl font-bold">{sortedPerformance.length}</p>
+                                    <p className="text-2xl font-bold">{topDrivers.length}</p>
                                 </div>
                                 <TruckIcon className="h-8 w-8 text-yellow-200" />
                             </div>
@@ -355,7 +418,7 @@ const DriversManagement: React.FC = () => {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-green-100 text-sm">Economia Total</p>
-                                    <p className="text-2xl font-bold">R$ {sortedPerformance.reduce((acc, p) => acc + p.totalSavings, 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                                    <p className="text-2xl font-bold">R$ {topDrivers.reduce((acc, p) => acc + (p.totalSavings ?? 0), 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                                 </div>
                                 <ChartBarIcon className="h-8 w-8 text-green-200" />
                             </div>
@@ -365,7 +428,7 @@ const DriversManagement: React.FC = () => {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-blue-100 text-sm">Rotas Completadas</p>
-                                    <p className="text-2xl font-bold">{sortedPerformance.reduce((acc, p) => acc + p.routesCompleted, 0)}</p>
+                                    <p className="text-2xl font-bold">{topDrivers.reduce((acc, p) => acc + (p.routesCompleted ?? 0), 0)}</p>
                                 </div>
                                 <FlagCheckeredIcon className="h-8 w-8 text-blue-200" />
                             </div>
@@ -375,7 +438,7 @@ const DriversManagement: React.FC = () => {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-purple-100 text-sm">Pontuação Média</p>
-                                    <p className="text-2xl font-bold">{(sortedPerformance.reduce((acc, p) => acc + p.overallScore, 0) / sortedPerformance.length).toFixed(1)}</p>
+                                    <p className="text-2xl font-bold">{(topDrivers.reduce((acc, p) => acc + (p.overallScore ?? 0), 0) / topDrivers.length).toFixed(1)}</p>
                                 </div>
                                 <ClockIcon className="h-8 w-8 text-purple-200" />
                             </div>
@@ -426,20 +489,22 @@ const DriversManagement: React.FC = () => {
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {sortedPerformance.map((performance, index) => (
+                                    {topDrivers.map((performance, index) => (
                                         <tr key={performance.id} className={`hover:bg-gray-50 ${index < 3 ? 'bg-gradient-to-r from-yellow-50 to-transparent' : ''}`}>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center">
-                                                    <span className="text-2xl mr-2">{getRankingIcon(performance.ranking)}</span>
-                                                    <span className="text-sm font-medium text-gray-900">#{performance.ranking}</span>
+                                                    <span className="text-2xl mr-2">{getRankingIcon(performance.ranking ?? 0)}</span>
+                                                    <span className="text-sm font-medium text-gray-900">#{performance.ranking ?? 0}</span>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center">
-                                                    <img
+                                                    <Image
                                                         className="h-10 w-10 rounded-full"
-                                                        src={performance.driverPhoto}
-                                                        alt={performance.driverName}
+                                                        src="/golffox-logo.svg"
+                                                        alt="Golffox Logo"
+                                                        width={40}
+                                                        height={40}
                                                     />
                                                     <div className="ml-4">
                                                         <div className="text-sm font-medium text-gray-900">
@@ -452,14 +517,14 @@ const DriversManagement: React.FC = () => {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${getLevelColor(performance.level)}`}>
+                                                <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${getLevelColor(performance.level ?? '')}`}>
                                                     {performance.level}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center">
-                                                    <span className={`text-lg font-bold ${getScoreColor(performance.overallScore)}`}>
-                                                        {performance.overallScore.toFixed(1)}
+                                                    <span className={`text-lg font-bold ${getScoreColor(performance.overallScore ?? 0)}`}>
+                                                        {(performance.overallScore ?? 0).toFixed(1)}
                                                     </span>
                                                     <span className="text-sm text-gray-500 ml-1">/100</span>
                                                 </div>
@@ -501,11 +566,11 @@ const DriversManagement: React.FC = () => {
                                                 {performance.routesCompleted}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
-                                                R$ {performance.totalSavings.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                                R$ {(performance.totalSavings ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex flex-wrap gap-1">
-                                                    {performance.badges.slice(0, 2).map((badge, badgeIndex) => (
+                                                    {(performance.badges ?? []).slice(0, 2).map((badge, badgeIndex) => (
                                                         <span 
                                                             key={badgeIndex}
                                                             className="inline-flex px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full"
@@ -514,9 +579,9 @@ const DriversManagement: React.FC = () => {
                                                             🏅
                                                         </span>
                                                     ))}
-                                                    {performance.badges.length > 2 && (
+                                                    {(performance.badges?.length ?? 0) > 2 && (
                                                         <span className="inline-flex px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-full">
-                                                            +{performance.badges.length - 2}
+                                                            +{(performance.badges?.length ?? 0) - 2}
                                                         </span>
                                                     )}
                                                 </div>
@@ -530,7 +595,7 @@ const DriversManagement: React.FC = () => {
 
                     {/* Detalhes dos Top 3 */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {sortedPerformance.slice(0, 3).map((performance, index) => (
+                        {topDrivers.slice(0, 3).map((performance, index) => (
                             <div key={performance.id} className={`bg-white rounded-lg shadow-lg border-2 ${
                                 index === 0 ? 'border-yellow-400' : 
                                 index === 1 ? 'border-gray-400' : 
@@ -543,23 +608,25 @@ const DriversManagement: React.FC = () => {
                                 } text-white`}>
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center">
-                                            <span className="text-3xl mr-3">{getRankingIcon(performance.ranking)}</span>
+                                            <span className="text-3xl mr-3">{getRankingIcon(performance.ranking ?? 0)}</span>
                                             <div>
                                                 <h3 className="font-bold text-lg">{performance.driverName}</h3>
                                                 <p className="text-sm opacity-90">{performance.level}</p>
                                             </div>
                                         </div>
-                                        <img
+                                        <Image
                                             className="h-16 w-16 rounded-full border-4 border-white"
-                                            src={performance.driverPhoto}
-                                            alt={performance.driverName}
+                                            src="/golffox-logo.svg"
+                                            alt="Golffox Logo"
+                                            width={64}
+                                            height={64}
                                         />
                                     </div>
                                 </div>
                                 
                                 <div className="p-4 space-y-3">
                                     <div className="text-center">
-                                        <p className="text-3xl font-bold text-gray-900">{performance.overallScore.toFixed(1)}</p>
+                                        <p className="text-3xl font-bold text-gray-900">{(performance.overallScore ?? 0).toFixed(1)}</p>
                                         <p className="text-sm text-gray-600">Pontuação Geral</p>
                                     </div>
                                     
@@ -584,13 +651,13 @@ const DriversManagement: React.FC = () => {
                                     
                                     <div className="border-t pt-3">
                                         <p className="text-center text-lg font-bold text-green-600">
-                                            R$ {performance.totalSavings.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                            R$ {(performance.totalSavings ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                         </p>
                                         <p className="text-center text-sm text-gray-600">Economia Total</p>
                                     </div>
                                     
                                     <div className="flex flex-wrap gap-1 justify-center">
-                                        {performance.badges.map((badge, badgeIndex) => (
+                                        {(performance.badges ?? []).map((badge, badgeIndex) => (
                                             <span 
                                                 key={badgeIndex}
                                                 className="inline-flex px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full"
@@ -629,7 +696,7 @@ const DriversManagement: React.FC = () => {
                                     <p><span className="font-medium">Nome:</span> {selectedDriver.name}</p>
                                     <p><span className="font-medium">CPF:</span> {selectedDriver.cpf}</p>
                                     <p><span className="font-medium">RG:</span> {selectedDriver.rg}</p>
-                                    <p><span className="font-medium">Nascimento:</span> {formatDate(selectedDriver.birthDate)}</p>
+                                    <p><span className="font-medium">Nascimento:</span> {selectedDriver.birthDate ? formatDate(selectedDriver.birthDate) : '-'}</p>
                                     <p><span className="font-medium">Telefone:</span> {selectedDriver.phone}</p>
                                     <p><span className="font-medium">E-mail:</span> {selectedDriver.email}</p>
                                     <p><span className="font-medium">Endereço:</span> {selectedDriver.address}</p>
@@ -642,10 +709,10 @@ const DriversManagement: React.FC = () => {
                                 <h4 className="font-semibold text-gray-700 mb-3">Dados Profissionais</h4>
                                 <div className="space-y-2 text-sm">
                                     <p><span className="font-medium">CNH:</span> {selectedDriver.cnh}</p>
-                                    <p><span className="font-medium">Validade CNH:</span> {formatDate(selectedDriver.cnhValidity)}</p>
+                                    <p><span className="font-medium">Validade CNH:</span> {selectedDriver.cnhValidity ? formatDate(selectedDriver.cnhValidity) : '-'}</p>
                                     <p><span className="font-medium">Categoria:</span> {selectedDriver.cnhCategory}</p>
                                     <p><span className="font-medium">EAR:</span> {selectedDriver.hasEAR ? 'Sim' : 'Não'}</p>
-                                    <p><span className="font-medium">Último Exame:</span> {formatDate(selectedDriver.lastToxicologicalExam)}</p>
+                                    <p><span className="font-medium">Último Exame:</span> {selectedDriver.lastToxicologicalExam ? formatDate(selectedDriver.lastToxicologicalExam) : '-'}</p>
                                     {selectedDriver.transportCourseValidity && (
                                         <p><span className="font-medium">Validade Curso:</span> {formatDate(selectedDriver.transportCourseValidity)}</p>
                                     )}
@@ -657,7 +724,7 @@ const DriversManagement: React.FC = () => {
                                 <h4 className="font-semibold text-gray-700 mb-3">Vínculo Golffox</h4>
                                 <div className="space-y-2 text-sm">
                                     <p><span className="font-medium">Contrato:</span> {selectedDriver.contractType}</p>
-                                    <p><span className="font-medium">Credenciamento:</span> {formatDate(selectedDriver.credentialingDate)}</p>
+                                    <p><span className="font-medium">Credenciamento:</span> {selectedDriver.credentialingDate ? formatDate(selectedDriver.credentialingDate) : '-'}</p>
                                     <p><span className="font-medium">Status:</span> {selectedDriver.status}</p>
                                     <p><span className="font-medium">Empresa:</span> {selectedDriver.linkedCompany}</p>
                                 </div>
@@ -669,7 +736,7 @@ const DriversManagement: React.FC = () => {
                                 <div className="space-y-2 text-sm">
                                     <p><span className="font-medium">Rotas:</span> {selectedDriver.assignedRoutes?.join(', ') || 'Nenhuma'}</p>
                                     <p><span className="font-medium">Disponibilidade:</span> {selectedDriver.availability || 'Não informado'}</p>
-                                    <p><span className="font-medium">Última Atualização:</span> {formatDate(selectedDriver.lastUpdate)}</p>
+                                    <p><span className="font-medium">Última Atualização:</span> {selectedDriver.lastUpdate ? formatDate(selectedDriver.lastUpdate) : '-'}</p>
                                 </div>
                             </div>
                         </div>

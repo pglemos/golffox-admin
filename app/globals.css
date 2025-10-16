@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Golffox custom styles */
+.golffox-blue-dark {
+  color: #1e40af;
+}
+
+.golffox-gray-medium {
+  color: #6b7280;
+}
+
+/* CSS Variables for Golffox Theme */
+:root {
+  --golffox-primary: #3b82f6;
+  --golffox-secondary: #60a5fa;
+  --golffox-accent: #22d3ee;
+  --golffox-dark: #1e293b;
+  --golffox-gray-light: #f1f5f9;
+  --golffox-gray-medium: #64748b;
+  
+  /* Status Colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+}
+
+/* Dark theme adjustments */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --golffox-primary: #60a5fa;
+    --golffox-secondary: #93c5fd;
+    --golffox-accent: #67e8f9;
+    --golffox-dark: #f8fafc;
+    --golffox-gray-light: #334155;
+    --golffox-gray-medium: #94a3b8;
+    
+    /* Status Colors - Adjusted for dark theme */
+    --success: #34d399;
+    --warning: #fbbf24;
+    --error: #f87171;
+    --info: #60a5fa;
+  }
+}

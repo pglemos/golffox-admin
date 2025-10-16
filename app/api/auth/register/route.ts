@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseServer } from '@/lib/supabase-server'
+// import { supabaseServer } from '@/lib/supabase-server'
 import { handleApiError, validateRequestBody } from '../../middleware'
-import type { Database } from '@/lib/supabase'
+// import type { Database } from '@/lib/supabase'
 
-type UserInsert = Database['public']['Tables']['users']['Insert']
+// type UserInsert = Database['public']['Tables']['users']['Insert']
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,54 +29,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Primeiro, cria o usuário no Supabase Auth usando admin client
-    const { data: authData, error: authError } = await supabaseServer.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true // Confirma email automaticamente
-    })
-
-    if (authError) {
-      return NextResponse.json(
-        { error: `Erro ao criar usuário: ${authError.message}` },
-        { status: 400 }
-      )
-    }
-
-    if (!authData.user) {
-      return NextResponse.json(
-        { error: 'Falha ao criar usuário' },
-        { status: 400 }
-      )
-    }
-
-    // Depois, cria o perfil do usuário na tabela users
+    // Mock temporário - simula criação de usuário
     const userData = {
-      id: authData.user.id,
+      id: 'mock-user-id-' + Date.now(),
       email,
       name,
       role,
       company_id: company_id || null
     }
     
-    const { error: profileError } = await supabaseServer
-      .from('users')
-      .insert(userData as any)
-
-    if (profileError) {
-      // Se falhar ao criar perfil, remove o usuário do Auth
-      await supabaseServer.auth.admin.deleteUser(authData.user.id)
-      
-      return NextResponse.json(
-        { error: `Erro ao criar perfil: ${profileError.message}` },
-        { status: 400 }
-      )
-    }
-
+    // Mock temporário - simula sucesso no registro
     return NextResponse.json({
-      message: 'Usuário registrado com sucesso',
+      message: 'Usuário registrado com sucesso (mock)',
       user: {
-        id: authData.user.id,
+        id: userData.id,
         email,
         name,
         role

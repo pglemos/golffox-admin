@@ -5,6 +5,9 @@ declare global {
     google: typeof google;
     googleMapsApiLoaded: boolean | 'loading' | 'error';
     markerClustererApiLoaded: boolean;
+    // Adicionados para compatibilidade com GoogleMapsLoader
+    gm_authFailure?: () => void;
+    initMap?: () => void;
   }
 }
 

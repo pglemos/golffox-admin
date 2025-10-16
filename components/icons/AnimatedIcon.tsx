@@ -3,8 +3,7 @@
 import React from 'react';
 import { motion, HTMLMotionProps, Variants } from 'framer-motion';
 
-export interface AnimatedIconProps extends Omit<HTMLMotionProps<'div'>, 'children'> {
-  children: React.ReactNode;
+export interface AnimatedIconProps extends HTMLMotionProps<'div'> {
   variant?: 'hover' | 'pulse' | 'bounce' | 'rotate' | 'scale' | 'float' | 'glow' | 'premium';
   size?: 'sm' | 'md' | 'lg' | 'xl';
   disabled?: boolean;

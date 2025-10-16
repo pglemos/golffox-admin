@@ -1,4 +1,5 @@
-import { GeocodingResult, AddressValidationResult, GeocodingOptions } from './geocodingService';
+import { GeocodingResult, AddressValidationResult, GeocodingOptions } from '../src/services/geocodingService';
+// Note: Geocoding types reside in src/services/maps/geocodingService. This mock depends on those types.
 
 export class MockGeocodingService {
   private mockAddresses = [

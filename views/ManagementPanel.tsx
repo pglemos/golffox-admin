@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Sidebar from '../components/Sidebar';
-import MobileNavigation from '../components/MobileNavigation';
+import Sidebar from '../src/components/ui/Sidebar';
+import MobileNavigation from '../src/components/ui/MobileNavigation';
 import Dashboard from '../components/Dashboard';
 import RealTimeMap from '../components/RealTimeMap';
 import RoutesTable from '../components/RoutesTable';
@@ -13,7 +13,7 @@ import CompaniesManagement from '../components/CompaniesManagement';
 import PermissionsManagement from '../components/PermissionsManagement';
 import RouteHistory from '../components/RouteHistory';
 import CostControl from '../components/CostControl';
-import type { View, Route, Company, Employee, PermissionProfile } from '../types';
+import type { View, Route, Company, Employee, PermissionProfile } from '../src/types/types';
 import { VIEWS } from '../constants';
 
 // Props interface to receive state from the parent App component

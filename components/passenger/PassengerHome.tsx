@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MOCK_ROUTES } from '../../constants';
-import { RouteStatus, type Employee } from '../../types';
+import { RouteStatus, type Employee } from '../../src/types/types';
 import { TruckIcon, MapPinIcon, ClockIcon, UserCircleIcon, BellIcon } from '../icons/Icons';
 import MapApiKeyWarning from '../MapApiKeyWarning';
 

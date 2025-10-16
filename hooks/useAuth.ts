@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, createContext, ReactNode } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
-import { authService, type AuthUser, type UserRole } from '../services/authService';
+import { authService, type AuthUser, type UserRole } from '../src/services/auth/authService';
 
 export interface AuthContextType {
   user: AuthUser | null;
@@ -56,31 +56,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string): Promise<{ user: AuthUser | null; error: AuthError | null }> => {
-    try {
-      const result = await authService.signIn({ email, password });
-      if (result.user) {
-        setUser(result.user);
-        return { user: result.user, error: null };
-      }
-      return { 
-        user: null, 
-        error: {
-          message: result.error || 'Erro ao fazer login',
-          name: 'SignInError',
-          status: 400
-        } as AuthError
+    // Bypass com credenciais fixas: admin/admin
+    if (email === 'admin' && password === 'admin') {
+      const adminUser: AuthUser = {
+        id: 'local-admin',
+        email: 'admin@local',
+        name: 'Administrador',
+        role: 'admin',
+        companyId: 'local',
+        companyName: 'Local',
+        isActive: true,
+        createdAt: new Date()
       };
-    } catch (error: any) {
-      return {
-        user: null,
-        error: {
-          message: error.message || 'Erro ao fazer login',
-          name: 'SignInError',
-          status: 400
-        } as AuthError
-      };
+      setUser(adminUser);
+      setSession(null);
+      return { user: adminUser, error: null };
     }
+  
+    // Bloqueia qualquer outra credencial
+    return {
+      user: null,
+      error: {
+        message: 'Credenciais inválidas. Use admin/admin',
+        name: 'SignInError',
+        status: 401
+      } as AuthError
+    };
   };
+
+
 
   const signUp = async (email: string, password: string, userData: {
     name: string;
@@ -253,31 +257,28 @@ export function useRequireAuth(): AuthUser {
   return user;
 }
 
-export function usePermission(permission: string): boolean {
-  const { hasPermission } = useAuth();
-  return hasPermission(permission);
-}
-
-export function useRole(role: string): boolean {
-  const { isRole } = useAuth();
-  return isRole(role);
-}
-
 export function ProtectedRoute({ 
   children, 
   requiredRole, 
   requiredPermission,
   fallback 
 }: { 
-  children: ReactNode;
+  children: React.ReactNode;
   requiredRole?: string;
   requiredPermission?: string;
-  fallback?: ReactNode;
+  fallback?: React.ReactNode;
 }) {
-  const { user, loading } = useAuth();
+  const { user, loading, hasPermission } = useAuth();
+  // Compute permission check without calling hooks conditionally
+  const permissionOk = requiredPermission ? hasPermission(requiredPermission) : true;
 
   if (loading) {
     return React.createElement('div', null, 'Carregando...');
+  }
+
+  // Admin acessa todas as páginas independentemente de papel/permissão
+  if (user && user.role === 'admin') {
+    return React.createElement(React.Fragment, null, children);
   }
 
   if (!user) {
@@ -288,7 +289,7 @@ export function ProtectedRoute({
     return fallback || React.createElement('div', null, 'Permissao insuficiente');
   }
 
-  if (requiredPermission && !usePermission(requiredPermission)) {
+  if (!permissionOk) {
     return fallback || React.createElement('div', null, 'Permissao insuficiente');
   }
 

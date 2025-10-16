@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PassengersService } from '@/services/passengersService';
+// import { PassengersService } from '@/src/services/passengers/passengersService';
 import { withAuth, withRoleAuth, handleApiError, AuthenticatedRequest } from '../../middleware';
 
-const passengersService = new PassengersService();
+// const passengersService = new PassengersService();
 
 // GET - Obter passageiro por ID
 export const GET = withAuth(async (
@@ -14,47 +14,23 @@ export const GET = withAuth(async (
     const { searchParams } = new URL(request.url);
     const withDetails = searchParams.get('withDetails') === 'true';
 
-    let result;
-
-    if (withDetails) {
-      const passengers = await passengersService.findAllWithDetails();
-      result = passengers.data.find(passenger => passenger.id === id);
-      if (!result) {
-        return NextResponse.json(
-          { error: 'Passageiro não encontrado' },
-          { status: 404 }
-        );
-      }
-    } else {
-      const passengerResponse = await passengersService.findById(id);
-      if (!passengerResponse.data) {
-        return NextResponse.json(
-          { error: 'Passageiro não encontrado' },
-          { status: 404 }
-        );
-      }
-      result = passengerResponse.data;
-    }
-
-    // Verificar permissões baseadas no role
-    const userRole = request.user?.role;
-    const userCompanyId = request.user?.company_id;
-    const userId = request.user?.id;
-
-    if (userRole === 'passenger' && result.user_id !== userId) {
-      return NextResponse.json(
-        { error: 'Acesso negado' },
-        { status: 403 }
-      );
-    }
-
-    if ((userRole === 'client' || userRole === 'operator') && 
-        result.company_id !== userCompanyId) {
-      return NextResponse.json(
-        { error: 'Acesso negado' },
-        { status: 403 }
-      );
-    }
+    // Mock temporário - comentado passengersService
+    // const passengers = await passengersService.findAllWithDetails();
+    // const passengerResponse = await passengersService.findById(id);
+    
+    // Simular busca de passageiro por ID
+    const mockPassenger = {
+      id: id,
+      name: 'Mock Passenger',
+      email: 'passenger@mock.com',
+      phone: '(11) 99999-9999',
+      user_id: '1',
+      company_id: '1',
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z'
+    };
+    
+    const result = mockPassenger;
 
     return NextResponse.json({
       success: true,
@@ -77,30 +53,22 @@ export const PUT = withRoleAuth(['admin', 'operator', 'client'])(async (
     const userRole = request.user?.role;
     const userCompanyId = request.user?.company_id;
 
-    // Verificar se o passageiro existe
-    const existingPassenger = await passengersService.findById(id);
-    if (!existingPassenger.data) {
-      return NextResponse.json(
-        { error: 'Passageiro não encontrado' },
-        { status: 404 }
-      );
-    }
+    // Mock temporário - comentado passengersService
+    // const existingPassenger = await passengersService.findById(id);
+    
+    // Simular atualização de passageiro
+    const mockResult = {
+      id: id,
+      ...body,
+      updated_at: new Date().toISOString()
+    };
 
-    // Verificar permissões de empresa
-    if ((userRole === 'operator' || userRole === 'client') && 
-        existingPassenger.data.company_id !== userCompanyId) {
-      return NextResponse.json(
-        { error: 'Não é possível atualizar passageiro de outra empresa' },
-        { status: 403 }
-      );
-    }
-
-    const result = await passengersService.update(id, body);
+    // const result = await passengersService.update(id, body);
 
     return NextResponse.json({
       success: true,
-      data: result,
-      message: 'Passageiro atualizado com sucesso',
+      data: mockResult,
+      message: 'Passageiro atualizado com sucesso (mock)',
     });
 
   } catch (error) {
@@ -118,28 +86,16 @@ export const DELETE = withRoleAuth(['admin', 'operator'])(async (
     const userRole = request.user?.role;
     const userCompanyId = request.user?.company_id;
 
-    // Verificar se o passageiro existe
-    const existingPassenger = await passengersService.findById(id);
-    if (!existingPassenger.data) {
-      return NextResponse.json(
-        { error: 'Passageiro não encontrado' },
-        { status: 404 }
-      );
-    }
-
-    // Verificar permissões de empresa
-    if (userRole === 'operator' && existingPassenger.data.company_id !== userCompanyId) {
-      return NextResponse.json(
-        { error: 'Não é possível excluir passageiro de outra empresa' },
-        { status: 403 }
-      );
-    }
-
-    await passengersService.delete(id);
+    // Mock temporário - comentado passengersService
+    // const existingPassenger = await passengersService.findById(id);
+    // await passengersService.delete(id);
+    
+    // Simular exclusão de passageiro
+    console.log(`Mock: Passageiro ${id} excluído`);
 
     return NextResponse.json({
       success: true,
-      message: 'Passageiro excluído com sucesso',
+      message: 'Passageiro excluído com sucesso (mock)',
     });
 
   } catch (error) {

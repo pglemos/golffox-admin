@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { Alert, Route, Vehicle } from '../types';
-import { AlertType } from '../types';
+import type { Alert, Route, Vehicle } from '../src/types/types';
+import { AlertType } from '../src/types/types';
 import { notificationService, type NotificationSubscriber } from '../services/notificationService';
 
 export interface UseNotificationsOptions {
@@ -196,7 +196,7 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
 
 // Hook especializado para alertas críticos
 export function useCriticalAlerts() {
-    const { alertsByType, ...rest } = useNotifications({
+    const { alertsByType, hasCriticalAlerts, ...rest } = useNotifications({
         filters: { types: [AlertType.Critical] },
         autoCheck: true,
         checkInterval: 30000 // Verifica a cada 30 segundos

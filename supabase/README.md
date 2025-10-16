@@ -12,6 +12,8 @@ Este diretório contém os scripts SQL necessários para configurar o banco de d
 
 - `schema.sql` - Schema completo do banco de dados com todas as tabelas, índices e dados iniciais
 - `rls_policies.sql` - Políticas de Row Level Security (RLS) para controle de acesso
+- `fixed_rls_policies.sql` - Versão corrigida das políticas RLS sem recursão
+- `missing_tables.sql` - Script para criar tabelas faltantes
 
 ## 🚀 Configuração Passo a Passo
 

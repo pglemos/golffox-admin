@@ -1,5 +1,62 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { Driver } from '../types';
+// import { Driver } from '../types';
+
+// Temporary type definition
+type Driver = {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  licenseNumber?: string;
+  cnh?: string;
+  cnhValidity?: string;
+  cnhCategory?: string;
+  hasEAR?: boolean;
+  transportCourseValidity?: string;
+  lastToxicologicalExam?: string;
+  contractType?: string;
+  credentialingDate?: string;
+  linkedCompany?: string;
+  assignedRoutes?: any[];
+  availability?: string;
+  lastUpdate?: string;
+  vehicleId?: string;
+  status?: string;
+  cpf?: string;
+  rg?: string;
+  birthDate?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  cep?: string;
+  emergencyContact?: string;
+  emergencyPhone?: string;
+  licenseCategory?: string;
+  licenseExpiry?: string;
+  medicalCertificate?: string;
+  medicalExpiry?: string;
+  bankAccount?: string;
+  bankAgency?: string;
+  bankName?: string;
+  pixKey?: string;
+  vehicleModel?: string;
+  vehiclePlate?: string;
+  vehicleYear?: string;
+  vehicleColor?: string;
+  vehicleCapacity?: number;
+  vehicleInsurance?: string;
+  vehicleInsuranceExpiry?: string;
+  profilePhoto?: string;
+  photoUrl?: string;
+  documentsUploaded?: boolean;
+  backgroundCheck?: boolean;
+  trainingCompleted?: boolean;
+  contractSigned?: boolean;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+};
 
 interface DriverRegistrationFormProps {
     onSubmit: (driver: Partial<Driver>) => void;
@@ -424,7 +481,9 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                         cnhFile: 'Arquivo da CNH',
                         residenceProof: 'Comprovante de residência',
                         transportCourse: 'Curso de transporte',
-                        toxicologicalExam: 'Exame toxicológico'
+                        courseFile: 'Arquivo do curso',
+                        toxicologicalExam: 'Exame toxicológico',
+                        idPhoto: 'Foto do documento'
                     };
                     newErrors[fileType] = `${fileNames[fileType]} é obrigatório`;
                 }

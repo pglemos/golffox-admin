@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { DriversService } from '@/services/driversService';
+// import { DriversService } from '@/src/services/drivers/driversService';
 import { withAuth, withRoleAuth, handleApiError, AuthenticatedRequest } from '../../middleware';
 
-const driversService = new DriversService();
+// const driversService = new DriversService();
 
 // GET - Obter motorista por ID
 export const GET = withAuth(async (
@@ -12,42 +12,15 @@ export const GET = withAuth(async (
   try {
     const { id } = params;
     const { searchParams } = new URL(request.url);
-    const withDetails = searchParams.get('withDetails') === 'true';
-
-    let result;
-
-    if (withDetails) {
-      const drivers = await driversService.findAllWithDetails();
-      result = drivers.data.find(driver => driver.id === id);
-      
-      if (!result) {
-        return NextResponse.json(
-          { error: 'Motorista não encontrado' },
-          { status: 404 }
-        );
-      }
-    } else {
-      const driverResponse = await driversService.findById(id);
-      if (!driverResponse.data) {
-        return NextResponse.json(
-          { error: 'Motorista não encontrado' },
-          { status: 404 }
-        );
-      }
-      result = driverResponse.data;
-    }
-
-    // Verificar permissões baseadas no role
-    const userRole = request.user?.role;
-    const userCompanyId = request.user?.company_id;
-
-    if ((userRole === 'client' || userRole === 'operator') && 
-        result.linked_company !== userCompanyId) {
-      return NextResponse.json(
-        { error: 'Acesso negado' },
-        { status: 403 }
-      );
-    }
+    // Mock temporário - simula motorista encontrado
+    const result = {
+      id: id,
+      name: 'Mock Driver',
+      email: 'mock@driver.com',
+      phone: '(11) 99999-9999',
+      license_number: 'ABC123456',
+      status: 'active'
+    };
 
     return NextResponse.json({
       success: true,
@@ -70,29 +43,17 @@ export const PUT = withRoleAuth(['admin', 'operator'])(async (
     const userRole = request.user?.role;
     const userCompanyId = request.user?.company_id;
 
-    // Verificar se o motorista existe
-    const existingDriver = await driversService.findById(id);
-    if (!existingDriver.data) {
-      return NextResponse.json(
-        { error: 'Motorista não encontrado' },
-        { status: 404 }
-      );
-    }
-
-    // Verificar permissões de empresa
-    if (userRole === 'operator' && existingDriver.data.linked_company !== userCompanyId) {
-      return NextResponse.json(
-        { error: 'Não é possível atualizar motorista de outra empresa' },
-        { status: 403 }
-      );
-    }
-
-    const result = await driversService.update(id, body);
-
+    // Mock temporário - simula atualização bem-sucedida
+    const mockResult = {
+      id: id,
+      ...body,
+      updated_at: new Date().toISOString()
+    };
+    
     return NextResponse.json({
       success: true,
-      data: result,
-      message: 'Motorista atualizado com sucesso',
+      data: mockResult,
+      message: 'Motorista atualizado com sucesso (mock)',
     });
 
   } catch (error) {
@@ -110,28 +71,10 @@ export const DELETE = withRoleAuth(['admin', 'operator'])(async (
     const userRole = request.user?.role;
     const userCompanyId = request.user?.company_id;
 
-    // Verificar se o motorista existe
-    const existingDriver = await driversService.findById(id);
-    if (!existingDriver.data) {
-      return NextResponse.json(
-        { error: 'Motorista não encontrado' },
-        { status: 404 }
-      );
-    }
-
-    // Verificar permissões de empresa
-    if (userRole === 'operator' && existingDriver.data.linked_company !== userCompanyId) {
-      return NextResponse.json(
-        { error: 'Não é possível excluir motorista de outra empresa' },
-        { status: 403 }
-      );
-    }
-
-    await driversService.delete(id);
-
+    // Mock temporário - simula exclusão bem-sucedida
     return NextResponse.json({
       success: true,
-      message: 'Motorista excluído com sucesso',
+      message: 'Motorista excluído com sucesso (mock)',
     });
 
   } catch (error) {

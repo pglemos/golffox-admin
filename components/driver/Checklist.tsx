@@ -1,6 +1,18 @@
 import React, { useState, useMemo } from 'react';
 import { MOCK_CHECKLIST_ITEMS } from '../../constants';
-import type { ChecklistItem } from '../../types';
+// import type { ChecklistItem } from '../../types';
+
+// Temporary type definition
+type ChecklistItem = {
+  id: string;
+  category: string;
+  item: string;
+  status: 'pending' | 'completed' | 'issue';
+  required: boolean;
+  notes?: string;
+  isCritical?: boolean;
+  label?: string;
+};
 import { CheckCircleIcon, ExclamationCircleIcon, WrenchScrewdriverIcon, TruckIcon, ShieldCheckIcon, UserIcon, DocumentTextIcon } from '../icons/Icons';
 
 interface ChecklistProps {
@@ -53,7 +65,7 @@ const Checklist: React.FC<ChecklistProps> = ({ onComplete }) => {
                                 <span className="ml-2">{category}</span>
                             </h2>
                             <div className="bg-golffox-gray-light rounded-lg p-2 sm:p-3 space-y-2">
-                                {items.map((item: ChecklistItem) => (
+                                {items.map((item) => (
                                     <div 
                                         key={item.id} 
                                         className={`p-2 sm:p-3 rounded-md flex justify-between items-center transition-colors min-h-[60px] ${
