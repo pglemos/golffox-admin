@@ -1,8 +1,0 @@
-{
-  "/_not-found/page": "app/_not-found/page.js",
-  "/administrador/page": "app/administrador/page.js",
-  "/admin/page": "app/admin/page.js",
-  "/passageiro/page": "app/passageiro/page.js",
-  "/motorista/page": "app/motorista/page.js",
-  "/operador/page": "app/operador/page.js"
-}

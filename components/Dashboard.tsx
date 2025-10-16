@@ -1,14 +1,10 @@
 'use client';
 
 import React from 'react';
-import { ThemeProvider, DashboardView } from './DesignerDashboard';
+import AnalyticsDashboard from './AnalyticsDashboard';
 
 const Dashboard: React.FC = () => {
-  return (
-    <ThemeProvider>
-      <DashboardView />
-    </ThemeProvider>
-  );
+  return <AnalyticsDashboard />;
 };
 
 export default Dashboard;
