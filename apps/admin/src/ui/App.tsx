@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { supabaseClient } from '../../../packages/shared/supabaseClient'
-import { aiSuggest } from '../../../packages/shared/ai/aiClient'
+import { supabaseClient } from '../lib/supabaseClient'
+import { aiSuggest } from '../lib/aiClient'
 
 export default function App() {
   const [status, setStatus] = useState('Carregando...')
