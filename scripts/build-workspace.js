@@ -3,9 +3,10 @@
 const { execSync } = require('node:child_process')
 
 const project = process.env.VERCEL_PROJECT_NAME || process.env.PROJECT_NAME || ''
+const projectId = process.env.VERCEL_PROJECT_ID || ''
 
 const WORKSPACE_MAP = {
-  'golffox-admin': { pkg: 'golffox-admin', path: 'apps/admin' },
+  'golffox-admin': { pkg: 'golffox-admin', path: 'apps/admin', projectId: 'prj_sZ1wRsJ1G8N3hhnY5kAk59YRKjkH' },
   'golffox-operador': { pkg: 'golffox-operator', path: 'apps/operator' },
   'golffox-transportadora': { pkg: 'golffox-carrier', path: 'apps/carrier' },
   'golffox-motorista': { pkg: 'golffox-driver', path: 'apps/driver' },
@@ -18,7 +19,7 @@ function run(cmd) {
   execSync(cmd, { stdio: 'inherit', env: process.env })
 }
 
-const workspace = WORKSPACE_MAP[project]
+const workspace = WORKSPACE_MAP[project] || Object.values(WORKSPACE_MAP).find((item) => item.projectId === projectId)
 
 if (workspace) {
   console.log(`[build] Detected Vercel project "${project}". Installing and building ${workspace.pkg}.`)
