@@ -356,8 +356,22 @@ export default function AdminPremiumResponsive() {
   }, [])
 
   useEffect(() => {
+    if (typeof window === 'undefined') return
+    const stored = window.localStorage.getItem('golffox-theme')
+    if (stored === 'light' || stored === 'dark') {
+      setTheme(stored)
+      return
+    }
+    if (window.matchMedia?.('(prefers-color-scheme: light)').matches) {
+      setTheme('light')
+    }
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
     document.documentElement.setAttribute('data-theme', theme)
     document.body.classList.toggle('light-theme', isLight)
+    window.localStorage.setItem('golffox-theme', theme)
   }, [theme, isLight])
 
   useEffect(() => {
