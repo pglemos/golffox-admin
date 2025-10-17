@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
+  "packageManager": "pnpm@9.12.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -28,4 +29,3 @@
     "autoprefixer": "^10.4.21"
   }
 }
-
