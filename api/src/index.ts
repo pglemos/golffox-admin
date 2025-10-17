@@ -11,6 +11,14 @@ const app = new Hono()
 app.use('*', cors())
 app.use('*', prettyJSON())
 
+app.get('/', (c) =>
+  c.json({
+    ok: true,
+    name: 'golffox-api',
+    endpoints: ['/health', '/ai/suggest', '/admin/trips'],
+  })
+)
+
 app.get('/health', (c) => c.json({ ok: true }))
 
 // Minimal AI endpoint; in production, secure + rate-limit
@@ -42,4 +50,3 @@ app.get('/admin/trips', async (c) => {
 const port = Number(process.env.PORT || 8787)
 console.log(`[API] listening on :${port}`)
 serve({ fetch: app.fetch, port })
-
