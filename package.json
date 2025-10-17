@@ -13,7 +13,7 @@
     "start": "next start -p 3000 -H 0.0.0.0",
     "lint": "next lint",
     "dev:all": "pnpm -r --parallel --filter ./apps/* dev",
-    "build:all": "pnpm -r build",
+    "build:all": "node scripts/build-workspace.js",
     "lint:all": "pnpm -r lint",
     "typecheck:all": "pnpm -r typecheck",
     "verify-supabase": "node scripts/verify-supabase.js",
