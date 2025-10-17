@@ -5,10 +5,14 @@ const key = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 let client: SupabaseClient | null = null
 
-if (!url || !key) {
-  console.warn('Supabase client missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY')
-} else {
-  client = createClient(url, key)
+try {
+  if (url && key) {
+    client = createClient(url, key)
+  } else {
+    console.warn('Supabase client missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY')
+  }
+} catch (error) {
+  console.error('Failed to create Supabase client', error)
 }
 
 export const supabaseClient = client
