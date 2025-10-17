@@ -4,7 +4,7 @@ import { cors } from 'hono/cors'
 import { prettyJSON } from 'hono/pretty-json'
 import { config } from 'dotenv'
 import { createClient } from '@supabase/supabase-js'
-import { runSetup, runSql } from './dbSetup'
+import { runSetup, runSql } from './dbSetup.js'
 
 config()
 

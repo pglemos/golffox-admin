@@ -1,4 +1,4 @@
-import { runSetup } from './dbSetup'
+import { runSetup } from './dbSetup.js'
 
 const shouldRun = process.env.RUN_DB_SETUP === 'true'
 
