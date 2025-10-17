@@ -1,4 +1,5 @@
 import pg from 'pg'
+
 const { Client } = pg
 
 const DB_CONFIG = {
@@ -156,17 +157,19 @@ export async function runSql(sql: string) {
     password: DB_CONFIG.password,
     ssl: { rejectUnauthorized: false },
   })
+  console.log('[setup] connecting to Supabase host', DB_CONFIG.host)
   await client.connect()
   try {
-    console.log('[setup] executing SQL segment');\n    await client.query(sql)
+    console.log('[setup] executing SQL segment')
+    await client.query(sql)
   } finally {
     await client.end()
   }
 }
 
 export async function runSetup() {
-  console.log('[setup] running migrations');\n  await runSql(MIGRATION_SQL)
-  console.log('[setup] running seed');\n  await runSql(SEED_SQL)
+  console.log('[setup] running migrations')
+  await runSql(MIGRATION_SQL)
+  console.log('[setup] running seed')
+  await runSql(SEED_SQL)
 }
-
-
