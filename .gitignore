@@ -1,4 +1,4 @@
-﻿# Ignorar arquivos grandes
+# Ignorar arquivos grandes
 *.zip
 *.rar
 *.mp4
@@ -13,7 +13,6 @@ build/
 # Node
 node_modules/
 yarn.lock
-pnpm-lock.yaml
 package-lock.json
 
 # Next.js
