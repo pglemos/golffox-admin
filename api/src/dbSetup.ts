@@ -1,4 +1,4 @@
-import { Client } from 'pg'
+import pg from 'pg'\nconst { Client } = pg
 
 const DB_CONFIG = {
   host: process.env.SUPABASE_DB_HOST ?? 'db.oulwcijxeklxllufyofb.supabase.co',
@@ -167,3 +167,4 @@ export async function runSetup() {
   await runSql(MIGRATION_SQL)
   await runSql(SEED_SQL)
 }
+
