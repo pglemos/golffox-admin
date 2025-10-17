@@ -33,19 +33,60 @@ import {
 import { supabaseClient } from '../lib/supabaseClient'
 import { aiSuggest } from '../lib/aiClient'
 
-const brand = {
-  primary: '#2563EB',
-  accent: '#F97316',
-  success: '#22C55E',
-}
+const glassDark =
+  'backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_18px_40px_rgba(0,0,0,0.35)]'
+const glassLight =
+  'backdrop-blur-xl bg-white/85 border border-slate-200/70 shadow-[0_22px_44px_rgba(15,23,42,0.12)]'
 
-const glassDark = 'backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_18px_40px_rgba(0,0,0,0.35)]'
-const glassLight = 'backdrop-blur-xl bg-white/75 border border-slate-200/70 shadow-[0_20px_40px_rgba(15,23,42,0.12)]'
+const themeTokens = {
+  dark: {
+    background: 'bg-gradient-to-br from-[#0E1116] via-[#111827] to-[#090C12] text-white',
+    header: 'border-white/10 bg-black/45',
+    glass: glassDark,
+    navActive:
+      'bg-gradient-to-r from-blue-600/60 to-blue-400/20 text-white shadow-[0_0_25px_rgba(37,99,235,0.35)]',
+    navInactive: 'text-gray-300 hover:bg-white/10 hover:shadow-[0_0_16px_rgba(59,130,246,0.18)]',
+    quickTitle: 'text-white',
+    quickDescription: 'text-slate-400',
+    chartAxis: '#cbd5f5',
+    chartGrid: 'rgba(255,255,255,0.08)',
+    tooltipBg: 'rgba(15,23,42,0.9)',
+    tooltipText: '#e2e8f0',
+    tooltipLabel: '#94a3b8',
+    statusChip: {
+      emerald: 'bg-gradient-to-r from-emerald-500/25 to-emerald-500/8 text-emerald-100 border-emerald-400/25',
+      amber: 'bg-gradient-to-r from-amber-500/25 to-amber-500/10 text-amber-100 border-amber-400/25',
+      rose: 'bg-gradient-to-r from-rose-500/25 to-rose-500/8 text-rose-100 border-rose-400/25',
+    },
+  },
+  light: {
+    background: 'bg-gradient-to-br from-[#F6F9FF] via-[#EEF2FB] to-[#DEE8FF] text-slate-900',
+    header:
+      'border-slate-200/70 bg-white/85 backdrop-blur-xl shadow-[0_12px_30px_rgba(15,23,42,0.08)] text-slate-900',
+    glass: glassLight,
+    navActive:
+      'bg-gradient-to-r from-blue-600/20 to-blue-400/10 text-blue-700 shadow-[0_0_18px_rgba(37,99,235,0.25)] border border-blue-400/20',
+    navInactive:
+      'text-slate-600 hover:bg-white/90 hover:shadow-[0_0_18px_rgba(59,130,246,0.18)] border border-transparent',
+    quickTitle: 'text-slate-900',
+    quickDescription: 'text-slate-500',
+    chartAxis: '#475569',
+    chartGrid: 'rgba(71,85,105,0.18)',
+    tooltipBg: 'rgba(255,255,255,0.98)',
+    tooltipText: '#0f172a',
+    tooltipLabel: '#1e293b',
+    statusChip: {
+      emerald: 'bg-emerald-100 text-emerald-700 border-emerald-200 shadow-[0_12px_24px_rgba(16,185,129,0.18)]',
+      amber: 'bg-amber-100 text-amber-700 border-amber-200 shadow-[0_12px_24px_rgba(251,191,36,0.18)]',
+      rose: 'bg-rose-100 text-rose-700 border-rose-200 shadow-[0_12px_24px_rgba(244,63,94,0.18)]',
+    },
+  },
+} as const
 
 const fadeVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
-  exit: { opacity: 0, y: -20, transition: { duration: 0.35, ease: 'easeIn' } },
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: 'easeOut' } },
+  exit: { opacity: 0, y: -18, transition: { duration: 0.35, ease: 'easeIn' } },
 }
 
 type SidebarItemProps = {
@@ -53,22 +94,31 @@ type SidebarItemProps = {
   label: string
   active: boolean
   onClick: () => void
+  tokens: typeof themeTokens.dark
 }
 
-const SidebarButton = ({ icon: Icon, label, active, onClick }: SidebarItemProps) => (
+const SidebarButton = ({ icon: Icon, label, active, onClick, tokens }: SidebarItemProps) => (
   <motion.button
     whileHover={{ scale: 1.07, x: 6 }}
     whileTap={{ scale: 0.96 }}
     onClick={onClick}
     className={`flex w-full items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-      active
-        ? 'bg-gradient-to-r from-blue-600/60 to-blue-400/20 text-white shadow-[0_0_25px_rgba(37,99,235,0.35)]'
-        : 'text-gray-300 hover:bg-white/10 hover:shadow-[0_0_16px_rgba(59,130,246,0.18)]'
+      active ? tokens.navActive : tokens.navInactive
     }`}
   >
     <motion.span
       className="grid h-8 w-8 place-items-center rounded-lg"
-      animate={active ? { filter: ['drop-shadow(0 0 0px rgba(59,130,246,0))', 'drop-shadow(0 0 12px rgba(59,130,246,0.55))', 'drop-shadow(0 0 0px rgba(59,130,246,0))'] } : {}}
+      animate={
+        active
+          ? {
+              filter: [
+                'drop-shadow(0 0 0px rgba(59,130,246,0))',
+                'drop-shadow(0 0 12px rgba(59,130,246,0.55))',
+                'drop-shadow(0 0 0px rgba(59,130,246,0))',
+              ],
+            }
+          : {}
+      }
       transition={{ duration: 1.6, repeat: active ? Infinity : 0, ease: 'easeInOut' }}
     >
       <Icon size={18} />
@@ -78,7 +128,7 @@ const SidebarButton = ({ icon: Icon, label, active, onClick }: SidebarItemProps)
 )
 
 const AnimatedNumber = ({ value }: { value: number }) => {
-  const spring = useSpring(value, { stiffness: 120, damping: 20 })
+  const spring = useSpring(value, { stiffness: 110, damping: 18 })
   const [display, setDisplay] = useState(value)
 
   useEffect(() => {
@@ -100,9 +150,18 @@ type MetricCardProps = {
   sub?: string | JSX.Element
   tone?: string
   glassClass: string
+  titleClass: string
 }
 
-const MetricCard = ({ icon: Icon, title, value, sub, tone = brand.primary, glassClass }: MetricCardProps) => {
+const MetricCard = ({
+  icon: Icon,
+  title,
+  value,
+  sub,
+  tone = brand.primary,
+  glassClass,
+  titleClass,
+}: MetricCardProps) => {
   const [pulse, setPulse] = useState(false)
 
   useEffect(() => {
@@ -118,12 +177,12 @@ const MetricCard = ({ icon: Icon, title, value, sub, tone = brand.primary, glass
     >
       <div className="flex items-center justify-between">
         <div>
-          <div className="text-sm text-slate-300 font-medium tracking-wide">{title}</div>
-          <div className="mt-1 text-3xl font-semibold text-white">
+          <div className={`text-sm font-medium tracking-wide ${titleClass}`}>{title}</div>
+          <div className="mt-1 text-3xl font-semibold">
             {typeof value === 'number' ? <AnimatedNumber value={value} /> : value}
           </div>
           {sub ? (
-            <motion.div animate={pulse ? { scale: [1, 1.05, 1] } : {}} className="mt-1 text-xs text-slate-400">
+            <motion.div animate={pulse ? { scale: [1, 1.05, 1] } : {}} className="mt-1 text-xs opacity-80">
               {sub}
             </motion.div>
           ) : null}
@@ -147,9 +206,20 @@ type QuickActionProps = {
   tone?: string
   icon: LucideIcon
   glassClass: string
+  titleClass: string
+  descriptionClass: string
 }
 
-const QuickAction = ({ title, description, onClick, tone = brand.primary, icon: Icon, glassClass }: QuickActionProps) => {
+const QuickAction = ({
+  title,
+  description,
+  onClick,
+  tone = brand.primary,
+  icon: Icon,
+  glassClass,
+  titleClass,
+  descriptionClass,
+}: QuickActionProps) => {
   const [hovered, setHovered] = useState(false)
 
   return (
@@ -162,8 +232,8 @@ const QuickAction = ({ title, description, onClick, tone = brand.primary, icon: 
     >
       <div className="flex items-center justify-between">
         <div>
-          <div className="text-white font-semibold text-lg tracking-wide">{title}</div>
-          <div className="text-sm text-slate-400 mt-1 leading-relaxed">{description}</div>
+          <div className={`font-semibold text-lg tracking-wide ${titleClass}`}>{title}</div>
+          <div className={`text-sm mt-1 leading-relaxed ${descriptionClass}`}>{description}</div>
         </div>
         <motion.div
           animate={{ y: [0, -3, 0] }}
@@ -205,9 +275,10 @@ type DashboardPageProps = {
   chartData: Array<{ hora: string; ocupacao: number }>
   glassClass: string
   statuses: StatusBadge[]
+  tokens: typeof themeTokens.dark
 }
 
-const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses }: DashboardPageProps) => (
+const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses, tokens }: DashboardPageProps) => (
   <motion.div variants={fadeVariants} initial="hidden" animate="visible" exit="exit" className="space-y-8">
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       <MetricCard
@@ -217,6 +288,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses 
         sub="+12% versus yesterday"
         tone={brand.success}
         glassClass={glassClass}
+        titleClass={tokens.quickTitle}
       />
       <MetricCard
         icon={Bus}
@@ -224,36 +296,45 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses 
         value={kpis.veiculosAtivos}
         sub={`${kpis.veiculosAtivos}/${kpis.veiculosTotais} operating now`}
         glassClass={glassClass}
+        titleClass={tokens.quickTitle}
       />
-      <MetricCard icon={Route} title="Routes today" value={kpis.rotasDia} sub="+3 versus plan" glassClass={glassClass} />
+      <MetricCard
+        icon={Route}
+        title="Routes today"
+        value={kpis.rotasDia}
+        sub="+3 versus plan"
+        glassClass={glassClass}
+        titleClass={tokens.quickTitle}
+      />
       <MetricCard
         icon={AlertTriangle}
         title="Critical alerts"
         value={kpis.alertasCriticos}
-        sub={<span className="text-red-300">Immediate actions required</span>}
+        sub={<span className="text-red-400">Immediate action required</span>}
         tone="#ef4444"
         glassClass={glassClass}
+        titleClass={tokens.quickTitle}
       />
     </div>
 
     <motion.div className={`rounded-2xl p-6 transition-all ${glassClass}`} layout>
-      <div className="text-white font-semibold mb-4 text-lg flex items-center gap-2">
+      <div className={`font-semibold mb-4 text-lg flex items-center gap-2 ${tokens.quickTitle}`}>
         <Route size={16} /> Occupancy by hour
       </div>
       <ResponsiveContainer width="100%" height={260}>
-        <LineChart data={chartData} margin={{ top: 10, left: 0, right: 10, bottom: 0 }}>
-          <CartesianGrid stroke="rgba(255,255,255,0.08)" strokeDasharray="4 8" />
-          <XAxis dataKey="hora" stroke="#cbd5f5" tickLine={false} axisLine={false} />
-          <YAxis stroke="#cbd5f5" tickLine={false} axisLine={false} tickFormatter={(v) => `${v}%`} width={45} />
+        <LineChart data={chartData} margin={{ top: 12, left: 6, right: 12, bottom: 0 }}>
+          <CartesianGrid stroke={tokens.chartGrid} strokeDasharray="4 8" />
+          <XAxis dataKey="hora" stroke={tokens.chartAxis} tickLine={false} axisLine={false} />
+          <YAxis stroke={tokens.chartAxis} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}%`} width={45} />
           <Tooltip
             cursor={{ stroke: 'rgba(37,99,235,0.35)', strokeWidth: 1 }}
             contentStyle={{
-              background: 'rgba(15,23,42,0.88)',
-              border: '1px solid rgba(148,163,184,0.3)',
+              background: tokens.tooltipBg,
+              border: '1px solid rgba(148,163,184,0.28)',
               borderRadius: '14px',
-              color: '#e2e8f0',
+              color: tokens.tooltipText,
             }}
-            labelStyle={{ color: '#94a3b8', fontWeight: 600 }}
+            labelStyle={{ color: tokens.tooltipLabel, fontWeight: 600 }}
           />
           <Line
             type="monotone"
@@ -284,8 +365,8 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses 
       ))}
     </div>
 
-    <div>
-      <div className="text-white font-semibold mb-4 text-lg">Quick actions</div>
+    <div className="space-y-2">
+      <div className={`font-semibold mb-2 text-lg ${tokens.quickTitle}`}>Quick actions</div>
       <div className="flex overflow-x-auto md:grid md:grid-cols-3 gap-6 pb-2 md:pb-0 snap-x snap-mandatory [-webkit-overflow-scrolling:touch]">
         <QuickAction
           title="Track vehicles"
@@ -293,6 +374,8 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses 
           onClick={() => goto('/mapa')}
           icon={MapIcon}
           glassClass={glassClass}
+          titleClass={tokens.quickTitle}
+          descriptionClass={tokens.quickDescription}
         />
         <QuickAction
           title="View analytics"
@@ -301,6 +384,8 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses 
           tone={brand.accent}
           icon={FileBarChart}
           glassClass={glassClass}
+          titleClass={tokens.quickTitle}
+          descriptionClass={tokens.quickDescription}
         />
         <QuickAction
           title="Setup & branding"
@@ -309,13 +394,15 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses 
           tone="#94a3b8"
           icon={Settings}
           glassClass={glassClass}
+          titleClass={tokens.quickTitle}
+          descriptionClass={tokens.quickDescription}
         />
       </div>
     </div>
 
     <motion.div
       animate={{ opacity: [0.85, 1, 0.85], scale: [1, 1.01, 1] }}
-      transition={{ duration: 2.2, repeat: Infinity }}
+      transition={{ duration: 2.1, repeat: Infinity }}
       className={`rounded-2xl p-4 border ${glassClass} border-red-500/30 bg-red-500/10`}
     >
       <div className="flex items-center gap-3 text-red-300">
@@ -324,8 +411,8 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses 
     </motion.div>
 
     <motion.div className={`rounded-2xl p-6 transition-all ${glassClass}`} layout>
-      <div className="text-white font-semibold mb-2 text-lg">AI insights</div>
-      <p className="text-sm text-slate-300 leading-relaxed">{aiSummary}</p>
+      <div className={`font-semibold mb-2 text-lg ${tokens.quickTitle}`}>AI insights</div>
+      <p className="text-sm leading-relaxed opacity-80">{aiSummary}</p>
     </motion.div>
   </motion.div>
 )
@@ -345,8 +432,9 @@ export default function AdminPremiumResponsive() {
     alertasCriticos: 1,
   })
 
-  const glassClass = theme === 'light' ? glassLight : glassDark
   const isLight = theme === 'light'
+  const tokens = themeTokens[theme]
+  const glassClass = tokens.glass
 
   useEffect(() => {
     const handler = () => setIsMobile(window.innerWidth < 768)
@@ -356,13 +444,10 @@ export default function AdminPremiumResponsive() {
   }, [])
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    const stored = window.localStorage.getItem('golffox-theme')
+    const stored = typeof window !== 'undefined' ? window.localStorage.getItem('golffox-theme') : null
     if (stored === 'light' || stored === 'dark') {
       setTheme(stored)
-      return
-    }
-    if (window.matchMedia?.('(prefers-color-scheme: light)').matches) {
+    } else if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: light)').matches) {
       setTheme('light')
     }
   }, [])
@@ -382,7 +467,8 @@ export default function AdminPremiumResponsive() {
         if (active && res.summary) setAiSummary(res.summary)
       } catch (error) {
         console.warn('[admin] AI fallback', error)
-        if (active) setAiSummary('Operations stable. Keep monitoring occupancy, critical routes and alerts in real time.')
+        if (active)
+          setAiSummary('Operations stable. Keep monitoring occupancy, critical routes and alerts in real time.')
       }
     })()
     return () => {
@@ -458,29 +544,23 @@ export default function AdminPremiumResponsive() {
       {
         icon: '🟢',
         label: 'Stable operation',
-        tone: isLight
-          ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
-          : 'bg-gradient-to-r from-emerald-500/25 to-emerald-500/5 text-emerald-100 border-emerald-400/25',
+        tone: tokens.statusChip.emerald,
         description: `Average occupancy ${kpis.emTransito}%`,
       },
       {
         icon: '🟠',
-        label: 'Monitor critical routes',
-        tone: isLight
-          ? 'bg-amber-100 text-amber-700 border-amber-200'
-          : 'bg-gradient-to-r from-amber-500/25 to-amber-500/8 text-amber-100 border-amber-400/25',
-        description: 'Keep travel deviation below 10%',
+        label: 'Monitor routes',
+        tone: tokens.statusChip.amber,
+        description: 'Keep route deviation below 10%',
       },
       {
         icon: '🔴',
         label: 'Pending alerts',
-        tone: isLight
-          ? 'bg-rose-100 text-rose-700 border-rose-200'
-          : 'bg-gradient-to-r from-rose-500/25 to-rose-500/6 text-rose-100 border-rose-400/25',
+        tone: tokens.statusChip.rose,
         description: `${kpis.alertasCriticos} urgent tasks`,
       },
     ],
-    [isLight, kpis.alertasCriticos, kpis.emTransito]
+    [kpis.alertasCriticos, kpis.emTransito, tokens]
   )
 
   const goto = (path: string) => {
@@ -504,13 +584,7 @@ export default function AdminPremiumResponsive() {
   ]
 
   return (
-    <div
-      className={`min-h-screen flex flex-col overflow-hidden transition-colors duration-500 ${
-        isLight
-          ? 'bg-gradient-to-br from-[#F7FAFF] via-[#EEF2F9] to-[#E3ECFF] text-slate-900'
-          : 'bg-gradient-to-br from-[#0E1116] via-[#111827] to-[#0B0F14] text-white'
-      }`}
-    >
+    <div className={`min-h-screen flex flex-col overflow-hidden transition-colors duration-500 ${tokens.background}`}>
       <motion.div className="fixed top-5 right-5 z-50 flex items-center gap-3">
         <motion.button
           whileHover={{ rotate: 25, scale: 1.08 }}
@@ -533,9 +607,7 @@ export default function AdminPremiumResponsive() {
       <motion.header
         initial={{ y: -40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className={`sticky top-0 z-40 border-b ${
-          isLight ? 'border-slate-200/70 bg-white/80 text-slate-900' : 'border-white/10 bg-black/40'
-        } backdrop-blur-lg shadow-lg`}
+        className={`sticky top-0 z-40 border-b ${tokens.header}`}
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
@@ -546,7 +618,9 @@ export default function AdminPremiumResponsive() {
               animate={{ rotate: [0, 10, -10, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
               className={`h-10 w-10 grid place-items-center rounded-xl border ${
-                isLight ? 'bg-white/60 border-slate-200/60' : 'bg-gradient-to-br from-white/10 to-white/0 border-white/10'
+                isLight
+                  ? 'bg-white/80 border-slate-200/60 shadow-[0_12px_26px_rgba(15,23,42,0.12)]'
+                  : 'bg-gradient-to-br from-white/10 to-white/0 border-white/10'
               }`}
             >
               🦊
@@ -575,10 +649,10 @@ export default function AdminPremiumResponsive() {
           {(!isMobile || sidebarOpen) && (
             <motion.aside
               key="sidebar"
-              initial={{ x: -100, opacity: 0 }}
+              initial={{ x: -110, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -120, opacity: 0 }}
-              transition={{ duration: 0.4, ease: 'easeOut' }}
+              transition={{ duration: 0.35, ease: 'easeOut' }}
               className={`${isMobile ? 'fixed inset-x-4 top-24 z-50 flex' : 'hidden md:flex md:w-72 md:pl-4 md:pr-6'}`}
             >
               <div className={`flex w-full flex-col gap-2 rounded-2xl p-3 ${glassClass}`}>
@@ -589,6 +663,7 @@ export default function AdminPremiumResponsive() {
                     label={item.label}
                     active={route === item.path}
                     onClick={() => goto(item.path)}
+                    tokens={tokens}
                   />
                 ))}
               </div>
@@ -607,6 +682,7 @@ export default function AdminPremiumResponsive() {
                 chartData={chartData}
                 glassClass={glassClass}
                 statuses={statuses}
+                tokens={tokens}
               />
             ) : (
               <motion.div
