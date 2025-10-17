@@ -1,4 +1,4 @@
-﻿import pg from 'pg'
+import pg from 'pg'
 const { Client } = pg
 
 const DB_CONFIG = {
@@ -158,15 +158,15 @@ export async function runSql(sql: string) {
   })
   await client.connect()
   try {
-    await client.query(sql)
+    console.log('[setup] executing SQL segment');\n    await client.query(sql)
   } finally {
     await client.end()
   }
 }
 
 export async function runSetup() {
-  await runSql(MIGRATION_SQL)
-  await runSql(SEED_SQL)
+  console.log('[setup] running migrations');\n  await runSql(MIGRATION_SQL)
+  console.log('[setup] running seed');\n  await runSql(SEED_SQL)
 }
 
 
