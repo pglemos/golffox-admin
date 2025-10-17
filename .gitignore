@@ -50,3 +50,4 @@ dist/
 
 # Misc
 prompt
+.vercel
