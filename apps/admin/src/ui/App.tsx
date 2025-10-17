@@ -585,6 +585,9 @@ export default function AdminPremiumResponsive() {
 
   return (
     <div className={`min-h-screen flex flex-col overflow-hidden transition-colors duration-500 ${tokens.background}`}>
+      <div className="fixed top-2 left-1/2 -translate-x-1/2 z-50 rounded-full bg-black/70 text-white px-4 py-1 text-xs tracking-wide shadow-lg">
+        Golf Fox Admin dashboard rendering…
+      </div>
       <motion.div className="fixed top-5 right-5 z-50 flex items-center gap-3">
         <motion.button
           whileHover={{ rotate: 25, scale: 1.08 }}
