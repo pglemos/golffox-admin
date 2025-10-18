@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "framework": "nextjs",
+  "buildCommand": "pnpm install --frozen-lockfile && pnpm run build",
+  "outputDirectory": ".vercel/output",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "env": {
+    "NEXT_TELEMETRY_DISABLED": "1"
+  }
+}

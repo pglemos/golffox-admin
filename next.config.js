@@ -13,6 +13,16 @@ const nextConfig = {
         protocol: 'https',
         hostname: '**.replit.dev',
       },
+      // Allow Vercel preview/production domains for remote images
+      {
+        protocol: 'https',
+        hostname: '**.vercel.app',
+      },
+      // Allow Supabase Storage images
+      {
+        protocol: 'https',
+        hostname: '**.supabase.co',
+      },
     ],
     // Disable Next.js Image Optimization so data URLs work directly with next/image
     unoptimized: true,
@@ -25,7 +35,7 @@ const nextConfig = {
   ],
   experimental: {
     serverActions: {
-      allowedOrigins: ['https://*.replit.dev', 'https://*.repl.co']
+      allowedOrigins: ['https://*.replit.dev', 'https://*.repl.co', 'https://*.vercel.app']
     }
   },
   eslint: {
