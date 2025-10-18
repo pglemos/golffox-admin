@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
   --foreground-rgb: 0, 0, 0;
@@ -79,7 +77,8 @@ body {
   }
 
   * {
-    @apply antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
@@ -89,7 +88,10 @@ body {
   }
 
   .glass-panel {
-    @apply rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl;
+    border-radius: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    background-color: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(24px);
   }
 }
 

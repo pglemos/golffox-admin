@@ -9,10 +9,8 @@ const nextConfig = {
   images: {
     domains: ['localhost'],
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**.replit.dev',
-      },
+      { protocol: 'https', hostname: '**.replit.dev' },
+      { protocol: 'https', hostname: '**.vercel.app' },
     ],
     // Disable Next.js Image Optimization so data URLs work directly with next/image
     unoptimized: true,
@@ -21,11 +19,12 @@ const nextConfig = {
     'https://*.replit.dev',
     'https://*.repl.co',
     'https://0049f172-4806-447f-8b15-0e7c179c03ef-00-wntq1vd5fy6r.janeway.replit.dev',
-    '0049f172-4806-447f-8b15-0e7c179c03ef-00-wntq1vd5fy6r.janeway.replit.dev'
+    '0049f172-4806-447f-8b15-0e7c179c03ef-00-wntq1vd5fy6r.janeway.replit.dev',
+    'https://*.vercel.app'
   ],
   experimental: {
     serverActions: {
-      allowedOrigins: ['https://*.replit.dev', 'https://*.repl.co']
+      allowedOrigins: ['https://*.replit.dev', 'https://*.repl.co', 'https://*.vercel.app']
     }
   },
   eslint: {

@@ -26,7 +26,7 @@ async function verifySupabaseConnection() {
   
   try {
     // Tentar fazer uma consulta simples para verificar a conexão
-    const { data, error } = await supabase.from('profiles').select('count', { count: 'exact', head: true });
+    const { data, error } = await supabase.from('users').select('count', { count: 'exact', head: true });
     
     if (error) throw error;
     
@@ -50,22 +50,24 @@ async function verifySupabaseConnection() {
 async function verifyEssentialTables() {
   console.log('🔍 Verificando tabelas essenciais...');
   
-  const essentialTables = ['profiles', 'trips', 'vehicles'];
+  const essentialTables = ['users', 'vehicles', 'routes'];
   const missingTables = [];
   
   for (const table of essentialTables) {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from(table)
       .select('count', { count: 'exact', head: true });
     
     if (error && error.code === '42P01') { // Código para tabela não existente
       missingTables.push(table);
+    } else if (error) {
+      console.warn(`⚠️ Erro ao verificar tabela ${table}:`, error.message);
     }
   }
   
   if (missingTables.length > 0) {
     console.warn('⚠️ Tabelas essenciais não encontradas:', missingTables.join(', '));
-    console.log('Execute npm run db:setup para configurar o banco de dados');
+    console.log('Dica: aplique os SQLs em supabase/schema.sql e supabase/rls_policies.sql via SQL Editor do Supabase');
   } else {
     console.log('✅ Todas as tabelas essenciais estão presentes!');
   }
