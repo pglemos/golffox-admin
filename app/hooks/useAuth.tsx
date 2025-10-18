@@ -95,8 +95,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       setError(null);
       
-      // Bypass de desenvolvimento: permite login com admin/admin sem Supabase
-      if (email === 'admin' && password === 'admin') {
+      // Development bypass: only enabled outside production
+      if (process.env.NODE_ENV !== 'production' && email === 'admin' && password === 'admin') {
         const userProfile: UserProfile = {
           id: 'local-admin',
           email: 'admin@local',
