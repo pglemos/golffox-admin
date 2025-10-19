@@ -59,20 +59,20 @@ $envs = @('production', 'preview')
 foreach ($envName in $envs) {
   Write-Info "Configurando variáveis no ambiente: $envName"
 
-  vercel env add NEXT_PUBLIC_SUPABASE_URL $SupabaseUrl $envName | Out-Null
-  vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY $SupabaseAnonKey $envName | Out-Null
+  vercel env set NEXT_PUBLIC_SUPABASE_URL $SupabaseUrl $envName | Out-Null
+  vercel env set NEXT_PUBLIC_SUPABASE_ANON_KEY $SupabaseAnonKey $envName | Out-Null
 
-  vercel env add SUPABASE_SERVICE_ROLE_KEY $SupabaseServiceRoleKey $envName | Out-Null
+  vercel env set SUPABASE_SERVICE_ROLE_KEY $SupabaseServiceRoleKey $envName | Out-Null
 
-  vercel env add SUPABASE_URL $SupabaseUrl $envName | Out-Null
-  vercel env add SUPABASE_SERVICE_ROLE $SupabaseServiceRoleKey $envName | Out-Null
+  vercel env set SUPABASE_URL $SupabaseUrl $envName | Out-Null
+  vercel env set SUPABASE_SERVICE_ROLE $SupabaseServiceRoleKey $envName | Out-Null
 
   if ($GoogleMapsApiKey) {
-    vercel env add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY $GoogleMapsApiKey $envName | Out-Null
+    vercel env set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY $GoogleMapsApiKey $envName | Out-Null
   }
 
   if ($SetupAdminToken) {
-    vercel env add SETUP_ADMIN_TOKEN $SetupAdminToken $envName | Out-Null
+    vercel env set SETUP_ADMIN_TOKEN $SetupAdminToken $envName | Out-Null
   }
 }
 
