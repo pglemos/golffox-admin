@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { supabaseAdmin } from '../../../lib/supabase'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
@@ -40,15 +41,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(500).json({ error: 'Missing Supabase envs' })
     }
 
+    if (!supabaseAdmin) {
+      return res.status(500).json({ error: 'Supabase admin client not initialized' })
+    }
+
     // GET -> status check
     if (req.method === 'GET') {
-      const checkResp = await fetch(`${supabaseUrl}/rest/v1/users?role=eq.admin&select=id,email,name,role`, {
-        headers: {
-          'apikey': serviceRole,
-          'Authorization': `Bearer ${serviceRole}`,
-        },
-      })
-      const admins = await checkResp.json().catch(() => [])
+      const { data: admins, error: listErr } = await supabaseAdmin
+        .from('users')
+        .select('id,email,name,role')
+        .eq('role', 'admin')
+        .limit(1)
+
+      if (listErr) {
+        return res.status(500).json({ error: 'Falha ao listar usuários', details: listErr.message })
+      }
+
       const exists = Array.isArray(admins) && admins.length > 0
       const admin = exists ? admins[0] : null
       return res.status(200).json({ exists, admin })
@@ -82,42 +90,59 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const authJson: any = await authResp.json().catch(() => ({}))
 
-    if (!authResp.ok || !authJson?.user?.id) {
-      const msg = authJson?.error?.message || authJson?.message || 'Falha ao criar usuário de autenticação'
-      return res.status(500).json({ error: msg, details: authJson })
+    // Handle both possible response shapes from Supabase: { user: { id, ... } } or { id, ... }
+    let userId: string | null = null
+    if (!authResp.ok) {
+      if (authJson?.error_code === 'email_exists') {
+        // Lookup existing user ID by email via Admin list users
+        try {
+          const listResp = await fetch(`${supabaseUrl}/auth/v1/admin/users?per_page=200`, {
+            headers: {
+              'apikey': serviceRole,
+              'Authorization': `Bearer ${serviceRole}`,
+            },
+          })
+          const listJson: any = await listResp.json().catch(() => ({}))
+          const list = Array.isArray(listJson) ? listJson : (listJson?.users || [])
+          const found = Array.isArray(list) ? list.find((u: any) => u?.email === email) : null
+          userId = found?.id || null
+        } catch {}
+        if (!userId) {
+          return res.status(500).json({ error: 'Usuário já existe mas ID não encontrado', details: authJson })
+        }
+      } else {
+        const msg = authJson?.error?.message || authJson?.message || 'Falha ao criar usuário de autenticação'
+        return res.status(500).json({ error: msg, details: authJson })
+      }
     }
 
-    const userId: string = authJson.user.id
+    userId = userId ?? (authJson?.user?.id || authJson?.id)
+    if (!userId) {
+      return res.status(500).json({ error: 'Falha ao obter ID do usuário criado', details: authJson })
+    }
 
     // Check if admin already exists in public.users
-    const checkResp = await fetch(`${supabaseUrl}/rest/v1/users?role=eq.admin&select=id`, {
-      headers: {
-        'apikey': serviceRole,
-        'Authorization': `Bearer ${serviceRole}`,
-      },
-    })
+    const { data: admins, error: checkErr } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .eq('role', 'admin')
+      .limit(1)
 
-    const admins = await checkResp.json().catch(() => [])
+    if (checkErr) {
+      return res.status(500).json({ error: 'Falha ao verificar admin existente', details: checkErr.message })
+    }
+
     if (Array.isArray(admins) && admins.length > 0) {
       return res.status(200).json({ status: 'exists', message: 'Usuário admin já existe' })
     }
 
     // Insert admin record into public.users table
-    const insertResp = await fetch(`${supabaseUrl}/rest/v1/users`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': serviceRole,
-        'Authorization': `Bearer ${serviceRole}`,
-        'Prefer': 'return=minimal',
-      },
-      body: JSON.stringify({ id: userId, email, name, role: 'admin' }),
-    })
+    const { error: insertErr } = await supabaseAdmin
+      .from('users')
+      .insert({ id: userId, email, name, role: 'admin' })
 
-    if (!insertResp.ok) {
-      const insertJson: any = await insertResp.json().catch(() => ({}))
-      const msg = insertJson?.error || insertJson?.message || 'Falha ao inserir usuário'
-      return res.status(500).json({ error: msg, details: insertJson })
+    if (insertErr) {
+      return res.status(500).json({ error: 'Falha ao inserir usuário', details: insertErr.message })
     }
 
     return res.status(201).json({ status: 'created', userId, email })
