@@ -29,7 +29,7 @@ const Reports: React.FC = () => {
         const result = await generateReport(query, contextData);
         setReport(result);
     } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
+        const errorMessage = err instanceof Error ? err.message : 'Ocorreu um erro desconhecido.';
         setError(`Falha ao gerar relatório: ${errorMessage}`);
     } finally {
         setIsLoading(false);
