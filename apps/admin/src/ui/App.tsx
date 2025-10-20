@@ -680,7 +680,7 @@ export default function AdminPremiumResponsive() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
-  const [aiSummary, setAiSummary] = useState('Loading intelligent insights...')
+  const [aiSummary, setAiSummary] = useState('Carregando insights inteligentes...')
   const sb = useMemo(() => supabaseClient, [])
   const [kpis, setKpis] = useState<KPIState>({
     emTransito: 65,
@@ -726,7 +726,9 @@ export default function AdminPremiumResponsive() {
       } catch (error) {
         console.warn('[admin] AI fallback', error)
         if (active)
-          setAiSummary('Operations stable. Keep monitoring occupancy, critical routes and alerts in real time.')
+          setAiSummary(
+            'Operações estáveis. Continue monitorando ocupação, rotas críticas e alertas em tempo real.'
+          )
       }
     })()
     return () => {
@@ -801,21 +803,21 @@ export default function AdminPremiumResponsive() {
     () => [
       {
         icon: '🟢',
-        label: 'Stable operation',
+        label: 'Operação estável',
         tone: tokens.statusChip.emerald,
-        description: `Average occupancy ${kpis.emTransito}%`,
+        description: `Ocupação média de ${kpis.emTransito}%`,
       },
       {
         icon: '🟠',
-        label: 'Monitor routes',
+        label: 'Monitorar rotas',
         tone: tokens.statusChip.amber,
-        description: 'Keep route deviation below 10%',
+        description: 'Mantenha o desvio das rotas abaixo de 10%',
       },
       {
         icon: '🔴',
-        label: 'Pending alerts',
+        label: 'Alertas pendentes',
         tone: tokens.statusChip.rose,
-        description: `${kpis.alertasCriticos} urgent tasks`,
+        description: `${kpis.alertasCriticos} tarefas urgentes`,
       },
     ],
     [kpis.alertasCriticos, kpis.emTransito, tokens]
@@ -827,24 +829,24 @@ export default function AdminPremiumResponsive() {
   }
 
   const navItems: Array<{ icon: LucideIcon; label: string; path: string }> = [
-    { icon: LayoutGrid, label: 'Dashboard', path: '/' },
-    { icon: MapIcon, label: 'Map', path: '/map' },
-    { icon: Route, label: 'Routes', path: '/routes' },
-    { icon: Bus, label: 'Vehicles', path: '/vehicles' },
-    { icon: Users, label: 'Drivers', path: '/drivers' },
-    { icon: Building2, label: 'Companies', path: '/companies' },
-    { icon: ShieldCheck, label: 'Permissions', path: '/permissions' },
+    { icon: LayoutGrid, label: 'Visão geral', path: '/' },
+    { icon: MapIcon, label: 'Mapa', path: '/map' },
+    { icon: Route, label: 'Rotas', path: '/routes' },
+    { icon: Bus, label: 'Veículos', path: '/vehicles' },
+    { icon: Users, label: 'Motoristas', path: '/drivers' },
+    { icon: Building2, label: 'Empresas', path: '/companies' },
+    { icon: ShieldCheck, label: 'Permissões', path: '/permissions' },
     { icon: LifeBuoy, label: 'Suporte', path: '/support' },
-    { icon: Bell, label: 'Alerts', path: '/alerts' },
-    { icon: FileBarChart, label: 'Reports', path: '/reports' },
-    { icon: History, label: 'History', path: '/history' },
-    { icon: Wallet2, label: 'Costs', path: '/costs' },
+    { icon: Bell, label: 'Alertas', path: '/alerts' },
+    { icon: FileBarChart, label: 'Relatórios', path: '/reports' },
+    { icon: History, label: 'Histórico', path: '/history' },
+    { icon: Wallet2, label: 'Custos', path: '/costs' },
   ]
 
   return (
     <div className={`min-h-screen flex flex-col overflow-hidden transition-colors duration-500 ${tokens.background}`}>
       <div className="fixed top-2 left-1/2 -translate-x-1/2 z-50 rounded-full bg-black/70 text-white px-4 py-1 text-xs tracking-wide shadow-lg">
-        Golf Fox Admin dashboard rendering…
+        Renderizando painel Golf Fox Admin…
       </div>
       <motion.div className="fixed top-5 right-5 z-50 flex items-center gap-3">
         <motion.button
