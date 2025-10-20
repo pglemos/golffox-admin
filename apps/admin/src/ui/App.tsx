@@ -90,6 +90,26 @@ const fadeVariants = {
   exit: { opacity: 0, y: -18, transition: { duration: 0.35, ease: 'easeIn' } },
 }
 
+const adminNavItems = [
+  { icon: LayoutGrid, label: 'Visão geral', path: '/' },
+  { icon: MapIcon, label: 'Mapa', path: '/mapa' },
+  { icon: Route, label: 'Rotas', path: '/rotas' },
+  { icon: Bus, label: 'Veículos', path: '/veiculos' },
+  { icon: Users, label: 'Motoristas', path: '/motoristas' },
+  { icon: Building2, label: 'Empresas', path: '/empresas' },
+  { icon: ShieldCheck, label: 'Permissões', path: '/permissoes' },
+  { icon: LifeBuoy, label: 'Suporte', path: '/suporte' },
+  { icon: Bell, label: 'Alertas', path: '/alertas' },
+  { icon: FileBarChart, label: 'Relatórios', path: '/relatorios' },
+  { icon: History, label: 'Histórico', path: '/historico' },
+  { icon: Wallet2, label: 'Custos', path: '/custos' },
+] as const
+
+type AdminRoute = (typeof adminNavItems)[number]['path'] | '/configuracoes'
+
+const isValidAdminRoute = (path: string | null | undefined): path is AdminRoute =>
+  path === '/configuracoes' || adminNavItems.some((item) => item.path === path)
+
 type SidebarItemProps = {
   icon: LucideIcon
   label: string
@@ -293,7 +313,7 @@ type HistoryPageProps = {
 
 type DashboardPageProps = {
   kpis: KPIState
-  goto: (path: string) => void
+  goto: (path: AdminRoute) => void
   aiSummary: string
   chartData: Array<{ hora: string; ocupacao: number }>
   glassClass: string
@@ -626,7 +646,7 @@ const HistoryPage = ({ glassClass, tokens }: HistoryPageProps) => {
 }
 
 export default function AdminPremiumResponsive() {
-  const [route, setRoute] = useState('/')
+  const [route, setRoute] = useState<AdminRoute>('/')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
@@ -773,7 +793,12 @@ export default function AdminPremiumResponsive() {
     [kpis.alertasCriticos, kpis.emTransito, tokens]
   )
 
-  const goto = (path: string) => {
+  const goto = (path: AdminRoute) => {
+    if (route === path) {
+      if (isMobile) setSidebarOpen(false)
+      return
+    }
+
     setRoute(path)
     if (typeof window !== 'undefined') {
       window.history.pushState({ path }, '', path)
@@ -784,37 +809,34 @@ export default function AdminPremiumResponsive() {
   useEffect(() => {
     if (typeof window === 'undefined') return
 
-    const syncRoute = (nextPath?: string | null) => {
-      setRoute(nextPath && nextPath.length > 0 ? nextPath : '/')
+    const ensureValidRoute = (path: string | null | undefined): AdminRoute => {
+      if (isValidAdminRoute(path)) return path
+      return '/'
     }
 
-    const initialPath = window.location.pathname || '/'
+    const syncRoute = (nextPath?: string | null) => {
+      setRoute((current) => {
+        const safePath = ensureValidRoute(nextPath)
+        return current === safePath ? current : safePath
+      })
+    }
+
+    const initialPath = ensureValidRoute(window.location.pathname)
     syncRoute(initialPath)
-    window.history.replaceState({ path: initialPath }, '', initialPath)
+    if (!window.history.state?.path) {
+      window.history.replaceState({ path: initialPath }, '', initialPath)
+    }
 
     const handlePopState = (event: PopStateEvent) => {
-      const nextPath = typeof event.state?.path === 'string' ? event.state.path : window.location.pathname
+      const nextPath = ensureValidRoute(
+        typeof event.state?.path === 'string' ? event.state.path : window.location.pathname
+      )
       syncRoute(nextPath)
     }
 
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
   }, [])
-
-  const navItems: Array<{ icon: LucideIcon; label: string; path: string }> = [
-    { icon: LayoutGrid, label: 'Visão geral', path: '/' },
-    { icon: MapIcon, label: 'Mapa', path: '/mapa' },
-    { icon: Route, label: 'Rotas', path: '/rotas' },
-    { icon: Bus, label: 'Veículos', path: '/veiculos' },
-    { icon: Users, label: 'Motoristas', path: '/motoristas' },
-    { icon: Building2, label: 'Empresas', path: '/empresas' },
-    { icon: ShieldCheck, label: 'Permissões', path: '/permissoes' },
-    { icon: LifeBuoy, label: 'Suporte', path: '/suporte' },
-    { icon: Bell, label: 'Alertas', path: '/alertas' },
-    { icon: FileBarChart, label: 'Relatórios', path: '/relatorios' },
-    { icon: History, label: 'Histórico', path: '/historico' },
-    { icon: Wallet2, label: 'Custos', path: '/custos' },
-  ]
 
   return (
     <div className={`min-h-screen flex flex-col overflow-hidden transition-colors duration-500 ${tokens.background}`}>
@@ -892,7 +914,7 @@ export default function AdminPremiumResponsive() {
               className={`${isMobile ? 'fixed inset-x-4 top-24 z-50 flex' : 'hidden md:flex md:w-72 md:pl-4 md:pr-6'}`}
             >
               <div className={`flex w-full flex-col gap-2 rounded-2xl p-3 ${glassClass}`}>
-                {navItems.map((item) => (
+                {adminNavItems.map((item) => (
                   <SidebarButton
                     key={item.label}
                     icon={item.icon}
