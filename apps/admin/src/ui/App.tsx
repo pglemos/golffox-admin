@@ -408,12 +408,12 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
       className={`rounded-2xl p-4 border ${glassClass} border-red-500/30 bg-red-500/10`}
     >
       <div className="flex items-center gap-3 text-red-300">
-        <AlertTriangle className="animate-pulse" /> {kpis.alertasCriticos} critical alerts require immediate action.
+        <AlertTriangle className="animate-pulse" /> {kpis.alertasCriticos} alertas críticos exigem ação imediata.
       </div>
     </motion.div>
 
     <motion.div className={`rounded-2xl p-6 transition-all ${glassClass}`} layout>
-      <div className={`font-semibold mb-2 text-lg ${tokens.quickTitle}`}>AI insights</div>
+      <div className={`font-semibold mb-2 text-lg ${tokens.quickTitle}`}>Insights de IA</div>
       <p className="text-sm leading-relaxed opacity-80">{aiSummary}</p>
     </motion.div>
   </motion.div>
@@ -630,7 +630,7 @@ export default function AdminPremiumResponsive() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
-  const [aiSummary, setAiSummary] = useState('Loading intelligent insights...')
+  const [aiSummary, setAiSummary] = useState('Carregando insights inteligentes...')
   const sb = useMemo(() => supabaseClient, [])
   const [kpis, setKpis] = useState<KPIState>({
     emTransito: 65,
@@ -676,7 +676,9 @@ export default function AdminPremiumResponsive() {
       } catch (error) {
         console.warn('[admin] AI fallback', error)
         if (active)
-          setAiSummary('Operations stable. Keep monitoring occupancy, critical routes and alerts in real time.')
+          setAiSummary(
+            'Operações estáveis. Continue monitorando a ocupação, rotas críticas e alertas em tempo real.'
+          )
       }
     })()
     return () => {
@@ -751,21 +753,21 @@ export default function AdminPremiumResponsive() {
     () => [
       {
         icon: '🟢',
-        label: 'Stable operation',
+        label: 'Operação estável',
         tone: tokens.statusChip.emerald,
-        description: `Average occupancy ${kpis.emTransito}%`,
+        description: `Ocupação média de ${kpis.emTransito}%`,
       },
       {
         icon: '🟠',
-        label: 'Monitor routes',
+        label: 'Monitorar rotas',
         tone: tokens.statusChip.amber,
-        description: 'Keep route deviation below 10%',
+        description: 'Mantenha o desvio das rotas abaixo de 10%',
       },
       {
         icon: '🔴',
-        label: 'Pending alerts',
+        label: 'Alertas pendentes',
         tone: tokens.statusChip.rose,
-        description: `${kpis.alertasCriticos} urgent tasks`,
+        description: `${kpis.alertasCriticos} tarefas urgentes`,
       },
     ],
     [kpis.alertasCriticos, kpis.emTransito, tokens]
@@ -805,7 +807,7 @@ export default function AdminPremiumResponsive() {
         exit="exit"
         className={`rounded-2xl p-6 text-center text-sm md:text-base ${glassClass}`}
       >
-        <div className="text-lg font-semibold mb-2">Coming soon</div>
+        <div className="text-lg font-semibold mb-2">Em breve</div>
         <p className="text-slate-500 dark:text-slate-400">
           Estamos preparando esta área com todo cuidado. Volte mais tarde para conferir as novidades.
         </p>
@@ -816,7 +818,7 @@ export default function AdminPremiumResponsive() {
   return (
     <div className={`min-h-screen flex flex-col overflow-hidden transition-colors duration-500 ${tokens.background}`}>
       <div className="fixed top-2 left-1/2 -translate-x-1/2 z-50 rounded-full bg-black/70 text-white px-4 py-1 text-xs tracking-wide shadow-lg">
-        Golf Fox Admin dashboard rendering…
+        Carregando painel Golf Fox Admin…
       </div>
       <motion.div className="fixed top-5 right-5 z-50 flex items-center gap-3">
         <motion.button
@@ -833,7 +835,7 @@ export default function AdminPremiumResponsive() {
           className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition ${glassClass}`}
         >
           {isLight ? <Moon size={16} /> : <Sun size={16} />}
-          {isLight ? 'Dark mode' : 'Light mode'}
+          {isLight ? 'Modo escuro' : 'Modo claro'}
         </motion.button>
       </motion.div>
 
