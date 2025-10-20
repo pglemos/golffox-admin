@@ -580,7 +580,7 @@ export default function AdminPremiumResponsive() {
     { icon: ShieldCheck, label: 'Permissions', path: '/permissions' },
     { icon: LifeBuoy, label: 'Support', path: '/support' },
     { icon: Bell, label: 'Alerts', path: '/alerts' },
-    { icon: FileBarChart, label: 'Relatórios', path: '/reports' },
+    { icon: FileBarChart, label: 'Relatórios', path: '/relatorios' },
     { icon: History, label: 'History', path: '/history' },
     { icon: Wallet2, label: 'Costs', path: '/costs' },
   ]
@@ -689,7 +689,7 @@ export default function AdminPremiumResponsive() {
                 statuses={statuses}
                 tokens={tokens}
               />
-            ) : route === '/reports' ? (
+            ) : route === '/relatorios' ? (
               <motion.div
                 key="reports"
                 variants={fadeVariants}
