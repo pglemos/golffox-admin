@@ -19,6 +19,7 @@ import {
   Menu,
   Sun,
   Moon,
+  PlusCircle,
 } from 'lucide-react'
 import {
   LineChart,
@@ -100,7 +101,7 @@ type SidebarItemProps = {
   label: string
   active: boolean
   onClick: () => void
-  tokens: typeof themeTokens.dark
+  tokens: ThemeToken
 }
 
 const SidebarButton = ({ icon: Icon, label, active, onClick, tokens }: SidebarItemProps) => (
@@ -203,6 +204,49 @@ type StatusBadge = {
   description: string
 }
 
+type StatusFilter = 'todas' | RouteStatus
+
+const statusDescriptions: Record<RouteStatus, string> = {
+  [RouteStatus.OnTime]: 'Sem desvios relevantes',
+  [RouteStatus.Delayed]: 'Acompanhamento próximo recomendado',
+  [RouteStatus.Problem]: 'Requer intervenção imediata',
+}
+
+const getStatusTone = (status: RouteStatus, isLight: boolean) => {
+  if (isLight) {
+    switch (status) {
+      case RouteStatus.OnTime:
+        return 'bg-emerald-100 text-emerald-700 border border-emerald-300'
+      case RouteStatus.Delayed:
+        return 'bg-amber-100 text-amber-700 border border-amber-300'
+      case RouteStatus.Problem:
+        return 'bg-rose-100 text-rose-700 border border-rose-300'
+    }
+  }
+
+  switch (status) {
+    case RouteStatus.OnTime:
+      return 'bg-emerald-500/20 text-emerald-100 border border-emerald-400/40'
+    case RouteStatus.Delayed:
+      return 'bg-amber-500/20 text-amber-100 border border-amber-400/40'
+    case RouteStatus.Problem:
+      return 'bg-rose-500/20 text-rose-100 border border-rose-400/40'
+    default:
+      return 'bg-slate-500/20 text-slate-100 border border-slate-400/40'
+  }
+}
+
+const formatPunctuality = (value: number) => {
+  if (value === 0) return 'No horário'
+  const minutes = Math.abs(value)
+  return value > 0 ? `Atraso de ${minutes} min` : `Adiantada ${minutes} min`
+}
+
+const getOccupancy = (route: RouteType) => {
+  if (!route.passengers.total) return 0
+  return Math.round((route.passengers.onboard / route.passengers.total) * 100)
+}
+
 type DashboardPageProps = {
   kpis: KPIState
   goto: (path: string) => void
@@ -210,7 +254,7 @@ type DashboardPageProps = {
   chartData: Array<{ hora: string; ocupacao: number }>
   glassClass: string
   statuses: StatusBadge[]
-  tokens: typeof themeTokens.dark
+  tokens: ThemeToken
 }
 
 const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses, tokens }: DashboardPageProps) => (
@@ -352,6 +396,212 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
   </motion.div>
 )
 
+type VehiclesPageProps = {
+  glassClass: string
+}
+
+const VehiclesPage = ({ glassClass }: VehiclesPageProps) => {
+  const resumoCards = [
+    {
+      titulo: 'Veículos em rota',
+      valor: 18,
+      detalhe: 'Operando em linhas prioritárias',
+      destaque: 'text-emerald-500 dark:text-emerald-300',
+    },
+    {
+      titulo: 'Disponíveis para despacho',
+      valor: 9,
+      detalhe: 'Prontos para novos itinerários',
+      destaque: 'text-blue-500 dark:text-blue-300',
+    },
+    {
+      titulo: 'Em manutenção programada',
+      valor: 3,
+      detalhe: 'Retorno previsto até 12/10',
+      destaque: 'text-amber-500 dark:text-amber-300',
+    },
+    {
+      titulo: 'Frota total monitorada',
+      valor: 30,
+      detalhe: 'Inclui reserva estratégica',
+      destaque: 'text-slate-500 dark:text-slate-300',
+    },
+  ] as const
+
+  const veiculos = [
+    {
+      id: 1,
+      placa: 'ABC-1234',
+      modelo: 'Mercedes Sprinter 415',
+      capacidade: '20 passageiros',
+      motorista: 'João Silva',
+      status: 'em_rota',
+      ultimaAtualizacao: 'Há 5 minutos',
+    },
+    {
+      id: 2,
+      placa: 'DEF-5678',
+      modelo: 'Iveco Daily 35-150',
+      capacidade: '18 passageiros',
+      motorista: 'Maria Oliveira',
+      status: 'disponivel',
+      ultimaAtualizacao: 'Há 12 minutos',
+    },
+    {
+      id: 3,
+      placa: 'GHI-7890',
+      modelo: 'Renault Master Executivo',
+      capacidade: '16 passageiros',
+      motorista: 'Carlos Souza',
+      status: 'manutencao',
+      ultimaAtualizacao: 'Na oficina desde ontem',
+    },
+    {
+      id: 4,
+      placa: 'JKL-2468',
+      modelo: 'Volkswagen 9.160 OD',
+      capacidade: '26 passageiros',
+      motorista: 'Patrícia Lima',
+      status: 'em_rota',
+      ultimaAtualizacao: 'Há 2 minutos',
+    },
+  ] as const
+
+  const statusLabel: Record<'em_rota' | 'disponivel' | 'manutencao', { texto: string; classe: string }> = {
+    em_rota: {
+      texto: 'Em rota',
+      classe:
+        'bg-emerald-500/15 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-200 border border-emerald-500/20',
+    },
+    disponivel: {
+      texto: 'Disponível',
+      classe:
+        'bg-blue-500/15 text-blue-600 dark:bg-blue-500/20 dark:text-blue-200 border border-blue-500/20',
+    },
+    manutencao: {
+      texto: 'Em manutenção',
+      classe:
+        'bg-amber-500/15 text-amber-600 dark:bg-amber-500/20 dark:text-amber-200 border border-amber-500/20',
+    },
+  }
+
+  const proximasManutencoes = [
+    {
+      titulo: 'Troca de óleo e filtros',
+      placa: 'DEF-5678',
+      data: 'Agendado para 11/10 às 08:00',
+    },
+    {
+      titulo: 'Revisão do sistema de freios',
+      placa: 'GHI-7890',
+      data: 'Agendado para 13/10 às 14:30',
+    },
+    {
+      titulo: 'Calibração de pneus',
+      placa: 'JKL-2468',
+      data: 'Agendado para 14/10 às 07:45',
+    },
+  ] as const
+
+  return (
+    <motion.div variants={fadeVariants} initial="hidden" animate="visible" exit="exit" className="space-y-8 text-left">
+      <div className={`flex flex-col gap-4 rounded-2xl p-6 md:flex-row md:items-center md:justify-between ${glassClass}`}>
+        <div>
+          <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Central de Veículos</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-300">
+            Monitoramento completo da frota corporativa, com atualização em tempo real das operações e disponibilidade.
+          </p>
+        </div>
+        <motion.button
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.96 }}
+          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition hover:bg-blue-700"
+        >
+          <PlusCircle size={18} />
+          Cadastrar novo veículo
+        </motion.button>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {resumoCards.map((card) => (
+          <motion.div
+            key={card.titulo}
+            whileHover={{ translateY: -4 }}
+            className={`rounded-2xl p-5 shadow-sm transition-shadow ${glassClass}`}
+          >
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              {card.titulo}
+            </p>
+            <div className={`mt-2 text-4xl font-bold ${card.destaque}`}>{card.valor}</div>
+            <p className="mt-3 text-sm text-slate-500 dark:text-slate-300">{card.detalhe}</p>
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
+        <div className={`overflow-hidden rounded-2xl ${glassClass}`}>
+          <div className="flex items-center justify-between border-b border-white/10 bg-white/40 px-6 py-4 backdrop-blur dark:border-slate-700/40 dark:bg-white/5">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Veículos monitorados</h3>
+            <span className="text-sm text-slate-500 dark:text-slate-400">Atualizado há 2 minutos</span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-white/10 text-sm">
+              <thead className="bg-white/30 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 backdrop-blur dark:bg-white/5 dark:text-slate-300">
+                <tr>
+                  <th className="px-6 py-3">Placa</th>
+                  <th className="px-6 py-3">Modelo</th>
+                  <th className="px-6 py-3">Capacidade</th>
+                  <th className="px-6 py-3">Motorista</th>
+                  <th className="px-6 py-3">Status</th>
+                  <th className="px-6 py-3">Última atualização</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5 dark:divide-slate-700/40">
+                {veiculos.map((veiculo) => (
+                  <tr key={veiculo.id} className="hover:bg-white/40 dark:hover:bg-white/5">
+                    <td className="px-6 py-3 font-mono text-sm text-slate-900 dark:text-slate-200">{veiculo.placa}</td>
+                    <td className="px-6 py-3 text-slate-600 dark:text-slate-300">{veiculo.modelo}</td>
+                    <td className="px-6 py-3 text-slate-600 dark:text-slate-300">{veiculo.capacidade}</td>
+                    <td className="px-6 py-3 text-slate-600 dark:text-slate-300">{veiculo.motorista}</td>
+                    <td className="px-6 py-3">
+                      <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${statusLabel[veiculo.status as keyof typeof statusLabel].classe}`}>
+                        <span className="inline-block h-2 w-2 rounded-full bg-current" />
+                        {statusLabel[veiculo.status as keyof typeof statusLabel].texto}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3 text-slate-500 dark:text-slate-400">{veiculo.ultimaAtualizacao}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className={`flex flex-col gap-4 rounded-2xl p-6 ${glassClass}`}>
+          <div>
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Próximas manutenções</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-300">
+              Cronograma preventivo para manter a disponibilidade da frota.
+            </p>
+          </div>
+          <ul className="space-y-4">
+            {proximasManutencoes.map((item) => (
+              <li key={item.placa} className="rounded-xl bg-white/60 p-4 text-sm shadow-sm backdrop-blur dark:bg-white/5">
+                <p className="font-semibold text-slate-900 dark:text-white">{item.titulo}</p>
+                <p className="text-slate-500 dark:text-slate-300">Veículo {item.placa}</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500">{item.data}</p>
+              </li>
+            ))}
+          </ul>
+          <div className="rounded-xl bg-emerald-500/15 p-4 text-sm text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-200">
+            Índice de conformidade com a manutenção preventiva em 96% este mês.
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
 export default function AdminPremiumResponsive() {
   const [route, setRoute] = useState('/')
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -369,7 +619,7 @@ export default function AdminPremiumResponsive() {
   const companies = useMemo<Company[]>(() => MOCK_COMPANIES, [])
 
   const isLight = theme === 'light'
-  const tokens = themeTokens[theme]
+  const tokens: ThemeTokens = themeTokens[theme]
   const glassClass = tokens.glass
 
   useEffect(() => {
@@ -377,6 +627,12 @@ export default function AdminPremiumResponsive() {
     handler()
     window.addEventListener('resize', handler)
     return () => window.removeEventListener('resize', handler)
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const timeout = window.setTimeout(() => setBootNoticeVisible(false), 1600)
+    return () => window.clearTimeout(timeout)
   }, [])
 
   useEffect(() => {
@@ -518,6 +774,28 @@ export default function AdminPremiumResponsive() {
     { icon: History, label: 'Histórico', path: '/history' },
     { icon: Wallet2, label: 'Custos', path: '/costs' },
   ]
+
+  const renderRouteContent = () => {
+    if (route === '/vehicles') {
+      return <VehiclesPage key="vehicles" glassClass={glassClass} />
+    }
+
+    return (
+      <motion.div
+        key={route}
+        variants={fadeVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        className={`rounded-2xl p-6 text-center text-sm md:text-base ${glassClass}`}
+      >
+        <div className="text-lg font-semibold mb-2">Em breve</div>
+        <p className="text-slate-500 dark:text-slate-400">
+          Estamos preparando esta área com todo cuidado. Volte mais tarde para conferir as novidades.
+        </p>
+      </motion.div>
+    )
+  }
 
   return (
     <div className={`min-h-screen flex flex-col overflow-hidden transition-colors duration-500 ${tokens.background}`}>
