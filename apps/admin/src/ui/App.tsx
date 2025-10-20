@@ -98,6 +98,25 @@ type PermissionArea = {
   descricao: string
 }
 
+const adminNavItems = [
+  { icon: LayoutGrid, label: 'Visão geral', path: '/' },
+  { icon: MapIcon, label: 'Mapa', path: '/mapa' },
+  { icon: Route, label: 'Rotas', path: '/rotas' },
+  { icon: Bus, label: 'Veículos', path: '/veiculos' },
+  { icon: Users, label: 'Motoristas', path: '/motoristas' },
+  { icon: Building2, label: 'Empresas', path: '/empresas' },
+  { icon: ShieldCheck, label: 'Permissões', path: '/permissoes' },
+  { icon: LifeBuoy, label: 'Suporte', path: '/suporte' },
+  { icon: Bell, label: 'Alertas', path: '/alertas' },
+  { icon: FileBarChart, label: 'Relatórios', path: '/relatorios' },
+  { icon: History, label: 'Histórico', path: '/historico' },
+  { icon: Wallet2, label: 'Custos', path: '/custos' },
+] as const
+
+type AdminRoute = (typeof adminNavItems)[number]['path'] | '/configuracoes'
+
+const isValidAdminRoute = (path: string | null | undefined): path is AdminRoute =>
+  path === '/configuracoes' || adminNavItems.some((item) => item.path === path)
 
 type SidebarItemProps = {
   icon: LucideIcon
@@ -545,13 +564,37 @@ type QuickActionProps = {
     ].slice(0, 25))
   }
 
-  const openCreateModal = () => {
-    setModalState({ aberto: true, modo: 'criar' })
-    setEditingId(null)
-    setFormState({ nome: '', descricao: '', responsavel: '' })
-    setTempPermissions([])
-    setFormError(null)
-  }
+type HistoryRegistro = {
+  id: string
+  titulo: string
+  descricao: string
+  horario: string
+  categoria: 'rota' | 'alerta' | 'exportacao'
+  destaque?: string
+}
+
+type HistoryResumo = {
+  icon: LucideIcon
+  titulo: string
+  valor: number
+  sub: string
+  tone?: string
+}
+
+type HistoryPageProps = {
+  glassClass: string
+  tokens: typeof themeTokens.dark
+}
+
+type DashboardPageProps = {
+  kpis: KPIState
+  goto: (path: AdminRoute) => void
+  aiSummary: string
+  chartData: Array<{ hora: string; ocupacao: number }>
+  glassClass: string
+  statuses: StatusBadge[]
+  tokens: typeof themeTokens.dark
+}
 
 const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses, tokens }: DashboardPageProps) => (
   <motion.div variants={fadeVariants} initial="hidden" animate="visible" exit="exit" className="space-y-8">
@@ -560,7 +603,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
         icon={Users}
         title="Passageiros em trânsito"
         value={kpis.emTransito}
-        sub="+12% em relação a ontem"
+        sub="+12% versus ontem"
         tone={brand.success}
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
@@ -569,7 +612,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
         icon={Bus}
         title="Veículos ativos"
         value={kpis.veiculosAtivos}
-        sub={`${kpis.veiculosAtivos}/${kpis.veiculosTotais} em operação agora`}
+        sub={`${kpis.veiculosAtivos}/${kpis.veiculosTotais} operando agora`}
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
       />
@@ -577,7 +620,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
         icon={Route}
         title="Rotas hoje"
         value={kpis.rotasDia}
-        sub="+3 em relação ao planejado"
+        sub="+3 versus o plano"
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
       />
@@ -594,7 +637,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
 
     <motion.div className={`rounded-2xl p-6 transition-all ${glassClass}`} layout>
       <div className={`font-semibold mb-4 text-lg flex items-center gap-2 ${tokens.quickTitle}`}>
-        <Route size={16} /> Ocupação por horário
+        <Route size={16} /> Ocupação por hora
       </div>
       <ResponsiveContainer width="100%" height={260}>
         <LineChart data={chartData} margin={{ top: 12, left: 6, right: 12, bottom: 0 }}>
@@ -645,8 +688,8 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
       <div className="flex overflow-x-auto md:grid md:grid-cols-3 gap-6 pb-2 md:pb-0 snap-x snap-mandatory [-webkit-overflow-scrolling:touch]">
         <QuickAction
           title="Acompanhar veículos"
-          description="Mapa ao vivo com geolocalização em tempo real"
-          onClick={() => goto('/map')}
+          description="Mapa ao vivo com geolocalização em segundos"
+          onClick={() => goto('/mapa')}
           icon={MapIcon}
           glassClass={glassClass}
           titleClass={tokens.quickTitle}
@@ -654,8 +697,8 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
         />
         <QuickAction
           title="Ver análises"
-          description="Dashboards por rota, frota e ocupação"
-          onClick={() => goto('/reports')}
+          description="Painéis por rota, frota e ocupação"
+          onClick={() => goto('/relatorios')}
           tone={brand.accent}
           icon={FileBarChart}
           glassClass={glassClass}
@@ -663,9 +706,9 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
           descriptionClass={tokens.quickDescription}
         />
         <QuickAction
-          title="Configurações e marca"
-          description="Notificações, tema e integrações preferidas"
-          onClick={() => goto('/settings')}
+          title="Configuração e branding"
+          description="Notificações, tema e integrações"
+          onClick={() => goto('/configuracoes')}
           tone="#94a3b8"
           icon={Settings}
           glassClass={glassClass}
@@ -692,8 +735,193 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
   </motion.div>
 )
 
+const HistoryPage = ({ glassClass, tokens }: HistoryPageProps) => {
+  const resumos: HistoryResumo[] = [
+    {
+      icon: Route,
+      titulo: 'Rotas finalizadas',
+      valor: 128,
+      sub: '+18% vs. mês anterior',
+      tone: brand.primary,
+    },
+    {
+      icon: Users,
+      titulo: 'Passageiros transportados',
+      valor: 3124,
+      sub: '+246 nesta semana',
+      tone: brand.accent,
+    },
+    {
+      icon: FileBarChart,
+      titulo: 'Relatórios exportados',
+      valor: 42,
+      sub: 'Última exportação há 2h',
+      tone: brand.success,
+    },
+    {
+      icon: AlertTriangle,
+      titulo: 'Ocorrências registradas',
+      valor: 6,
+      sub: '3 resolvidas nas últimas 24h',
+      tone: '#f97316',
+    },
+  ]
+
+  const registros: HistoryRegistro[] = [
+    {
+      id: 'rot-9821',
+      titulo: 'Rota 12 concluída sem atrasos',
+      descricao: 'Linha Centro ↔️ Aeroporto finalizada com ocupação média de 84%.',
+      horario: '09:45',
+      categoria: 'rota',
+      destaque: '+15 min de antecipação',
+    },
+    {
+      id: 'exp-4410',
+      titulo: 'Exportação de relatório de performance',
+      descricao: 'Arquivo .xlsx enviado para ana.lima@golffox.com.',
+      horario: '08:57',
+      categoria: 'exportacao',
+      destaque: 'Formato Excel',
+    },
+    {
+      id: 'rot-9810',
+      titulo: 'Atualização de trajeto no período da tarde',
+      descricao: 'Rotas 8 e 9 ajustadas automaticamente após trânsito intenso.',
+      horario: '07:32',
+      categoria: 'rota',
+    },
+    {
+      id: 'ale-207',
+      titulo: 'Alerta crítico resolvido',
+      descricao: 'Equipe de resgate encerrou ocorrência de pneu furado na Rota 5.',
+      horario: '06:18',
+      categoria: 'alerta',
+      destaque: 'Tempo de resposta: 11 min',
+    },
+  ]
+
+  const exportacoes: Array<{
+    id: string
+    responsavel: string
+    formato: string
+    periodo: string
+    horario: string
+  }> = [
+    { id: 'exp-4410', responsavel: 'Ana Lima', formato: 'Excel (.xlsx)', periodo: 'Semana atual', horario: '08:57' },
+    { id: 'exp-4378', responsavel: 'Bruno Rocha', formato: 'PDF', periodo: 'Rotas críticas', horario: 'Ontem • 19:12' },
+    { id: 'exp-4302', responsavel: 'Equipe BI', formato: 'CSV', periodo: 'Histórico mensal', horario: 'Ontem • 08:05' },
+  ]
+
+  const badgePorCategoria: Record<HistoryRegistro['categoria'], { icon: string; classe: string; texto: string }> = {
+    rota: {
+      icon: '🛣️',
+      classe: 'bg-blue-500/10 border border-blue-400/30 text-blue-100',
+      texto: 'Atualização de rota',
+    },
+    alerta: {
+      icon: '⚠️',
+      classe: 'bg-amber-500/15 border border-amber-400/30 text-amber-100',
+      texto: 'Alerta operacional',
+    },
+    exportacao: {
+      icon: '📤',
+      classe: 'bg-emerald-500/10 border border-emerald-400/30 text-emerald-100',
+      texto: 'Exportação concluída',
+    },
+  }
+
+  return (
+    <motion.div variants={fadeVariants} initial="hidden" animate="visible" exit="exit" className="space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="text-left">
+          <h1 className={`text-2xl font-semibold ${tokens.quickTitle}`}>Histórico operacional</h1>
+          <p className={`text-sm opacity-80 ${tokens.quickDescription}`}>
+            Acompanhe eventos recentes, exportações de relatórios e indicadores consolidados da operação.
+          </p>
+        </div>
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.96 }}
+          className={`px-4 py-2 rounded-full border text-sm font-medium transition ${glassClass}`}
+        >
+          Baixar resumo diário
+        </motion.button>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+        {resumos.map((item) => (
+          <MetricCard
+            key={item.titulo}
+            icon={item.icon}
+            title={item.titulo}
+            value={item.valor}
+            sub={item.sub}
+            tone={item.tone}
+            glassClass={glassClass}
+            titleClass={tokens.quickTitle}
+          />
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+        <motion.div className={`rounded-2xl p-6 transition-all xl:col-span-3 ${glassClass}`} layout>
+          <div className={`flex items-center justify-between mb-4 ${tokens.quickTitle}`}>
+            <span className="font-semibold text-lg">Linha do tempo</span>
+            <span className="text-xs opacity-75">Atualizado há 3 minutos</span>
+          </div>
+
+          <div className="space-y-5">
+            {registros.map((registro) => {
+              const badge = badgePorCategoria[registro.categoria]
+              return (
+                <motion.div
+                  key={registro.id}
+                  whileHover={{ scale: 1.01, translateX: 6 }}
+                  className="rounded-2xl border border-white/10 bg-white/5 p-4 flex flex-col gap-2"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs tracking-wide uppercase opacity-70">{registro.horario}</span>
+                    <span className={`text-[11px] font-medium px-3 py-1 rounded-full flex items-center gap-2 ${badge.classe}`}>
+                      <span>{badge.icon}</span>
+                      {badge.texto}
+                    </span>
+                  </div>
+                  <div className={`text-base font-semibold ${tokens.quickTitle}`}>{registro.titulo}</div>
+                  <p className={`text-sm leading-relaxed opacity-80 ${tokens.quickDescription}`}>{registro.descricao}</p>
+                  {registro.destaque ? (
+                    <span className="text-xs font-medium text-emerald-300">{registro.destaque}</span>
+                  ) : null}
+                </motion.div>
+              )
+            })}
+          </div>
+        </motion.div>
+
+        <motion.div className={`rounded-2xl p-6 transition-all xl:col-span-2 ${glassClass}`} layout>
+          <div className={`font-semibold text-lg mb-4 ${tokens.quickTitle}`}>Exportações recentes</div>
+          <div className="space-y-4">
+            {exportacoes.map((exp) => (
+              <div key={exp.id} className="rounded-xl border border-white/10 bg-white/5 p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold">{exp.formato}</span>
+                  <span className="text-xs opacity-70">{exp.horario}</span>
+                </div>
+                <div className="mt-2 text-sm opacity-80">
+                  Responsável: <span className="font-medium">{exp.responsavel}</span>
+                </div>
+                <div className="text-xs opacity-70">Período: {exp.periodo}</div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
+  )
+}
+
 export default function AdminPremiumResponsive() {
-  const [route, setRoute] = useState('/')
+  const [route, setRoute] = useState<AdminRoute>('/')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
@@ -733,7 +961,9 @@ export default function AdminPremiumResponsive() {
       } catch (error) {
         console.warn('[admin] AI fallback', error)
         if (active)
-          setAiSummary('Operações estáveis. Continue monitorando a ocupação, rotas críticas e alertas em tempo real.')
+          setAiSummary(
+            'Operação estável. Continue monitorando ocupação, rotas críticas e alertas em tempo real.'
+          )
       }
     })()
     return () => {
@@ -847,7 +1077,7 @@ export default function AdminPremiumResponsive() {
         icon: '🟢',
         label: 'Operação estável',
         tone: tokens.statusChip.emerald,
-        description: `Ocupação média de ${kpis.emTransito}%`,
+        description: `Ocupação média ${kpis.emTransito}%`,
       },
       {
         icon: '🟠',
@@ -866,18 +1096,55 @@ export default function AdminPremiumResponsive() {
   )
 }
 
-const App = () => {
-  const [activeView, setActiveView] = useState<ActiveView>('permissions')
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const goto = (path: AdminRoute) => {
+    if (route === path) {
+      if (isMobile) setSidebarOpen(false)
+      return
+    }
 
-  const navItems = NAV_ITEMS
-  const fallbackLabel =
-    navItems.find((item) => item.path === route)?.label ?? EXTRA_ROUTE_LABELS[route] ?? route
+    setRoute(path)
+    if (typeof window !== 'undefined') {
+      window.history.pushState({ path }, '', path)
+    }
+    if (isMobile) setSidebarOpen(false)
+  }
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const ensureValidRoute = (path: string | null | undefined): AdminRoute => {
+      if (isValidAdminRoute(path)) return path
+      return '/'
+    }
+
+    const syncRoute = (nextPath?: string | null) => {
+      setRoute((current) => {
+        const safePath = ensureValidRoute(nextPath)
+        return current === safePath ? current : safePath
+      })
+    }
+
+    const initialPath = ensureValidRoute(window.location.pathname)
+    syncRoute(initialPath)
+    if (!window.history.state?.path) {
+      window.history.replaceState({ path: initialPath }, '', initialPath)
+    }
+
+    const handlePopState = (event: PopStateEvent) => {
+      const nextPath = ensureValidRoute(
+        typeof event.state?.path === 'string' ? event.state.path : window.location.pathname
+      )
+      syncRoute(nextPath)
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
 
   return (
     <div className={`min-h-screen flex flex-col overflow-hidden transition-colors duration-500 ${tokens.background}`}>
       <div className="fixed top-2 left-1/2 -translate-x-1/2 z-50 rounded-full bg-black/70 text-white px-4 py-1 text-xs tracking-wide shadow-lg">
-        Carregando painel Golf Fox Admin…
+        Painel Golf Fox carregando…
       </div>
       <motion.div className="fixed top-5 right-5 z-50 flex items-center gap-3">
         <motion.button
@@ -990,14 +1257,29 @@ const App = () => {
             </button>
           </header>
 
-          {activeView === 'permissions' ? (
-            <PermissionsWorkspace isLight={isLight} />
-          ) : activeView === 'overview' ? (
-            <PlaceholderView titulo="Visão geral do ecossistema Golffox" />
-          ) : activeView === 'rotas' ? (
-            <PlaceholderView titulo="Monitoramento de rotas" />
-          ) : (
-            <PlaceholderView titulo="Gestão de empresas" />
+        <AnimatePresence>
+          {(!isMobile || sidebarOpen) && (
+            <motion.aside
+              key="sidebar"
+              initial={{ x: -110, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -120, opacity: 0 }}
+              transition={{ duration: 0.35, ease: 'easeOut' }}
+              className={`${isMobile ? 'fixed inset-x-4 top-24 z-50 flex' : 'hidden md:flex md:w-72 md:pl-4 md:pr-6'}`}
+            >
+              <div className={`flex w-full flex-col gap-2 rounded-2xl p-3 ${glassClass}`}>
+                {adminNavItems.map((item) => (
+                  <SidebarButton
+                    key={item.label}
+                    icon={item.icon}
+                    label={item.label}
+                    active={route === item.path}
+                    onClick={() => goto(item.path)}
+                    tokens={tokens}
+                  />
+                ))}
+              </div>
+            </motion.aside>
           )}
         </AnimatePresence>
 
@@ -1014,8 +1296,8 @@ const App = () => {
                 statuses={statuses}
                 tokens={tokens}
               />
-            ) : route === '/costs' ? (
-              <CostsPage key="costs" glassClass={glassClass} tokens={tokens} />
+            ) : route === '/historico' ? (
+              <HistoryPage key="history" glassClass={glassClass} tokens={tokens} />
             ) : (
               <motion.div
                 key={route}
@@ -1026,7 +1308,7 @@ const App = () => {
                 className={`rounded-2xl p-6 text-center text-sm md:text-base ${glassClass}`}
               >
                 <div className="text-lg font-semibold mb-2">Em breve</div>
-                A página {fallbackLabel} está em desenvolvimento.
+                A página {route} está em desenvolvimento.
               </motion.div>
             )}
           </AnimatePresence>
