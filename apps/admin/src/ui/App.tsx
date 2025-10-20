@@ -16,7 +16,6 @@ import {
   Wallet2,
   Settings,
   AlertTriangle,
-  ChevronRight,
   Menu,
   Sun,
   Moon,
@@ -35,7 +34,7 @@ import { aiSuggest } from '../lib/aiClient'
 import { brand } from '../theme'
 import { MetricCard } from './components/MetricCard'
 import { DriversPage } from './pages/DriversPage'
-import { fadeVariants, themeTokens, type ThemeToken } from './themeTokens'
+import { fadeVariants, themeTokens, type ThemeMode, type ThemeToken } from './themeTokens'
 
 
 type SidebarItemProps = {
@@ -298,7 +297,7 @@ export default function AdminPremiumResponsive() {
   const [route, setRoute] = useState('/')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
+  const [theme, setTheme] = useState<ThemeMode>('dark')
   const [aiSummary, setAiSummary] = useState('Carregando insights inteligentes...')
   const sb = useMemo(() => supabaseClient, [])
   const [kpis, setKpis] = useState<KPIState>({
