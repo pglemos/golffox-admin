@@ -382,7 +382,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
         <QuickAction
           title="Ver análises"
           description="Dashboards por rota, frota e ocupação"
-          onClick={() => goto('/relatorios')}
+          onClick={() => goto('/reports')}
           tone={brand.accent}
           icon={FileBarChart}
           glassClass={glassClass}
@@ -631,6 +631,7 @@ export default function AdminPremiumResponsive() {
   const [isMobile, setIsMobile] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [aiSummary, setAiSummary] = useState('Carregando insights inteligentes...')
+  const [bootNoticeVisible, setBootNoticeVisible] = useState(true)
   const sb = useMemo(() => supabaseClient, [])
   const [kpis, setKpis] = useState<KPIState>({
     emTransito: 65,
@@ -649,6 +650,12 @@ export default function AdminPremiumResponsive() {
     handler()
     window.addEventListener('resize', handler)
     return () => window.removeEventListener('resize', handler)
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const timeout = window.setTimeout(() => setBootNoticeVisible(false), 1600)
+    return () => window.clearTimeout(timeout)
   }, [])
 
   useEffect(() => {
@@ -817,9 +824,11 @@ export default function AdminPremiumResponsive() {
 
   return (
     <div className={`min-h-screen flex flex-col overflow-hidden transition-colors duration-500 ${tokens.background}`}>
-      <div className="fixed top-2 left-1/2 -translate-x-1/2 z-50 rounded-full bg-black/70 text-white px-4 py-1 text-xs tracking-wide shadow-lg">
-        Carregando painel Golf Fox Admin…
-      </div>
+      {bootNoticeVisible ? (
+        <div className="fixed top-2 left-1/2 -translate-x-1/2 z-50 rounded-full bg-black/70 text-white px-4 py-1 text-xs tracking-wide shadow-lg">
+          Carregando painel Golf Fox Admin…
+        </div>
+      ) : null}
       <motion.div className="fixed top-5 right-5 z-50 flex items-center gap-3">
         <motion.button
           whileHover={{ rotate: 25, scale: 1.08 }}
