@@ -20,6 +20,12 @@ import {
   Menu,
   Sun,
   Moon,
+  Edit3,
+  Lock,
+  Plus,
+  Shield,
+  UserCheck,
+  UserCog,
 } from 'lucide-react'
 import {
   LineChart,
@@ -89,6 +95,121 @@ const fadeVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: 'easeOut' } },
   exit: { opacity: 0, y: -18, transition: { duration: 0.35, ease: 'easeIn' } },
 }
+
+type PermissionArea = {
+  id: string
+  titulo: string
+  descricao: string
+  destaque?: boolean
+}
+
+type PermissionProfile = {
+  id: string
+  nome: string
+  descricao: string
+  permissoes: string[]
+  ultimaAtualizacao: string
+  responsavel: string
+  bloqueado?: boolean
+}
+
+type ActivityLog = {
+  id: number
+  perfil: string
+  acao: string
+  horario: string
+  responsavel: string
+}
+
+const PERMISSION_AREAS: PermissionArea[] = [
+  {
+    id: 'dashboard_full',
+    titulo: 'Painel de Gestão Completo',
+    descricao: 'Todos os módulos administrativos com permissão de edição e configuração.',
+    destaque: true,
+  },
+  {
+    id: 'dashboard_view',
+    titulo: 'Painel de Gestão (Visualização)',
+    descricao: 'Indicadores e rotas em modo somente leitura para acompanhamento diário.',
+  },
+  {
+    id: 'operational_tools',
+    titulo: 'Ferramentas Operacionais',
+    descricao: 'Gestão de rotas, veículos, motoristas e atendimento a ocorrências.',
+  },
+  {
+    id: 'alerts_center',
+    titulo: 'Central de Alertas',
+    descricao: 'Monitoramento e resposta a alertas críticos e SLA de atendimento.',
+  },
+  {
+    id: 'reports_finance',
+    titulo: 'Relatórios e Custos',
+    descricao: 'Emissão de relatórios financeiros, auditoria de viagens e contratos.',
+  },
+]
+
+const INITIAL_PERMISSION_PROFILES: PermissionProfile[] = [
+  {
+    id: 'admin',
+    nome: 'Administrador',
+    descricao: 'Acesso completo ao ambiente Golffox, incluindo políticas de segurança e integrações.',
+    permissoes: PERMISSION_AREAS.map((area) => area.id),
+    ultimaAtualizacao: '15/07/2024 09:40',
+    responsavel: 'Carla Ribeiro',
+    bloqueado: true,
+  },
+  {
+    id: 'operations',
+    nome: 'Operações',
+    descricao: 'Monitora rotas em tempo real, aloca veículos e acompanha a equipe de motoristas.',
+    permissoes: ['dashboard_view', 'operational_tools', 'alerts_center'],
+    ultimaAtualizacao: '12/07/2024 18:20',
+    responsavel: 'Roberto Lima',
+  },
+  {
+    id: 'finance',
+    nome: 'Financeiro',
+    descricao: 'Analisa custos, gera relatórios de faturamento e acompanha metas contratuais.',
+    permissoes: ['dashboard_view', 'reports_finance'],
+    ultimaAtualizacao: '10/07/2024 14:05',
+    responsavel: 'Marina Alves',
+  },
+]
+
+const INITIAL_ACTIVITY_LOG: ActivityLog[] = [
+  {
+    id: 1,
+    perfil: 'Operações',
+    acao: 'Permissões revisadas para incluir acesso à Central de Alertas.',
+    horario: 'Hoje • 08:32',
+    responsavel: 'Ana Souza',
+  },
+  {
+    id: 2,
+    perfil: 'Financeiro',
+    acao: 'Exportou relatório mensal de custos e ajustou limites de aprovação.',
+    horario: 'Ontem • 19:15',
+    responsavel: 'Marina Alves',
+  },
+  {
+    id: 3,
+    perfil: 'Administrador',
+    acao: 'Atualizou política de auditoria e reforçou autenticação em duas etapas.',
+    horario: '09/07 • 09:50',
+    responsavel: 'Carla Ribeiro',
+  },
+]
+
+const formatDateTime = () =>
+  new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date())
 
 type SidebarItemProps = {
   icon: LucideIcon
@@ -196,6 +317,444 @@ const MetricCard = ({
           <Icon size={22} color={tone} />
         </motion.div>
       </div>
+    </motion.div>
+  )
+}
+
+const PermissionsPage = ({
+  glassClass,
+  isLight,
+}: {
+  glassClass: string
+  isLight: boolean
+}) => {
+  const [profiles, setProfiles] = useState<PermissionProfile[]>(() => INITIAL_PERMISSION_PROFILES)
+  const [selectedProfileId, setSelectedProfileId] = useState<string>(() => INITIAL_PERMISSION_PROFILES[0]?.id ?? '')
+  const [activityLog, setActivityLog] = useState<ActivityLog[]>(() => INITIAL_ACTIVITY_LOG)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingProfile, setEditingProfile] = useState<PermissionProfile | null>(null)
+  const [tempPermissions, setTempPermissions] = useState<string[]>([])
+
+  const areaMap = useMemo(() => {
+    const map: Record<string, PermissionArea> = {}
+    PERMISSION_AREAS.forEach((area) => {
+      map[area.id] = area
+    })
+    return map
+  }, [])
+
+  useEffect(() => {
+    if (profiles.length === 0) {
+      setSelectedProfileId('')
+      return
+    }
+    const exists = profiles.some((profile) => profile.id === selectedProfileId)
+    if (!exists) {
+      setSelectedProfileId(profiles[0].id)
+    }
+  }, [profiles, selectedProfileId])
+
+  const selectedProfile = useMemo(
+    () => profiles.find((profile) => profile.id === selectedProfileId) ?? profiles[0] ?? null,
+    [profiles, selectedProfileId],
+  )
+
+  const textMuted = isLight ? 'text-slate-600' : 'text-slate-300/80'
+  const textStrong = isLight ? 'text-slate-900' : 'text-white'
+  const chipClass = isLight
+    ? 'bg-blue-500/10 text-blue-700 border border-blue-500/20'
+    : 'bg-blue-500/20 text-blue-100 border border-blue-400/30'
+  const subCardClass = isLight
+    ? 'bg-white/80 border-slate-200/70 text-slate-700'
+    : 'bg-white/5 border-white/10 text-slate-200'
+
+  const handleOpenEdit = (profile: PermissionProfile) => {
+    setEditingProfile(profile)
+    setTempPermissions(profile.permissoes)
+    setIsModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setEditingProfile(null)
+    setTempPermissions([])
+  }
+
+  const togglePermission = (areaId: string) => {
+    setTempPermissions((prev) =>
+      prev.includes(areaId) ? prev.filter((permission) => permission !== areaId) : [...prev, areaId],
+    )
+  }
+
+  const addActivityEntry = (perfil: string, acao: string, horario: string) => {
+    setActivityLog((prev) => [
+      { id: Date.now(), perfil, acao, horario, responsavel: 'Você' },
+      ...prev,
+    ].slice(0, 6))
+  }
+
+  const handleSavePermissions = () => {
+    if (!editingProfile) return
+
+    const horario = formatDateTime()
+
+    setProfiles((prev) =>
+      prev.map((profile) =>
+        profile.id === editingProfile.id
+          ? {
+              ...profile,
+              permissoes: [...tempPermissions],
+              ultimaAtualizacao: horario,
+              responsavel: 'Você',
+            }
+          : profile,
+      ),
+    )
+
+    setSelectedProfileId(editingProfile.id)
+    addActivityEntry(editingProfile.nome, `Permissões atualizadas (${tempPermissions.length} áreas)`, horario)
+    handleCloseModal()
+  }
+
+  const handleCreateProfile = () => {
+    const horario = formatDateTime()
+    const novoPerfil: PermissionProfile = {
+      id: `perfil-${Date.now()}`,
+      nome: `Perfil personalizado ${profiles.length + 1}`,
+      descricao: 'Defina uma descrição personalizada para este perfil de acesso.',
+      permissoes: ['dashboard_view'],
+      ultimaAtualizacao: horario,
+      responsavel: 'Você',
+    }
+
+    setProfiles((prev) => [novoPerfil, ...prev])
+    setSelectedProfileId(novoPerfil.id)
+    addActivityEntry(novoPerfil.nome, 'Perfil criado com permissões iniciais.', horario)
+    setEditingProfile(novoPerfil)
+    setTempPermissions(novoPerfil.permissoes)
+    setIsModalOpen(true)
+  }
+
+  return (
+    <motion.div variants={fadeVariants} initial="hidden" animate="visible" exit="exit" className="space-y-6">
+      <div className={`rounded-2xl p-6 ${glassClass} ${textStrong}`}>
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div>
+            <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-blue-400">
+              <Shield size={16} />
+              Governança de acesso
+            </div>
+            <h1 className="mt-2 text-2xl font-semibold">Permissões e perfis de uso</h1>
+            <p className={`mt-2 text-sm ${textMuted}`}>
+              Controle centralizado dos perfis habilitados no ambiente Golffox. Ajuste áreas liberadas e acompanhe o histórico de
+              alterações em tempo real.
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <button
+              type="button"
+              onClick={handleCreateProfile}
+              className={`flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                isLight
+                  ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-[0_14px_30px_rgba(37,99,235,0.28)]'
+                  : 'bg-blue-500/90 text-white hover:bg-blue-400 shadow-[0_14px_28px_rgba(59,130,246,0.35)]'
+              }`}
+            >
+              <Plus size={16} />
+              Novo perfil
+            </button>
+            {selectedProfile ? (
+              <button
+                type="button"
+                onClick={() => handleOpenEdit(selectedProfile)}
+                disabled={selectedProfile.bloqueado}
+                className={`flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                  selectedProfile.bloqueado
+                    ? 'cursor-not-allowed bg-slate-500/40 text-slate-200/60'
+                    : isLight
+                    ? 'border border-blue-500/30 bg-white/80 text-blue-700 hover:border-blue-500 hover:text-blue-800'
+                    : 'border border-white/10 bg-white/5 text-white hover:border-blue-400/60'
+                }`}
+              >
+                {selectedProfile.bloqueado ? <Lock size={16} /> : <Edit3 size={16} />}
+                {selectedProfile.bloqueado ? 'Perfil protegido' : 'Editar permissões'}
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2 space-y-6">
+          <div className={`rounded-2xl p-6 ${glassClass} ${textStrong}`}>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold">Perfis configurados</h2>
+                <p className={`mt-1 text-sm ${textMuted}`}>
+                  Escolha um perfil para visualizar as permissões ativas e os responsáveis pela última atualização.
+                </p>
+              </div>
+              <div className={`flex items-center gap-2 text-xs font-semibold ${textMuted}`}>
+                <UserCheck size={16} />
+                {profiles.length} perfis ativos
+              </div>
+            </div>
+
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {profiles.map((profile) => {
+                const isActive = profile.id === selectedProfile?.id
+                return (
+                  <button
+                    key={profile.id}
+                    type="button"
+                    onClick={() => setSelectedProfileId(profile.id)}
+                    className={`relative rounded-2xl p-4 text-left transition-all ${glassClass} ${
+                      isActive
+                        ? 'ring-2 ring-blue-500 shadow-[0_0_22px_rgba(59,130,246,0.35)]'
+                        : 'opacity-80 hover:opacity-100'
+                    } ${textStrong}`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="text-lg font-semibold">{profile.nome}</h3>
+                        <p className={`mt-1 text-xs ${textMuted}`}>{profile.descricao}</p>
+                      </div>
+                      {profile.bloqueado ? <Lock size={18} className="text-blue-300" /> : <UserCog size={18} className="text-blue-300" />}
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {profile.permissoes.slice(0, 3).map((permission) => (
+                        <span key={permission} className={`rounded-full px-3 py-1 text-[11px] font-medium ${chipClass}`}>
+                          {areaMap[permission]?.titulo ?? permission}
+                        </span>
+                      ))}
+                      {profile.permissoes.length > 3 ? (
+                        <span className={`rounded-full px-3 py-1 text-[11px] font-medium ${chipClass}`}>
+                          +{profile.permissoes.length - 3}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className={`mt-4 text-[11px] ${textMuted}`}>
+                      Atualizado em {profile.ultimaAtualizacao} · {profile.responsavel}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <div className={`rounded-2xl p-6 ${glassClass} ${textStrong}`}>
+            {selectedProfile ? (
+              <>
+                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                  <div>
+                    <h2 className="text-xl font-semibold">{selectedProfile.nome}</h2>
+                    <p className={`mt-2 text-sm ${textMuted}`}>{selectedProfile.descricao}</p>
+                  </div>
+                  <div className="flex flex-col gap-2 text-sm">
+                    <div className={`rounded-xl border px-3 py-2 ${subCardClass}`}>
+                      <div className="text-xs uppercase tracking-wide opacity-80">Última atualização</div>
+                      <div className="mt-1 font-semibold">{selectedProfile.ultimaAtualizacao}</div>
+                    </div>
+                    <div className={`rounded-xl border px-3 py-2 ${subCardClass}`}>
+                      <div className="text-xs uppercase tracking-wide opacity-80">Responsável</div>
+                      <div className="mt-1 font-semibold">{selectedProfile.responsavel}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <ShieldCheck size={18} />
+                    Áreas liberadas
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {selectedProfile.permissoes.length > 0 ? (
+                      selectedProfile.permissoes.map((permission) => (
+                        <span key={permission} className={`rounded-full px-3 py-1 text-xs font-medium ${chipClass}`}>
+                          {areaMap[permission]?.titulo ?? permission}
+                        </span>
+                      ))
+                    ) : (
+                      <span className={`text-sm ${textMuted}`}>Nenhuma área selecionada para este perfil.</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mt-6 grid gap-4 lg:grid-cols-2">
+                  <div className={`rounded-2xl border p-5 ${subCardClass}`}>
+                    <div className="flex items-center gap-2 text-sm font-semibold">
+                      <Settings size={16} />
+                      Regras principais
+                    </div>
+                    <ul className={`mt-3 space-y-2 text-sm ${textMuted}`}>
+                      <li>• Permissões aplicadas imediatamente após salvar alterações.</li>
+                      <li>• Alterações são registradas para auditoria e conformidade.</li>
+                      <li>• Notificações são enviadas para os responsáveis do perfil.</li>
+                    </ul>
+                  </div>
+                  <div className={`rounded-2xl border p-5 ${subCardClass}`}>
+                    <div className="flex items-center gap-2 text-sm font-semibold">
+                      <AlertTriangle size={16} />
+                      Recomendações de segurança
+                    </div>
+                    <ul className={`mt-3 space-y-2 text-sm ${textMuted}`}>
+                      <li>• Utilize autenticação em duas etapas para perfis críticos.</li>
+                      <li>• Revise permissões de perfis inativos a cada trimestre.</li>
+                      <li>• Limite acessos de edição apenas a gestores autorizados.</li>
+                    </ul>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className={`text-sm ${textMuted}`}>Selecione um perfil para visualizar as permissões configuradas.</div>
+            )}
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <div className={`rounded-2xl p-6 ${glassClass} ${textStrong}`}>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Áreas do sistema</h3>
+              <div className={`text-xs ${textMuted}`}>{PERMISSION_AREAS.length} áreas monitoradas</div>
+            </div>
+            <div className="mt-4 space-y-4">
+              {PERMISSION_AREAS.map((area) => {
+                const totalPerfis = profiles.filter((profile) => profile.permissoes.includes(area.id)).length
+                return (
+                  <div
+                    key={area.id}
+                    className={`rounded-2xl border p-4 transition ${
+                      area.destaque
+                        ? isLight
+                          ? 'border-blue-400/40 bg-blue-100/40'
+                          : 'border-blue-400/40 bg-blue-500/10'
+                        : subCardClass
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="text-sm font-semibold">{area.titulo}</div>
+                        <p className={`mt-1 text-xs ${textMuted}`}>{area.descricao}</p>
+                      </div>
+                      <span className={`rounded-full px-3 py-1 text-[11px] font-semibold ${chipClass}`}>
+                        {totalPerfis} perfis
+                      </span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          <div className={`rounded-2xl p-6 ${glassClass} ${textStrong}`}>
+            <div className="flex items-center gap-2 text-sm font-semibold">
+              <ChevronRight size={16} />
+              Atividades recentes
+            </div>
+            <ul className="mt-4 space-y-3 text-sm">
+              {activityLog.map((entry) => (
+                <li key={entry.id} className={`rounded-2xl border p-4 ${subCardClass}`}>
+                  <div className="flex items-center justify-between text-sm font-semibold">
+                    <span>{entry.perfil}</span>
+                    <span className={textMuted}>{entry.horario}</span>
+                  </div>
+                  <p className={`mt-2 text-sm leading-relaxed ${textMuted}`}>{entry.acao}</p>
+                  <div className={`mt-3 text-xs ${textMuted}`}>Responsável: {entry.responsavel}</div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {isModalOpen && editingProfile ? (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className={`w-full max-w-lg rounded-2xl p-6 ${glassClass} ${textStrong}`}
+            >
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="text-xs uppercase tracking-wide text-blue-400">Editar permissões</div>
+                  <h3 className="mt-1 text-xl font-semibold">{editingProfile.nome}</h3>
+                  <p className={`mt-2 text-sm ${textMuted}`}>
+                    Selecione as áreas que este perfil poderá acessar. As alterações são aplicadas imediatamente.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className={`rounded-full p-2 transition ${
+                    isLight ? 'hover:bg-slate-200/70 text-slate-500' : 'hover:bg-white/10 text-slate-300'
+                  }`}
+                >
+                  ×
+                </button>
+              </div>
+
+              {editingProfile.bloqueado ? (
+                <div className="mt-4 rounded-2xl border border-blue-500/40 bg-blue-500/10 p-4 text-sm text-blue-100">
+                  Este perfil é protegido para garantir a segurança do ambiente e não pode ter permissões ajustadas.
+                </div>
+              ) : (
+                <div className="mt-5 space-y-3">
+                  {PERMISSION_AREAS.map((area) => (
+                    <label
+                      key={area.id}
+                      className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-3 transition ${subCardClass}`}
+                    >
+                      <input
+                        type="checkbox"
+                        className="mt-1 h-4 w-4 accent-blue-500"
+                        checked={tempPermissions.includes(area.id)}
+                        onChange={() => togglePermission(area.id)}
+                      />
+                      <span>
+                        <span className="text-sm font-semibold">{area.titulo}</span>
+                        <span className={`block text-xs ${textMuted}`}>{area.descricao}</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              )}
+
+              <div className="mt-6 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className={`rounded-xl px-4 py-2 text-sm font-semibold ${
+                    isLight ? 'bg-white/70 text-slate-700 hover:bg-slate-200/80' : 'bg-white/5 text-white hover:bg-white/10'
+                  }`}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSavePermissions}
+                  disabled={editingProfile.bloqueado}
+                  className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                    editingProfile.bloqueado
+                      ? 'cursor-not-allowed bg-slate-500/40 text-slate-200/70'
+                      : isLight
+                      ? 'bg-blue-600 text-white hover:bg-blue-700'
+                      : 'bg-blue-500 text-white hover:bg-blue-400'
+                  }`}
+                >
+                  Salvar alterações
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </motion.div>
   )
 }
@@ -576,7 +1135,7 @@ export default function AdminPremiumResponsive() {
     { icon: Bus, label: 'Vehicles', path: '/vehicles' },
     { icon: Users, label: 'Drivers', path: '/drivers' },
     { icon: Building2, label: 'Companies', path: '/companies' },
-    { icon: ShieldCheck, label: 'Permissions', path: '/permissions' },
+    { icon: ShieldCheck, label: 'Permissões', path: '/permissions' },
     { icon: LifeBuoy, label: 'Support', path: '/support' },
     { icon: Bell, label: 'Alerts', path: '/alerts' },
     { icon: FileBarChart, label: 'Reports', path: '/reports' },
@@ -688,6 +1247,8 @@ export default function AdminPremiumResponsive() {
                 statuses={statuses}
                 tokens={tokens}
               />
+            ) : route === '/permissions' ? (
+              <PermissionsPage key="permissions" glassClass={glassClass} isLight={isLight} />
             ) : (
               <motion.div
                 key={route}
@@ -697,8 +1258,8 @@ export default function AdminPremiumResponsive() {
                 exit="exit"
                 className={`rounded-2xl p-6 text-center text-sm md:text-base ${glassClass}`}
               >
-                <div className="text-lg font-semibold mb-2">Coming soon</div>
-                The page {route} is in progress.
+                <div className="text-lg font-semibold mb-2">Em breve</div>
+                A página {route} está em desenvolvimento.
               </motion.div>
             )}
           </AnimatePresence>
