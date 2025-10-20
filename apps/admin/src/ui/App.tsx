@@ -285,34 +285,34 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       <MetricCard
         icon={Users}
-        title="Passengers in transit"
+        title="Passageiros em trânsito"
         value={kpis.emTransito}
-        sub="+12% versus yesterday"
+        sub="+12% em relação a ontem"
         tone={brand.success}
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
       />
       <MetricCard
         icon={Bus}
-        title="Active vehicles"
+        title="Veículos ativos"
         value={kpis.veiculosAtivos}
-        sub={`${kpis.veiculosAtivos}/${kpis.veiculosTotais} operating now`}
+        sub={`${kpis.veiculosAtivos}/${kpis.veiculosTotais} em operação agora`}
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
       />
       <MetricCard
         icon={Route}
-        title="Routes today"
+        title="Rotas do dia"
         value={kpis.rotasDia}
-        sub="+3 versus plan"
+        sub="+3 em relação ao plano"
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
       />
       <MetricCard
         icon={AlertTriangle}
-        title="Critical alerts"
+        title="Alertas críticos"
         value={kpis.alertasCriticos}
-        sub={<span className="text-red-400">Immediate action required</span>}
+        sub={<span className="text-red-400">Requer ação imediata</span>}
         tone="#ef4444"
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
@@ -321,7 +321,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
 
     <motion.div className={`rounded-2xl p-6 transition-all ${glassClass}`} layout>
       <div className={`font-semibold mb-4 text-lg flex items-center gap-2 ${tokens.quickTitle}`}>
-        <Route size={16} /> Occupancy by hour
+        <Route size={16} /> Ocupação por hora
       </div>
       <ResponsiveContainer width="100%" height={260}>
         <LineChart data={chartData} margin={{ top: 12, left: 6, right: 12, bottom: 0 }}>
@@ -368,20 +368,20 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
     </div>
 
     <div className="space-y-2">
-      <div className={`font-semibold mb-2 text-lg ${tokens.quickTitle}`}>Quick actions</div>
+      <div className={`font-semibold mb-2 text-lg ${tokens.quickTitle}`}>Ações rápidas</div>
       <div className="flex overflow-x-auto md:grid md:grid-cols-3 gap-6 pb-2 md:pb-0 snap-x snap-mandatory [-webkit-overflow-scrolling:touch]">
         <QuickAction
-          title="Track vehicles"
-          description="Live map with second-by-second geolocation"
-          onClick={() => goto('/mapa')}
+          title="Acompanhar veículos"
+          description="Mapa em tempo real com geolocalização por segundo"
+          onClick={() => goto('/map')}
           icon={MapIcon}
           glassClass={glassClass}
           titleClass={tokens.quickTitle}
           descriptionClass={tokens.quickDescription}
         />
         <QuickAction
-          title="View analytics"
-          description="Dashboards by route, fleet and occupancy"
+          title="Ver análises"
+          description="Dashboards por rota, frota e ocupação"
           onClick={() => goto('/relatorios')}
           tone={brand.accent}
           icon={FileBarChart}
@@ -390,8 +390,8 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
           descriptionClass={tokens.quickDescription}
         />
         <QuickAction
-          title="Setup & branding"
-          description="Notification, theming and integration preferences"
+          title="Configurar e personalizar"
+          description="Preferências de notificações, identidade visual e integrações"
           onClick={() => goto('/config')}
           tone="#94a3b8"
           icon={Settings}
