@@ -1,6 +1,6 @@
-import { useEffect, useState, type ReactNode } from 'react'
-import { motion, useSpring } from 'framer-motion'
+import { useEffect, useState } from 'react'
 import type { LucideIcon } from 'lucide-react'
+import { motion, useSpring } from 'framer-motion'
 
 import { brand } from '../../theme'
 
@@ -24,7 +24,7 @@ export type MetricCardProps = {
   icon: LucideIcon
   title: string
   value: string | number
-  sub?: ReactNode
+  sub?: string | JSX.Element
   tone?: string
   glassClass: string
   titleClass: string

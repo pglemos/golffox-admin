@@ -33,10 +33,68 @@ import {
 import { supabaseClient } from '../lib/supabaseClient'
 import { aiSuggest } from '../lib/aiClient'
 import { brand } from '../theme'
+import type { Company } from '../../../../src/types/types'
+import { MOCK_COMPANIES } from '../../../../constants'
 import { MetricCard } from './components/MetricCard'
-import { DriversPage } from './pages/DriversPage'
-import { fadeVariants, themeTokens, type ThemeMode, type ThemeToken } from './themeTokens'
+import CompaniesPage from './CompaniesPage'
 
+const glassDark =
+  'backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_18px_40px_rgba(0,0,0,0.35)]'
+const glassLight =
+  'backdrop-blur-xl bg-white/85 border border-slate-200/70 shadow-[0_22px_44px_rgba(15,23,42,0.12)]'
+
+const themeTokens = {
+  dark: {
+    background: 'bg-gradient-to-br from-[#0E1116] via-[#111827] to-[#090C12] text-white',
+    header: 'border-white/10 bg-black/45',
+    glass: glassDark,
+    navActive:
+      'bg-gradient-to-r from-blue-600/60 to-blue-400/20 text-white shadow-[0_0_25px_rgba(37,99,235,0.35)]',
+    navInactive: 'text-gray-300 hover:bg-white/10 hover:shadow-[0_0_16px_rgba(59,130,246,0.18)]',
+    quickTitle: 'text-white',
+    quickDescription: 'text-slate-400',
+    chartAxis: '#cbd5f5',
+    chartGrid: 'rgba(255,255,255,0.08)',
+    tooltipBg: 'rgba(15,23,42,0.9)',
+    tooltipText: '#e2e8f0',
+    tooltipLabel: '#94a3b8',
+    statusChip: {
+      emerald: 'bg-gradient-to-r from-emerald-500/25 to-emerald-500/8 text-emerald-100 border-emerald-400/25',
+      amber: 'bg-gradient-to-r from-amber-500/25 to-amber-500/10 text-amber-100 border-amber-400/25',
+      rose: 'bg-gradient-to-r from-rose-500/25 to-rose-500/8 text-rose-100 border-rose-400/25',
+    },
+  },
+  light: {
+    background: 'bg-gradient-to-br from-[#F6F9FF] via-[#EEF2FB] to-[#DEE8FF] text-slate-900',
+    header:
+      'border-slate-200/70 bg-white/85 backdrop-blur-xl shadow-[0_12px_30px_rgba(15,23,42,0.08)] text-slate-900',
+    glass: glassLight,
+    navActive:
+      'bg-gradient-to-r from-blue-600/20 to-blue-400/10 text-blue-700 shadow-[0_0_18px_rgba(37,99,235,0.25)] border border-blue-400/20',
+    navInactive:
+      'text-slate-600 hover:bg-white/90 hover:shadow-[0_0_18px_rgba(59,130,246,0.18)] border border-transparent',
+    quickTitle: 'text-slate-900',
+    quickDescription: 'text-slate-500',
+    chartAxis: '#475569',
+    chartGrid: 'rgba(71,85,105,0.18)',
+    tooltipBg: 'rgba(255,255,255,0.98)',
+    tooltipText: '#0f172a',
+    tooltipLabel: '#1e293b',
+    statusChip: {
+      emerald: 'bg-emerald-100 text-emerald-700 border-emerald-200 shadow-[0_12px_24px_rgba(16,185,129,0.18)]',
+      amber: 'bg-amber-100 text-amber-700 border-amber-200 shadow-[0_12px_24px_rgba(251,191,36,0.18)]',
+      rose: 'bg-rose-100 text-rose-700 border-rose-200 shadow-[0_12px_24px_rgba(244,63,94,0.18)]',
+    },
+  },
+} as const
+
+export type ThemeTokens = typeof themeTokens.dark
+
+const fadeVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: 'easeOut' } },
+  exit: { opacity: 0, y: -18, transition: { duration: 0.35, ease: 'easeIn' } },
+}
 
 type SidebarItemProps = {
   icon: LucideIcon
@@ -75,6 +133,7 @@ const SidebarButton = ({ icon: Icon, label, active, onClick, tokens }: SidebarIt
     <span className="text-sm font-medium tracking-wide">{label}</span>
   </motion.button>
 )
+
 
 type QuickActionProps = {
   title: string
@@ -222,7 +281,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
         icon={Route}
         title="Rotas do dia"
         value={kpis.rotasDia}
-        sub="+3 em relação ao plano"
+        sub="+3 acima do planejado"
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
       />
@@ -230,7 +289,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
         icon={AlertTriangle}
         title="Alertas críticos"
         value={kpis.alertasCriticos}
-        sub={<span className="text-red-400">Requer ação imediata</span>}
+        sub={<span className="text-red-400">Ação imediata necessária</span>}
         tone="#ef4444"
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
@@ -289,8 +348,8 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
       <div className={`font-semibold mb-2 text-lg ${tokens.quickTitle}`}>Ações rápidas</div>
       <div className="flex overflow-x-auto md:grid md:grid-cols-3 gap-6 pb-2 md:pb-0 snap-x snap-mandatory [-webkit-overflow-scrolling:touch]">
         <QuickAction
-          title="Acompanhar veículos"
-          description="Mapa em tempo real com geolocalização por segundo"
+          title="Monitorar veículos"
+          description="Mapa ao vivo com geolocalização em tempo real"
           onClick={() => goto('/map')}
           icon={MapIcon}
           glassClass={glassClass}
@@ -308,8 +367,8 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
           descriptionClass={tokens.quickDescription}
         />
         <QuickAction
-          title="Configurar e personalizar"
-          description="Preferências de notificações, identidade visual e integrações"
+          title="Configurações e identidade"
+          description="Preferências de notificações, tema e integrações"
           onClick={() => goto('/config')}
           tone="#94a3b8"
           icon={Settings}
@@ -549,7 +608,6 @@ export default function AdminPremiumResponsive() {
   const [isMobile, setIsMobile] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [aiSummary, setAiSummary] = useState('Carregando insights inteligentes...')
-  const [bootNoticeVisible, setBootNoticeVisible] = useState(true)
   const sb = useMemo(() => supabaseClient, [])
   const [kpis, setKpis] = useState<KPIState>({
     emTransito: 65,
@@ -558,6 +616,7 @@ export default function AdminPremiumResponsive() {
     rotasDia: 4,
     alertasCriticos: 1,
   })
+  const companies = useMemo<Company[]>(() => MOCK_COMPANIES, [])
 
   const isLight = theme === 'light'
   const tokens: ThemeTokens = themeTokens[theme]
@@ -601,9 +660,7 @@ export default function AdminPremiumResponsive() {
       } catch (error) {
         console.warn('[admin] AI fallback', error)
         if (active)
-          setAiSummary(
-            'Operações estáveis. Continue monitorando a ocupação, rotas críticas e alertas em tempo real.'
-          )
+          setAiSummary('Operações estáveis. Continue monitorando ocupação, rotas críticas e alertas em tempo real.')
       }
     })()
     return () => {
@@ -686,7 +743,7 @@ export default function AdminPremiumResponsive() {
         icon: '🟠',
         label: 'Monitorar rotas',
         tone: tokens.statusChip.amber,
-        description: 'Mantenha o desvio das rotas abaixo de 10%',
+        description: 'Mantenha o desvio de rotas abaixo de 10%',
       },
       {
         icon: '🔴',
@@ -704,8 +761,8 @@ export default function AdminPremiumResponsive() {
   }
 
   const navItems: Array<{ icon: LucideIcon; label: string; path: string }> = [
-    { icon: LayoutGrid, label: 'Visão geral', path: '/' },
-    { icon: MapIcon, label: 'Mapa tático', path: '/map' },
+    { icon: LayoutGrid, label: 'Painel', path: '/' },
+    { icon: MapIcon, label: 'Mapa', path: '/map' },
     { icon: Route, label: 'Rotas', path: '/routes' },
     { icon: Bus, label: 'Veículos', path: '/vehicles' },
     { icon: Users, label: 'Motoristas', path: '/drivers' },
@@ -742,11 +799,9 @@ export default function AdminPremiumResponsive() {
 
   return (
     <div className={`min-h-screen flex flex-col overflow-hidden transition-colors duration-500 ${tokens.background}`}>
-      {bootNoticeVisible ? (
-        <div className="fixed top-2 left-1/2 -translate-x-1/2 z-50 rounded-full bg-black/70 text-white px-4 py-1 text-xs tracking-wide shadow-lg">
-          Carregando painel Golf Fox Admin…
-        </div>
-      ) : null}
+      <div className="fixed top-2 left-1/2 -translate-x-1/2 z-50 rounded-full bg-black/70 text-white px-4 py-1 text-xs tracking-wide shadow-lg">
+        Renderizando painel do Golf Fox Admin…
+      </div>
       <motion.div className="fixed top-5 right-5 z-50 flex items-center gap-3">
         <motion.button
           whileHover={{ rotate: 25, scale: 1.08 }}
@@ -846,10 +901,29 @@ export default function AdminPremiumResponsive() {
                 statuses={statuses}
                 tokens={tokens}
               />
-            ) : route === '/drivers' ? (
-              <DriversPage key="drivers" glassClass={glassClass} tokens={tokens} isLight={isLight} />
+            ) : route === '/companies' ? (
+              <motion.div
+                key="companies"
+                variants={fadeVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="space-y-6"
+              >
+                <CompaniesPage companies={companies} glassClass={glassClass} tokens={tokens} isLight={isLight} />
+              </motion.div>
             ) : (
-              renderRouteContent()
+              <motion.div
+                key={route}
+                variants={fadeVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className={`rounded-2xl p-6 text-center text-sm md:text-base ${glassClass}`}
+              >
+                <div className="text-lg font-semibold mb-2">Em breve</div>
+                A página {route} está em desenvolvimento.
+              </motion.div>
             )}
           </AnimatePresence>
         </motion.main>
