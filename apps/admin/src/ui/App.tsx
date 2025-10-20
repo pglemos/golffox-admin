@@ -20,6 +20,10 @@ import {
   Menu,
   Sun,
   Moon,
+  Fuel,
+  Gauge,
+  TrendingUp,
+  PieChart,
 } from 'lucide-react'
 import {
   LineChart,
@@ -195,6 +199,265 @@ const MetricCard = ({
         >
           <Icon size={22} color={tone} />
         </motion.div>
+      </div>
+    </motion.div>
+  )
+}
+
+const currencyFormatter = new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL',
+})
+
+const numberFormatter = new Intl.NumberFormat('pt-BR', {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+})
+
+const integerFormatter = new Intl.NumberFormat('pt-BR', {
+  maximumFractionDigits: 0,
+})
+
+type CostRoute = {
+  id: string
+  rota: string
+  periodo: string
+  quilometragem: number
+  consumoMedio: number
+  custoCombustivel: number
+  custoMotorista: number
+  custoManutencao: number
+  custoOperacional: number
+  receitaTotal: number
+  margemLucro: number
+  custoPorKm: number
+  custoPorPassageiro: number
+}
+
+const COST_ROUTES: CostRoute[] = [
+  {
+    id: 'cc1',
+    rota: 'Rota Minerva Foods - Turno Manhã',
+    periodo: 'Janeiro 2024',
+    quilometragem: 1356,
+    consumoMedio: 3.6,
+    custoCombustivel: 2218.45,
+    custoMotorista: 4500,
+    custoManutencao: 850,
+    custoOperacional: 7568.45,
+    receitaTotal: 11250,
+    margemLucro: 32.7,
+    custoPorKm: 5.58,
+    custoPorPassageiro: 8.41,
+  },
+  {
+    id: 'cc2',
+    rota: 'Rota JBS - Turno Tarde',
+    periodo: 'Janeiro 2024',
+    quilometragem: 1584,
+    consumoMedio: 3.4,
+    custoCombustivel: 2744.12,
+    custoMotorista: 4500,
+    custoManutencao: 920,
+    custoOperacional: 8164.12,
+    receitaTotal: 13125,
+    margemLucro: 37.8,
+    custoPorKm: 5.15,
+    custoPorPassageiro: 7.77,
+  },
+  {
+    id: 'cc3',
+    rota: 'Rota Marfrig - Turno Noite',
+    periodo: 'Janeiro 2024',
+    quilometragem: 892,
+    consumoMedio: 3.8,
+    custoCombustivel: 1382.45,
+    custoMotorista: 4800,
+    custoManutencao: 650,
+    custoOperacional: 6832.45,
+    receitaTotal: 7500,
+    margemLucro: 8.9,
+    custoPorKm: 7.66,
+    custoPorPassageiro: 11.39,
+  },
+]
+
+type CostsPageProps = {
+  glassClass: string
+  tokens: typeof themeTokens.dark
+}
+
+const CostsPage = ({ glassClass, tokens }: CostsPageProps) => {
+  const totais = useMemo(() => {
+    const totalKm = COST_ROUTES.reduce((acc, rota) => acc + rota.quilometragem, 0)
+    const totalCombustivel = COST_ROUTES.reduce((acc, rota) => acc + rota.custoCombustivel, 0)
+    const totalMotoristas = COST_ROUTES.reduce((acc, rota) => acc + rota.custoMotorista, 0)
+    const totalManutencao = COST_ROUTES.reduce((acc, rota) => acc + rota.custoManutencao, 0)
+    const totalOperacional = COST_ROUTES.reduce((acc, rota) => acc + rota.custoOperacional, 0)
+    const totalReceita = COST_ROUTES.reduce((acc, rota) => acc + rota.receitaTotal, 0)
+    const mediaMargem = COST_ROUTES.reduce((acc, rota) => acc + rota.margemLucro, 0) / COST_ROUTES.length
+    const mediaConsumo = COST_ROUTES.reduce((acc, rota) => acc + rota.consumoMedio, 0) / COST_ROUTES.length
+    const custoMedioKm = totalOperacional / totalKm
+    return {
+      totalKm,
+      totalCombustivel,
+      totalMotoristas,
+      totalManutencao,
+      totalOperacional,
+      totalReceita,
+      lucroTotal: totalReceita - totalOperacional,
+      mediaMargem,
+      mediaConsumo,
+      custoMedioKm,
+      percentualCombustivel: (totalCombustivel / totalOperacional) * 100,
+      percentualMotoristas: (totalMotoristas / totalOperacional) * 100,
+      percentualManutencao: (totalManutencao / totalOperacional) * 100,
+    }
+  }, [])
+
+  return (
+    <motion.div variants={fadeVariants} initial="hidden" animate="visible" exit="exit" className="space-y-6 text-left">
+      <div className="space-y-1">
+        <h1 className={`text-2xl font-semibold ${tokens.quickTitle}`}>Controle de custos</h1>
+        <p className={`text-sm ${tokens.quickDescription}`}>
+          Acompanhe os custos operacionais das rotas, identifique oportunidades de economia e proteja a margem de lucro.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <MetricCard
+          icon={Wallet2}
+          title="Receita consolidada"
+          value={currencyFormatter.format(totais.totalReceita)}
+          sub={<span className="text-emerald-400">Lucro líquido {currencyFormatter.format(totais.lucroTotal)}</span>}
+          tone="#10b981"
+          glassClass={glassClass}
+          titleClass={tokens.quickTitle}
+        />
+        <MetricCard
+          icon={Fuel}
+          title="Custo de combustível"
+          value={currencyFormatter.format(totais.totalCombustivel)}
+          sub={`${numberFormatter.format(totais.percentualCombustivel)}% dos gastos operacionais`}
+          tone="#2563eb"
+          glassClass={glassClass}
+          titleClass={tokens.quickTitle}
+        />
+        <MetricCard
+          icon={Gauge}
+          title="Custo médio por km"
+          value={currencyFormatter.format(totais.custoMedioKm)}
+          sub={`${numberFormatter.format(totais.totalKm / 1000)} mil km percorridos`}
+          tone="#f97316"
+          glassClass={glassClass}
+          titleClass={tokens.quickTitle}
+        />
+        <MetricCard
+          icon={TrendingUp}
+          title="Margem média"
+          value={`${numberFormatter.format(totais.mediaMargem)}%`}
+          sub={`Consumo médio ${numberFormatter.format(totais.mediaConsumo)} km/l`}
+          tone="#a855f7"
+          glassClass={glassClass}
+          titleClass={tokens.quickTitle}
+        />
+      </div>
+
+      <div className={`rounded-2xl p-6 ${glassClass}`}>
+        <div className={`mb-4 flex items-center gap-2 text-lg font-semibold ${tokens.quickTitle}`}>
+          <PieChart size={18} /> Distribuição dos custos operacionais
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div className="space-y-1">
+            <div className="text-xs uppercase tracking-wide opacity-70">Combustível</div>
+            <div className="text-base font-semibold">
+              {numberFormatter.format(totais.percentualCombustivel)}%
+            </div>
+            <div className="text-xs opacity-70">{currencyFormatter.format(totais.totalCombustivel)}</div>
+          </div>
+          <div className="space-y-1">
+            <div className="text-xs uppercase tracking-wide opacity-70">Motoristas</div>
+            <div className="text-base font-semibold">{numberFormatter.format(totais.percentualMotoristas)}%</div>
+            <div className="text-xs opacity-70">{currencyFormatter.format(totais.totalMotoristas)}</div>
+          </div>
+          <div className="space-y-1">
+            <div className="text-xs uppercase tracking-wide opacity-70">Manutenção</div>
+            <div className="text-base font-semibold">{numberFormatter.format(totais.percentualManutencao)}%</div>
+            <div className="text-xs opacity-70">{currencyFormatter.format(totais.totalManutencao)}</div>
+          </div>
+        </div>
+      </div>
+
+      <div className={`rounded-2xl p-6 ${glassClass}`}>
+        <div className={`mb-4 text-lg font-semibold ${tokens.quickTitle}`}>Detalhamento por rota</div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs md:text-sm">
+            <thead className="uppercase tracking-wide opacity-70">
+              <tr>
+                <th className="py-2 pr-4 font-medium">Rota</th>
+                <th className="py-2 pr-4 font-medium">Período</th>
+                <th className="py-2 pr-4 font-medium">Quilometragem</th>
+                <th className="py-2 pr-4 font-medium">Custo combustível</th>
+                <th className="py-2 pr-4 font-medium">Custo operacional</th>
+                <th className="py-2 pr-4 font-medium">Receita</th>
+                <th className="py-2 pr-4 font-medium">Margem</th>
+                <th className="py-2 font-medium">Custo/km</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/10">
+              {COST_ROUTES.map((rota) => (
+                <tr key={rota.id} className="align-top">
+                  <td className="py-3 pr-4">
+                    <div className="font-medium">{rota.rota}</div>
+                    <div className="text-xs opacity-70">Consumo {numberFormatter.format(rota.consumoMedio)} km/l</div>
+                  </td>
+                  <td className="py-3 pr-4">{rota.periodo}</td>
+                  <td className="py-3 pr-4">{integerFormatter.format(rota.quilometragem)} km</td>
+                  <td className="py-3 pr-4">
+                    <div>{currencyFormatter.format(rota.custoCombustivel)}</div>
+                    <div className="text-xs opacity-70">{currencyFormatter.format(rota.custoCombustivel / rota.quilometragem)} por km</div>
+                  </td>
+                  <td className="py-3 pr-4">
+                    <div>{currencyFormatter.format(rota.custoOperacional)}</div>
+                    <div className="text-xs opacity-70">Motorista {currencyFormatter.format(rota.custoMotorista)}</div>
+                  </td>
+                  <td className="py-3 pr-4">
+                    <div>{currencyFormatter.format(rota.receitaTotal)}</div>
+                    <div className="text-xs opacity-70">
+                      Lucro {currencyFormatter.format(rota.receitaTotal - rota.custoOperacional)}
+                    </div>
+                  </td>
+                  <td className="py-3 pr-4">{numberFormatter.format(rota.margemLucro)}%</td>
+                  <td className="py-3">
+                    <div>{currencyFormatter.format(rota.custoPorKm)}</div>
+                    <div className="text-xs opacity-70">
+                      {currencyFormatter.format(rota.custoPorPassageiro)} por passageiro
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className={`rounded-2xl p-6 ${glassClass}`}>
+        <div className={`mb-3 text-lg font-semibold ${tokens.quickTitle}`}>Recomendações inteligentes</div>
+        <ul className={`space-y-2 text-sm ${tokens.quickDescription}`}>
+          <li>
+            • Programar treinamentos de condução econômica para manter o consumo médio acima de {numberFormatter.format(
+              totais.mediaConsumo,
+            )} km/l.
+          </li>
+          <li>
+            • Avaliar renegociação de contratos de manutenção preventiva para reduzir o impacto de {numberFormatter.format(
+              totais.percentualManutencao,
+            )}% sobre os custos.
+          </li>
+          <li>
+            • Priorizar rotas com margem acima de {numberFormatter.format(totais.mediaMargem)}% e revisar preços nas demais.
+          </li>
+        </ul>
       </div>
     </motion.div>
   )
@@ -581,7 +844,7 @@ export default function AdminPremiumResponsive() {
     { icon: Bell, label: 'Alerts', path: '/alerts' },
     { icon: FileBarChart, label: 'Reports', path: '/reports' },
     { icon: History, label: 'History', path: '/history' },
-    { icon: Wallet2, label: 'Costs', path: '/costs' },
+    { icon: Wallet2, label: 'Custos', path: '/costs' },
   ]
 
   return (
@@ -688,6 +951,8 @@ export default function AdminPremiumResponsive() {
                 statuses={statuses}
                 tokens={tokens}
               />
+            ) : route === '/costs' ? (
+              <CostsPage key="costs" glassClass={glassClass} tokens={tokens} />
             ) : (
               <motion.div
                 key={route}
@@ -697,8 +962,8 @@ export default function AdminPremiumResponsive() {
                 exit="exit"
                 className={`rounded-2xl p-6 text-center text-sm md:text-base ${glassClass}`}
               >
-                <div className="text-lg font-semibold mb-2">Coming soon</div>
-                The page {route} is in progress.
+                <div className="text-lg font-semibold mb-2">Em breve</div>
+                A página {route} está em desenvolvimento.
               </motion.div>
             )}
           </AnimatePresence>
