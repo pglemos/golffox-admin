@@ -775,8 +775,31 @@ export default function AdminPremiumResponsive() {
 
   const goto = (path: string) => {
     setRoute(path)
+    if (typeof window !== 'undefined') {
+      window.history.pushState({ path }, '', path)
+    }
     if (isMobile) setSidebarOpen(false)
   }
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const syncRoute = (nextPath?: string | null) => {
+      setRoute(nextPath && nextPath.length > 0 ? nextPath : '/')
+    }
+
+    const initialPath = window.location.pathname || '/'
+    syncRoute(initialPath)
+    window.history.replaceState({ path: initialPath }, '', initialPath)
+
+    const handlePopState = (event: PopStateEvent) => {
+      const nextPath = typeof event.state?.path === 'string' ? event.state.path : window.location.pathname
+      syncRoute(nextPath)
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
 
   const navItems: Array<{ icon: LucideIcon; label: string; path: string }> = [
     { icon: LayoutGrid, label: 'Visão geral', path: '/' },
