@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { AnimatePresence, motion, useSpring, type Variants } from 'framer-motion'
+import { useEffect, useMemo, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import type { LucideIcon } from 'lucide-react'
 import {
   LayoutGrid,
@@ -34,74 +34,17 @@ import {
 import { supabaseClient } from '../lib/supabaseClient'
 import { aiSuggest } from '../lib/aiClient'
 import { brand } from '../theme'
-import { MOCK_ROUTES } from '../../../../constants'
-import type { Route as RouteType } from '../../../../src/types/types'
-import { RouteStatus } from '../../../../src/types/types'
+import { MetricCard } from './components/MetricCard'
+import { DriversPage } from './pages/DriversPage'
+import { fadeVariants, themeTokens, type ThemeMode, type ThemeToken } from './themeTokens'
 
-const glassDark =
-  'backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_18px_40px_rgba(0,0,0,0.35)]'
-const glassLight =
-  'backdrop-blur-xl bg-white/85 border border-slate-200/70 shadow-[0_22px_44px_rgba(15,23,42,0.12)]'
-
-const themeTokens = {
-  dark: {
-    background: 'bg-gradient-to-br from-[#0E1116] via-[#111827] to-[#090C12] text-white',
-    header: 'border-white/10 bg-black/45',
-    glass: glassDark,
-    navActive:
-      'bg-gradient-to-r from-blue-600/60 to-blue-400/20 text-white shadow-[0_0_25px_rgba(37,99,235,0.35)]',
-    navInactive: 'text-gray-300 hover:bg-white/10 hover:shadow-[0_0_16px_rgba(59,130,246,0.18)]',
-    quickTitle: 'text-white',
-    quickDescription: 'text-slate-400',
-    chartAxis: '#cbd5f5',
-    chartGrid: 'rgba(255,255,255,0.08)',
-    tooltipBg: 'rgba(15,23,42,0.9)',
-    tooltipText: '#e2e8f0',
-    tooltipLabel: '#94a3b8',
-    statusChip: {
-      emerald: 'bg-gradient-to-r from-emerald-500/25 to-emerald-500/8 text-emerald-100 border-emerald-400/25',
-      amber: 'bg-gradient-to-r from-amber-500/25 to-amber-500/10 text-amber-100 border-amber-400/25',
-      rose: 'bg-gradient-to-r from-rose-500/25 to-rose-500/8 text-rose-100 border-rose-400/25',
-    },
-  },
-  light: {
-    background: 'bg-gradient-to-br from-[#F6F9FF] via-[#EEF2FB] to-[#DEE8FF] text-slate-900',
-    header:
-      'border-slate-200/70 bg-white/85 backdrop-blur-xl shadow-[0_12px_30px_rgba(15,23,42,0.08)] text-slate-900',
-    glass: glassLight,
-    navActive:
-      'bg-gradient-to-r from-blue-600/20 to-blue-400/10 text-blue-700 shadow-[0_0_18px_rgba(37,99,235,0.25)] border border-blue-400/20',
-    navInactive:
-      'text-slate-600 hover:bg-white/90 hover:shadow-[0_0_18px_rgba(59,130,246,0.18)] border border-transparent',
-    quickTitle: 'text-slate-900',
-    quickDescription: 'text-slate-500',
-    chartAxis: '#475569',
-    chartGrid: 'rgba(71,85,105,0.18)',
-    tooltipBg: 'rgba(255,255,255,0.98)',
-    tooltipText: '#0f172a',
-    tooltipLabel: '#1e293b',
-    statusChip: {
-      emerald: 'bg-emerald-100 text-emerald-700 border-emerald-200 shadow-[0_12px_24px_rgba(16,185,129,0.18)]',
-      amber: 'bg-amber-100 text-amber-700 border-amber-200 shadow-[0_12px_24px_rgba(251,191,36,0.18)]',
-      rose: 'bg-rose-100 text-rose-700 border-rose-200 shadow-[0_12px_24px_rgba(244,63,94,0.18)]',
-    },
-  },
-} as const
-
-type ThemeTokens = typeof themeTokens.dark | typeof themeTokens.light
-
-const fadeVariants: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } },
-  exit: { opacity: 0, y: -18, transition: { duration: 0.35, ease: [0.4, 0, 0.2, 1] } },
-}
 
 type SidebarItemProps = {
   icon: LucideIcon
   label: string
   active: boolean
   onClick: () => void
-  tokens: ThemeTokens
+  tokens: ThemeToken
 }
 
 const SidebarButton = ({ icon: Icon, label, active, onClick, tokens }: SidebarItemProps) => (
@@ -133,78 +76,6 @@ const SidebarButton = ({ icon: Icon, label, active, onClick, tokens }: SidebarIt
     <span className="text-sm font-medium tracking-wide">{label}</span>
   </motion.button>
 )
-
-const AnimatedNumber = ({ value }: { value: number }) => {
-  const spring = useSpring(value, { stiffness: 110, damping: 18 })
-  const [display, setDisplay] = useState(value)
-
-  useEffect(() => {
-    spring.set(value)
-  }, [spring, value])
-
-  useEffect(() => {
-    const unsub = spring.on('change', (v) => setDisplay(Math.round(v)))
-    return () => unsub()
-  }, [spring])
-
-  return <span>{new Intl.NumberFormat('pt-BR').format(display)}</span>
-}
-
-type MetricCardProps = {
-  icon: LucideIcon
-  title: string
-  value: string | number
-  sub?: ReactNode
-  tone?: string
-  glassClass: string
-  titleClass: string
-}
-
-const MetricCard = ({
-  icon: Icon,
-  title,
-  value,
-  sub,
-  tone = brand.primary,
-  glassClass,
-  titleClass,
-}: MetricCardProps) => {
-  const [pulse, setPulse] = useState(false)
-
-  useEffect(() => {
-    setPulse(true)
-    const timeout = window.setTimeout(() => setPulse(false), 600)
-    return () => window.clearTimeout(timeout)
-  }, [value])
-
-  return (
-    <motion.div
-      whileHover={{ translateY: -6, boxShadow: '0 18px 40px rgba(37,99,235,0.22)' }}
-      className={`rounded-2xl p-5 transition-all ${glassClass}`}
-    >
-      <div className="flex items-center justify-between">
-        <div>
-          <div className={`text-sm font-medium tracking-wide ${titleClass}`}>{title}</div>
-          <div className="mt-1 text-3xl font-semibold">
-            {typeof value === 'number' ? <AnimatedNumber value={value} /> : value}
-          </div>
-          {sub ? (
-            <motion.div animate={pulse ? { scale: [1, 1.05, 1] } : {}} className="mt-1 text-xs opacity-80">
-              {sub}
-            </motion.div>
-          ) : null}
-        </div>
-        <motion.div
-          animate={{ rotate: [0, 6, -6, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="p-3 rounded-xl bg-white/12 border border-white/10 shadow-inner"
-        >
-          <Icon size={22} color={tone} />
-        </motion.div>
-      </div>
-    </motion.div>
-  )
-}
 
 type QuickActionProps = {
   title: string
@@ -325,7 +196,7 @@ type DashboardPageProps = {
   chartData: Array<{ hora: string; ocupacao: number }>
   glassClass: string
   statuses: StatusBadge[]
-  tokens: ThemeTokens
+  tokens: ThemeToken
 }
 
 const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses, tokens }: DashboardPageProps) => (
@@ -333,34 +204,34 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       <MetricCard
         icon={Users}
-        title="Passengers in transit"
+        title="Passageiros em trânsito"
         value={kpis.emTransito}
-        sub="+12% versus yesterday"
+        sub="+12% vs. ontem"
         tone={brand.success}
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
       />
       <MetricCard
         icon={Bus}
-        title="Active vehicles"
+        title="Veículos ativos"
         value={kpis.veiculosAtivos}
-        sub={`${kpis.veiculosAtivos}/${kpis.veiculosTotais} operating now`}
+        sub={`${kpis.veiculosAtivos}/${kpis.veiculosTotais} em operação agora`}
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
       />
       <MetricCard
         icon={Route}
-        title="Routes today"
+        title="Rotas hoje"
         value={kpis.rotasDia}
-        sub="+3 versus plan"
+        sub="+3 vs. planejamento"
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
       />
       <MetricCard
         icon={AlertTriangle}
-        title="Critical alerts"
+        title="Alertas críticos"
         value={kpis.alertasCriticos}
-        sub={<span className="text-red-400">Immediate action required</span>}
+        sub={<span className="text-red-400">Ação imediata necessária</span>}
         tone="#ef4444"
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
@@ -369,7 +240,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
 
     <motion.div className={`rounded-2xl p-6 transition-all ${glassClass}`} layout>
       <div className={`font-semibold mb-4 text-lg flex items-center gap-2 ${tokens.quickTitle}`}>
-        <Route size={16} /> Occupancy by hour
+        <Route size={16} /> Ocupação por hora
       </div>
       <ResponsiveContainer width="100%" height={260}>
         <LineChart data={chartData} margin={{ top: 12, left: 6, right: 12, bottom: 0 }}>
@@ -416,11 +287,11 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
     </div>
 
     <div className="space-y-2">
-      <div className={`font-semibold mb-2 text-lg ${tokens.quickTitle}`}>Quick actions</div>
+      <div className={`font-semibold mb-2 text-lg ${tokens.quickTitle}`}>Ações rápidas</div>
       <div className="flex overflow-x-auto md:grid md:grid-cols-3 gap-6 pb-2 md:pb-0 snap-x snap-mandatory [-webkit-overflow-scrolling:touch]">
         <QuickAction
-          title="Track vehicles"
-          description="Live map with second-by-second geolocation"
+          title="Monitorar veículos"
+          description="Mapa ao vivo com geolocalização em segundos"
           onClick={() => goto('/mapa')}
           icon={MapIcon}
           glassClass={glassClass}
@@ -428,8 +299,8 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
           descriptionClass={tokens.quickDescription}
         />
         <QuickAction
-          title="View analytics"
-          description="Dashboards by route, fleet and occupancy"
+          title="Ver análises"
+          description="Dashboards por rota, frota e ocupação"
           onClick={() => goto('/relatorios')}
           tone={brand.accent}
           icon={FileBarChart}
@@ -438,8 +309,8 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
           descriptionClass={tokens.quickDescription}
         />
         <QuickAction
-          title="Setup & branding"
-          description="Notification, theming and integration preferences"
+          title="Configurações e identidade"
+          description="Preferências de notificações, tema e integrações"
           onClick={() => goto('/config')}
           tone="#94a3b8"
           icon={Settings}
@@ -456,12 +327,12 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
       className={`rounded-2xl p-4 border ${glassClass} border-red-500/30 bg-red-500/10`}
     >
       <div className="flex items-center gap-3 text-red-300">
-        <AlertTriangle className="animate-pulse" /> {kpis.alertasCriticos} critical alerts require immediate action.
+        <AlertTriangle className="animate-pulse" /> {kpis.alertasCriticos} alerta(s) crítico(s) exigem ação imediata.
       </div>
     </motion.div>
 
     <motion.div className={`rounded-2xl p-6 transition-all ${glassClass}`} layout>
-      <div className={`font-semibold mb-2 text-lg ${tokens.quickTitle}`}>AI insights</div>
+      <div className={`font-semibold mb-2 text-lg ${tokens.quickTitle}`}>Insights de IA</div>
       <p className="text-sm leading-relaxed opacity-80">{aiSummary}</p>
     </motion.div>
   </motion.div>
@@ -730,8 +601,8 @@ export default function AdminPremiumResponsive() {
   const [route, setRoute] = useState('/')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
-  const [aiSummary, setAiSummary] = useState('Loading intelligent insights...')
+  const [theme, setTheme] = useState<ThemeMode>('dark')
+  const [aiSummary, setAiSummary] = useState('Carregando insights inteligentes...')
   const sb = useMemo(() => supabaseClient, [])
   const [kpis, setKpis] = useState<KPIState>({
     emTransito: 65,
@@ -777,7 +648,7 @@ export default function AdminPremiumResponsive() {
       } catch (error) {
         console.warn('[admin] AI fallback', error)
         if (active)
-          setAiSummary('Operations stable. Keep monitoring occupancy, critical routes and alerts in real time.')
+          setAiSummary('Operações estáveis. Continue monitorando ocupação, rotas críticas e alertas em tempo real.')
       }
     })()
     return () => {
@@ -852,21 +723,21 @@ export default function AdminPremiumResponsive() {
     () => [
       {
         icon: '🟢',
-        label: 'Stable operation',
+        label: 'Operação estável',
         tone: tokens.statusChip.emerald,
-        description: `Average occupancy ${kpis.emTransito}%`,
+        description: `Ocupação média ${kpis.emTransito}%`,
       },
       {
         icon: '🟠',
-        label: 'Monitor routes',
+        label: 'Monitorar rotas',
         tone: tokens.statusChip.amber,
-        description: 'Keep route deviation below 10%',
+        description: 'Mantenha desvio de rota abaixo de 10%',
       },
       {
         icon: '🔴',
-        label: 'Pending alerts',
+        label: 'Alertas pendentes',
         tone: tokens.statusChip.rose,
-        description: `${kpis.alertasCriticos} urgent tasks`,
+        description: `${kpis.alertasCriticos} tarefa(s) urgente(s)`,
       },
     ],
     [kpis.alertasCriticos, kpis.emTransito, tokens]
@@ -878,24 +749,24 @@ export default function AdminPremiumResponsive() {
   }
 
   const navItems: Array<{ icon: LucideIcon; label: string; path: string }> = [
-    { icon: LayoutGrid, label: 'Dashboard', path: '/' },
-    { icon: MapIcon, label: 'Map', path: '/map' },
-    { icon: Route, label: 'Rotas', path: '/routes' },
-    { icon: Bus, label: 'Vehicles', path: '/vehicles' },
-    { icon: Users, label: 'Drivers', path: '/drivers' },
-    { icon: Building2, label: 'Companies', path: '/companies' },
-    { icon: ShieldCheck, label: 'Permissions', path: '/permissions' },
-    { icon: LifeBuoy, label: 'Support', path: '/support' },
-    { icon: Bell, label: 'Alerts', path: '/alerts' },
-    { icon: FileBarChart, label: 'Reports', path: '/reports' },
-    { icon: History, label: 'History', path: '/history' },
-    { icon: Wallet2, label: 'Costs', path: '/costs' },
+    { icon: LayoutGrid, label: 'Painel', path: '/' },
+    { icon: MapIcon, label: 'Mapa', path: '/mapa' },
+    { icon: Route, label: 'Rotas', path: '/rotas' },
+    { icon: Bus, label: 'Veículos', path: '/veiculos' },
+    { icon: Users, label: 'Motoristas', path: '/drivers' },
+    { icon: Building2, label: 'Empresas', path: '/empresas' },
+    { icon: ShieldCheck, label: 'Permissões', path: '/permissoes' },
+    { icon: LifeBuoy, label: 'Suporte', path: '/suporte' },
+    { icon: Bell, label: 'Alertas', path: '/alertas' },
+    { icon: FileBarChart, label: 'Relatórios', path: '/relatorios' },
+    { icon: History, label: 'Histórico', path: '/historico' },
+    { icon: Wallet2, label: 'Custos', path: '/custos' },
   ]
 
   return (
     <div className={`min-h-screen flex flex-col overflow-hidden transition-colors duration-500 ${tokens.background}`}>
       <div className="fixed top-2 left-1/2 -translate-x-1/2 z-50 rounded-full bg-black/70 text-white px-4 py-1 text-xs tracking-wide shadow-lg">
-        Golf Fox Admin dashboard rendering…
+        Renderizando painel do Golf Fox Admin…
       </div>
       <motion.div className="fixed top-5 right-5 z-50 flex items-center gap-3">
         <motion.button
@@ -912,7 +783,7 @@ export default function AdminPremiumResponsive() {
           className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition ${glassClass}`}
         >
           {isLight ? <Moon size={16} /> : <Sun size={16} />}
-          {isLight ? 'Dark mode' : 'Light mode'}
+          {isLight ? 'Modo escuro' : 'Modo claro'}
         </motion.button>
       </motion.div>
 
@@ -996,8 +867,8 @@ export default function AdminPremiumResponsive() {
                 statuses={statuses}
                 tokens={tokens}
               />
-            ) : route === '/routes' ? (
-              <RoutesPage key="routes" tokens={tokens} glassClass={glassClass} isLight={isLight} />
+            ) : route === '/drivers' ? (
+              <DriversPage key="drivers" glassClass={glassClass} tokens={tokens} isLight={isLight} />
             ) : (
               <motion.div
                 key={route}
@@ -1007,8 +878,8 @@ export default function AdminPremiumResponsive() {
                 exit="exit"
                 className={`rounded-2xl p-6 text-center text-sm md:text-base ${glassClass}`}
               >
-                <div className="text-lg font-semibold mb-2">Coming soon</div>
-                The page {route} is in progress.
+                <div className="text-lg font-semibold mb-2">Em breve</div>
+                A página {route} está em desenvolvimento.
               </motion.div>
             )}
           </AnimatePresence>
