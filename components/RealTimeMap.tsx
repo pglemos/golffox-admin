@@ -7,6 +7,7 @@ import MapApiKeyWarning from './MapApiKeyWarning';
 import BusIcon3D, { BusStatus } from './BusIcon3D';
 import { getDriverStatus, getStatusColor, getStatusDescription, DriverLocation } from '../src/utils/helpers/driverStatus';
 import { createBusMapIcon, vehicleStatusToBusStatus } from '../src/utils/helpers/mapIcons';
+import GoogleMapsLoader from './GoogleMapsLoader';
 
 // Tipagens globais agora estão em src/types/global.d.ts
 
@@ -471,68 +472,70 @@ const RealTimeMap: React.FC = () => {
   };
 
   return (
-    <div>
-      <h2 className="text-3xl font-bold text-golffox-gray-dark mb-6">Mapa em Tempo Real</h2>
-      <div className="bg-golffox-white rounded-lg shadow-md p-4">
-        <div className="relative w-full h-[60vh] bg-gray-200 rounded-lg overflow-hidden">
-          {mapStatus.status === 'error' && <MapApiKeyWarning message={mapStatus.message} />}
-          {mapStatus.status === 'loading' && <div className="w-full h-full flex items-center justify-center bg-gray-200"><p className="text-golffox-gray-medium">Carregando Mapa...</p></div>}
-          <div ref={mapRef} className={`w-full h-full ${mapStatus.status !== 'loaded' ? 'invisible' : ''}`} />
+    <GoogleMapsLoader>
+      <div>
+        <h2 className="text-3xl font-bold text-golffox-gray-dark mb-6">Mapa em Tempo Real</h2>
+        <div className="bg-golffox-white rounded-lg shadow-md p-4">
+          <div className="relative w-full h-[60vh] bg-gray-200 rounded-lg overflow-hidden">
+            {mapStatus.status === 'error' && <MapApiKeyWarning message={mapStatus.message} />}
+            {mapStatus.status === 'loading' && <div className="w-full h-full flex items-center justify-center bg-gray-200"><p className="text-golffox-gray-medium">Carregando Mapa...</p></div>}
+            <div ref={mapRef} className={`w-full h-full ${mapStatus.status !== 'loaded' ? 'invisible' : ''}`} />
 
-          {selectedVehicle && (
-            <div className="absolute top-4 left-4 bg-white p-4 rounded-lg shadow-xl w-80 animate-fade-in-down z-10">
-              <div className="flex justify-between items-center mb-3">
-                <div className="flex items-center">
-                  <TruckIcon className="h-6 w-6 mr-2 text-golffox-gray-dark" />
-                  <h4 className="font-bold text-lg text-golffox-gray-dark">{selectedVehicle.plate}</h4>
+            {selectedVehicle && (
+              <div className="absolute top-4 left-4 bg-white p-4 rounded-lg shadow-xl w-80 animate-fade-in-down z-10">
+                <div className="flex justify-between items-center mb-3">
+                  <div className="flex items-center">
+                    <TruckIcon className="h-6 w-6 mr-2 text-golffox-gray-dark" />
+                    <h4 className="font-bold text-lg text-golffox-gray-dark">{selectedVehicle.plate}</h4>
+                  </div>
+                  <button onClick={handleDeselectVehicle} className="text-golffox-gray-medium hover:text-golffox-gray-dark p-1 rounded-full hover:bg-golffox-gray-light">
+                    <XMarkIcon className="h-5 w-5" />
+                  </button>
                 </div>
-                <button onClick={handleDeselectVehicle} className="text-golffox-gray-medium hover:text-golffox-gray-dark p-1 rounded-full hover:bg-golffox-gray-light">
-                  <XMarkIcon className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="space-y-2 text-sm">
-                <p><span className="font-semibold text-golffox-gray-medium w-24 inline-block">Motorista:</span> <span className="text-golffox-gray-dark font-medium">{selectedVehicle.driver}</span></p>
-                <p><span className="font-semibold text-golffox-gray-medium w-24 inline-block">Rota Atual:</span> <span className="text-golffox-gray-dark font-medium">{tripStatus.route?.name}</span></p>
-              </div>
-               <hr className="my-3"/>
-                <h5 className="font-bold text-md text-golffox-gray-dark mb-2">Status da Viagem</h5>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div><p className="font-semibold text-golffox-gray-medium">Velocidade</p><p className="font-bold text-golffox-gray-dark">{tripStatus.speed} km/h</p></div>
-                    <div><p className="font-semibold text-golffox-gray-medium">Passageiros</p><p className="font-bold text-golffox-gray-dark">{tripStatus.passengersOnboard} / {tripStatus.route?.passengers.total}</p></div>
-                    <div className="flex items-center space-x-2"><ClockIcon className="h-5 w-5 text-golffox-gray-medium"/><p className="font-bold text-golffox-gray-dark">{formatDuration(tripStatus.tripDuration)}</p></div>
-                    <div className="flex items-center space-x-2"><UsersIcon className="h-5 w-5 text-golffox-gray-medium"/><p className="font-bold text-golffox-gray-dark">ETA {tripStatus.eta} min</p></div>
+                <div className="space-y-2 text-sm">
+                  <p><span className="font-semibold text-golffox-gray-medium w-24 inline-block">Motorista:</span> <span className="text-golffox-gray-dark font-medium">{selectedVehicle.driver}</span></p>
+                  <p><span className="font-semibold text-golffox-gray-medium w-24 inline-block">Rota Atual:</span> <span className="text-golffox-gray-dark font-medium">{tripStatus.route?.name}</span></p>
                 </div>
+                 <hr className="my-3"/>
+                  <h5 className="font-bold text-md text-golffox-gray-dark mb-2">Status da Viagem</h5>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div><p className="font-semibold text-golffox-gray-medium">Velocidade</p><p className="font-bold text-golffox-gray-dark">{tripStatus.speed} km/h</p></div>
+                      <div><p className="font-semibold text-golffox-gray-medium">Passageiros</p><p className="font-bold text-golffox-gray-dark">{tripStatus.passengersOnboard} / {tripStatus.route?.passengers.total}</p></div>
+                      <div className="flex items-center space-x-2"><ClockIcon className="h-5 w-5 text-golffox-gray-medium"/><p className="font-bold text-golffox-gray-dark">{formatDuration(tripStatus.tripDuration)}</p></div>
+                      <div className="flex items-center space-x-2"><UsersIcon className="h-5 w-5 text-golffox-gray-medium"/><p className="font-bold text-golffox-gray-dark">ETA {tripStatus.eta} min</p></div>
+                  </div>
+              </div>
+            )}
+
+            <div className="absolute bottom-4 right-4 bg-white p-4 rounded-lg shadow-xl z-0">
+              <h4 className="font-bold mb-2 text-golffox-gray-dark">Legenda</h4>
+              <ul className="text-sm">
+                <li className="flex items-center mb-1">
+                  <BusIcon3D status="moving" size={20} className="mr-2" />
+                  <span>Em Movimento</span>
+                </li>
+                <li className="flex items-center mb-1">
+                  <BusIcon3D status="stopped" size={20} className="mr-2" />
+                  <span>Parado</span>
+                </li>
+                <li className="flex items-center mb-1">
+                  <BusIcon3D status="problem" size={20} className="mr-2" />
+                  <span>Com Problema</span>
+                </li>
+                <li className="flex items-center mb-1">
+                  <BusIcon3D status="garage" size={20} className="mr-2" />
+                  <span>Garagem</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-4 h-4 rounded-full mr-2 border-2 border-blue-500 bg-white"></div>
+                  <span>Pontos de parada (clique no ônibus)</span>
+                </li>
+              </ul>
             </div>
-          )}
-
-          <div className="absolute bottom-4 right-4 bg-white p-4 rounded-lg shadow-xl z-0">
-            <h4 className="font-bold mb-2 text-golffox-gray-dark">Legenda</h4>
-            <ul className="text-sm">
-              <li className="flex items-center mb-1">
-                <BusIcon3D status="moving" size={20} className="mr-2" />
-                <span>Em Movimento</span>
-              </li>
-              <li className="flex items-center mb-1">
-                <BusIcon3D status="stopped" size={20} className="mr-2" />
-                <span>Parado</span>
-              </li>
-              <li className="flex items-center mb-1">
-                <BusIcon3D status="problem" size={20} className="mr-2" />
-                <span>Com Problema</span>
-              </li>
-              <li className="flex items-center mb-1">
-                <BusIcon3D status="garage" size={20} className="mr-2" />
-                <span>Garagem</span>
-              </li>
-              <li className="flex items-center">
-                <div className="w-4 h-4 rounded-full mr-2 border-2 border-blue-500 bg-white"></div>
-                <span>Pontos de parada (clique no ônibus)</span>
-              </li>
-            </ul>
           </div>
         </div>
       </div>
-    </div>
+    </GoogleMapsLoader>
   );
 };
 
