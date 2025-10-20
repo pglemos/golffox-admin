@@ -779,18 +779,18 @@ export default function AdminPremiumResponsive() {
   }
 
   const navItems: Array<{ icon: LucideIcon; label: string; path: string }> = [
-    { icon: LayoutGrid, label: 'Dashboard', path: '/' },
-    { icon: MapIcon, label: 'Map', path: '/map' },
-    { icon: Route, label: 'Routes', path: '/routes' },
+    { icon: LayoutGrid, label: 'Visão geral', path: '/' },
+    { icon: MapIcon, label: 'Mapa tático', path: '/map' },
+    { icon: Route, label: 'Rotas', path: '/routes' },
     { icon: Bus, label: 'Veículos', path: '/vehicles' },
-    { icon: Users, label: 'Drivers', path: '/drivers' },
-    { icon: Building2, label: 'Companies', path: '/companies' },
-    { icon: ShieldCheck, label: 'Permissions', path: '/permissions' },
-    { icon: LifeBuoy, label: 'Support', path: '/support' },
-    { icon: Bell, label: 'Alerts', path: '/alerts' },
-    { icon: FileBarChart, label: 'Reports', path: '/reports' },
-    { icon: History, label: 'History', path: '/history' },
-    { icon: Wallet2, label: 'Costs', path: '/costs' },
+    { icon: Users, label: 'Motoristas', path: '/drivers' },
+    { icon: Building2, label: 'Empresas', path: '/companies' },
+    { icon: ShieldCheck, label: 'Permissões', path: '/permissions' },
+    { icon: LifeBuoy, label: 'Suporte', path: '/support' },
+    { icon: Bell, label: 'Alertas', path: '/alerts' },
+    { icon: FileBarChart, label: 'Relatórios', path: '/reports' },
+    { icon: History, label: 'Histórico', path: '/history' },
+    { icon: Wallet2, label: 'Custos', path: '/costs' },
   ]
 
   const renderRouteContent = () => {
