@@ -286,34 +286,34 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       <MetricCard
         icon={Users}
-        title="Passengers in transit"
+        title="Passageiros em trânsito"
         value={kpis.emTransito}
-        sub="+12% versus yesterday"
+        sub="+12% em relação a ontem"
         tone={brand.success}
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
       />
       <MetricCard
         icon={Bus}
-        title="Active vehicles"
+        title="Veículos ativos"
         value={kpis.veiculosAtivos}
-        sub={`${kpis.veiculosAtivos}/${kpis.veiculosTotais} operating now`}
+        sub={`${kpis.veiculosAtivos}/${kpis.veiculosTotais} em operação agora`}
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
       />
       <MetricCard
         icon={Route}
-        title="Routes today"
+        title="Rotas do dia"
         value={kpis.rotasDia}
-        sub="+3 versus plan"
+        sub="+3 acima do planejado"
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
       />
       <MetricCard
         icon={AlertTriangle}
-        title="Critical alerts"
+        title="Alertas críticos"
         value={kpis.alertasCriticos}
-        sub={<span className="text-red-400">Immediate action required</span>}
+        sub={<span className="text-red-400">Ação imediata necessária</span>}
         tone="#ef4444"
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
@@ -322,7 +322,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
 
     <motion.div className={`rounded-2xl p-6 transition-all ${glassClass}`} layout>
       <div className={`font-semibold mb-4 text-lg flex items-center gap-2 ${tokens.quickTitle}`}>
-        <Route size={16} /> Occupancy by hour
+        <Route size={16} /> Ocupação por hora
       </div>
       <ResponsiveContainer width="100%" height={260}>
         <LineChart data={chartData} margin={{ top: 12, left: 6, right: 12, bottom: 0 }}>
@@ -369,21 +369,21 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
     </div>
 
     <div className="space-y-2">
-      <div className={`font-semibold mb-2 text-lg ${tokens.quickTitle}`}>Quick actions</div>
+      <div className={`font-semibold mb-2 text-lg ${tokens.quickTitle}`}>Ações rápidas</div>
       <div className="flex overflow-x-auto md:grid md:grid-cols-3 gap-6 pb-2 md:pb-0 snap-x snap-mandatory [-webkit-overflow-scrolling:touch]">
         <QuickAction
-          title="Track vehicles"
-          description="Live map with second-by-second geolocation"
-          onClick={() => goto('/mapa')}
+          title="Monitorar veículos"
+          description="Mapa ao vivo com geolocalização em tempo real"
+          onClick={() => goto('/map')}
           icon={MapIcon}
           glassClass={glassClass}
           titleClass={tokens.quickTitle}
           descriptionClass={tokens.quickDescription}
         />
         <QuickAction
-          title="View analytics"
-          description="Dashboards by route, fleet and occupancy"
-          onClick={() => goto('/relatorios')}
+          title="Ver análises"
+          description="Dashboards por rota, frota e ocupação"
+          onClick={() => goto('/reports')}
           tone={brand.accent}
           icon={FileBarChart}
           glassClass={glassClass}
@@ -391,8 +391,8 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
           descriptionClass={tokens.quickDescription}
         />
         <QuickAction
-          title="Setup & branding"
-          description="Notification, theming and integration preferences"
+          title="Configurações e identidade"
+          description="Preferências de notificações, tema e integrações"
           onClick={() => goto('/config')}
           tone="#94a3b8"
           icon={Settings}
@@ -409,12 +409,12 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
       className={`rounded-2xl p-4 border ${glassClass} border-red-500/30 bg-red-500/10`}
     >
       <div className="flex items-center gap-3 text-red-300">
-        <AlertTriangle className="animate-pulse" /> {kpis.alertasCriticos} critical alerts require immediate action.
+        <AlertTriangle className="animate-pulse" /> {kpis.alertasCriticos} alertas críticos exigem ação imediata.
       </div>
     </motion.div>
 
     <motion.div className={`rounded-2xl p-6 transition-all ${glassClass}`} layout>
-      <div className={`font-semibold mb-2 text-lg ${tokens.quickTitle}`}>AI insights</div>
+      <div className={`font-semibold mb-2 text-lg ${tokens.quickTitle}`}>Insights de IA</div>
       <p className="text-sm leading-relaxed opacity-80">{aiSummary}</p>
     </motion.div>
   </motion.div>
@@ -636,7 +636,7 @@ export default function AdminPremiumResponsive() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
-  const [aiSummary, setAiSummary] = useState('Loading intelligent insights...')
+  const [aiSummary, setAiSummary] = useState('Carregando insights inteligentes...')
   const sb = useMemo(() => supabaseClient, [])
   const [kpis, setKpis] = useState<KPIState>({
     emTransito: 65,
@@ -683,7 +683,7 @@ export default function AdminPremiumResponsive() {
       } catch (error) {
         console.warn('[admin] AI fallback', error)
         if (active)
-          setAiSummary('Operations stable. Keep monitoring occupancy, critical routes and alerts in real time.')
+          setAiSummary('Operações estáveis. Continue monitorando ocupação, rotas críticas e alertas em tempo real.')
       }
     })()
     return () => {
@@ -758,21 +758,21 @@ export default function AdminPremiumResponsive() {
     () => [
       {
         icon: '🟢',
-        label: 'Stable operation',
+        label: 'Operação estável',
         tone: tokens.statusChip.emerald,
-        description: `Average occupancy ${kpis.emTransito}%`,
+        description: `Ocupação média de ${kpis.emTransito}%`,
       },
       {
         icon: '🟠',
-        label: 'Monitor routes',
+        label: 'Monitorar rotas',
         tone: tokens.statusChip.amber,
-        description: 'Keep route deviation below 10%',
+        description: 'Mantenha o desvio de rotas abaixo de 10%',
       },
       {
         icon: '🔴',
-        label: 'Pending alerts',
+        label: 'Alertas pendentes',
         tone: tokens.statusChip.rose,
-        description: `${kpis.alertasCriticos} urgent tasks`,
+        description: `${kpis.alertasCriticos} tarefas urgentes`,
       },
     ],
     [kpis.alertasCriticos, kpis.emTransito, tokens]
@@ -784,18 +784,18 @@ export default function AdminPremiumResponsive() {
   }
 
   const navItems: Array<{ icon: LucideIcon; label: string; path: string }> = [
-    { icon: LayoutGrid, label: 'Dashboard', path: '/' },
-    { icon: MapIcon, label: 'Map', path: '/map' },
-    { icon: Route, label: 'Routes', path: '/routes' },
-    { icon: Bus, label: 'Vehicles', path: '/vehicles' },
-    { icon: Users, label: 'Drivers', path: '/drivers' },
+    { icon: LayoutGrid, label: 'Painel', path: '/' },
+    { icon: MapIcon, label: 'Mapa', path: '/map' },
+    { icon: Route, label: 'Rotas', path: '/routes' },
+    { icon: Bus, label: 'Veículos', path: '/vehicles' },
+    { icon: Users, label: 'Motoristas', path: '/drivers' },
     { icon: Building2, label: 'Empresas', path: '/companies' },
-    { icon: ShieldCheck, label: 'Permissions', path: '/permissions' },
-    { icon: LifeBuoy, label: 'Support', path: '/support' },
-    { icon: Bell, label: 'Alerts', path: '/alerts' },
-    { icon: FileBarChart, label: 'Reports', path: '/reports' },
-    { icon: History, label: 'History', path: '/history' },
-    { icon: Wallet2, label: 'Costs', path: '/costs' },
+    { icon: ShieldCheck, label: 'Permissões', path: '/permissions' },
+    { icon: LifeBuoy, label: 'Suporte', path: '/support' },
+    { icon: Bell, label: 'Alertas', path: '/alerts' },
+    { icon: FileBarChart, label: 'Relatórios', path: '/reports' },
+    { icon: History, label: 'Histórico', path: '/history' },
+    { icon: Wallet2, label: 'Custos', path: '/costs' },
   ]
 
   return (
@@ -922,8 +922,8 @@ export default function AdminPremiumResponsive() {
                 exit="exit"
                 className={`rounded-2xl p-6 text-center text-sm md:text-base ${glassClass}`}
               >
-                <div className="text-lg font-semibold mb-2">Coming soon</div>
-                The page {route} is in progress.
+                <div className="text-lg font-semibold mb-2">Em breve</div>
+                A página {route} está em desenvolvimento.
               </motion.div>
             )}
           </AnimatePresence>
