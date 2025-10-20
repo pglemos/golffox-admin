@@ -707,6 +707,28 @@ const App = () => {
 
   const isLight = theme === 'light'
 
+  const renderRouteContent = () => {
+    if (route === '/vehicles') {
+      return <VehiclesPage key="vehicles" glassClass={glassClass} />
+    }
+
+    return (
+      <motion.div
+        key={route}
+        variants={fadeVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        className={`rounded-2xl p-6 text-center text-sm md:text-base ${glassClass}`}
+      >
+        <div className="text-lg font-semibold mb-2">Em breve</div>
+        <p className="text-slate-500 dark:text-slate-400">
+          Estamos preparando esta área com todo cuidado. Volte mais tarde para conferir as novidades.
+        </p>
+      </motion.div>
+    )
+  }
+
   return (
     <div className={isLight ? 'min-h-screen bg-slate-100 text-slate-900' : 'min-h-screen bg-slate-950 text-slate-100'}>
       <div className="mx-auto flex min-h-screen max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:px-8">

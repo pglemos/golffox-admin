@@ -1,60 +1,95 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { AlertTriangle, Info, X, RefreshCw, Filter } from 'lucide-react';
-// import { MOCK_ALERTS } from '../constants';
-// import type { Alert } from '../types';
-// import { AlertType } from '../types';
-// import { useNotifications } from '../hooks/useNotifications';
-
-// Tipos temporários
-type Alert = any;
-type AlertType = string;
-
-// Enum temporário
-const AlertType = {
-  Critical: 'critical',
-  Warning: 'warning',
-  Info: 'info'
-};
-
-// Mock data temporário
-const MOCK_ALERTS: Alert[] = [];
+import { MOCK_ALERTS } from '../constants';
+import { AlertType } from '../src/types/types';
+import { useNotifications } from '../hooks/useNotifications';
 
 const Alerts: React.FC = () => {
   const [showMockData, setShowMockData] = useState(false);
   const [filterType, setFilterType] = useState<AlertType | 'all'>('all');
-  
-  // const { 
-  //   alerts, 
-  //   alertsByType, 
-  //   stats, 
-  //   isLoading, 
-  //   dismissAlert, 
-  //   clearOldAlerts, 
-  //   refresh 
-  // } = useNotifications({ 
-  //   autoCheck: true, 
-  //   checkInterval: 30000 
-  // });
-  
-  // Mock values temporários
-  const alerts: Alert[] = [];
-  const alertsByType = {};
-  const stats = { total: 0, critical: 0, warning: 0, info: 0 };
-  const isLoading = false;
-  const dismissAlert = (id: string) => {};
-  const clearOldAlerts = () => {};
-  const refresh = () => {};
+
+  const {
+    alerts,
+    stats,
+    isLoading,
+    dismissAlert,
+    clearOldAlerts,
+    refresh,
+  } = useNotifications({
+    autoCheck: true,
+    checkInterval: 30000,
+  });
+
+  const tipoParaRotulo: Record<AlertType, string> = {
+    [AlertType.Critical]: 'Críticos',
+    [AlertType.Warning]: 'Avisos',
+    [AlertType.Info]: 'Informativos',
+  };
 
   // Combina alertas reais com mock data se necessário
-  const allAlerts = showMockData ? [...alerts, ...MOCK_ALERTS] : alerts;
-  
-  // Aplica filtro por tipo
-  const filteredAlerts = filterType === 'all' 
-    ? allAlerts 
-    : allAlerts.filter(alert => alert.type === filterType);
+  const allAlerts = useMemo(() => {
+    if (!showMockData) {
+      return alerts;
+    }
 
-  const sortedAlerts = [...filteredAlerts].sort((a, b) => 
-    new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    const mockAlerts = MOCK_ALERTS.filter(
+      (mockAlert) => !alerts.some((alert) => alert.id === mockAlert.id),
+    );
+
+    return [...alerts, ...mockAlerts];
+  }, [alerts, showMockData]);
+
+  const computedStats = useMemo(() => {
+    const totais = {
+      total: allAlerts.length,
+      critical: 0,
+      warning: 0,
+      info: 0,
+      last24h: 0,
+    };
+
+    const limite24h = Date.now() - 24 * 60 * 60 * 1000;
+
+    allAlerts.forEach((alert) => {
+      if (alert.type === AlertType.Critical) {
+        totais.critical += 1;
+      }
+
+      if (alert.type === AlertType.Warning) {
+        totais.warning += 1;
+      }
+
+      if (alert.type === AlertType.Info) {
+        totais.info += 1;
+      }
+
+      if (new Date(alert.timestamp).getTime() >= limite24h) {
+        totais.last24h += 1;
+      }
+    });
+
+    return {
+      ...stats,
+      ...totais,
+    };
+  }, [allAlerts, stats]);
+
+  // Aplica filtro por tipo
+  const filteredAlerts = useMemo(() => {
+    if (filterType === 'all') {
+      return allAlerts;
+    }
+
+    return allAlerts.filter((alert) => alert.type === filterType);
+  }, [allAlerts, filterType]);
+
+  const sortedAlerts = useMemo(
+    () =>
+      [...filteredAlerts].sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+      ),
+    [filteredAlerts],
   );
 
   const getAlertIcon = (type: AlertType) => {
@@ -84,8 +119,7 @@ const Alerts: React.FC = () => {
   };
 
   const handleDismissAlert = (alertId: string) => {
-    // Só permite dismissar alertas reais (não mock data)
-    if (!showMockData || !MOCK_ALERTS.find(alert => alert.id === alertId)) {
+    if (!showMockData || !MOCK_ALERTS.find((alert) => alert.id === alertId)) {
       dismissAlert(alertId);
     }
   };
@@ -110,19 +144,19 @@ const Alerts: React.FC = () => {
       {/* Estatísticas */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-lg shadow border">
-          <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
+          <div className="text-2xl font-bold text-gray-900">{computedStats.total}</div>
           <div className="text-sm text-gray-600">Total de Alertas</div>
         </div>
         <div className="bg-white p-4 rounded-lg shadow border">
-          <div className="text-2xl font-bold text-red-600">{stats.critical}</div>
+          <div className="text-2xl font-bold text-red-600">{computedStats.critical}</div>
           <div className="text-sm text-gray-600">Críticos</div>
         </div>
         <div className="bg-white p-4 rounded-lg shadow border">
-          <div className="text-2xl font-bold text-yellow-600">{stats.warning}</div>
+          <div className="text-2xl font-bold text-yellow-600">{computedStats.warning}</div>
           <div className="text-sm text-gray-600">Avisos</div>
         </div>
         <div className="bg-white p-4 rounded-lg shadow border">
-          <div className="text-2xl font-bold text-blue-600">{stats.info}</div>
+          <div className="text-2xl font-bold text-blue-600">{computedStats.info}</div>
           <div className="text-sm text-gray-600">Informativos</div>
         </div>
       </div>
@@ -138,12 +172,12 @@ const Alerts: React.FC = () => {
               className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
             >
               <option value="all">Todos os tipos</option>
-              <option value={AlertType.Critical}>Críticos</option>
-              <option value={AlertType.Warning}>Avisos</option>
-              <option value={AlertType.Info}>Informativos</option>
+              <option value={AlertType.Critical}>{tipoParaRotulo[AlertType.Critical]}</option>
+              <option value={AlertType.Warning}>{tipoParaRotulo[AlertType.Warning]}</option>
+              <option value={AlertType.Info}>{tipoParaRotulo[AlertType.Info]}</option>
             </select>
           </div>
-          
+
           <label className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -155,7 +189,7 @@ const Alerts: React.FC = () => {
           </label>
         </div>
 
-        {alerts.length > 0 && (
+        {allAlerts.length > 0 && (
           <button
             onClick={clearOldAlerts}
             className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50"
