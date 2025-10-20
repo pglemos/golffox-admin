@@ -2,17 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion, useSpring } from 'framer-motion'
 import type { LucideIcon } from 'lucide-react'
 import {
-  LayoutGrid,
   Map as MapIcon,
   Route,
   Bus,
   Users,
-  Building2,
-  ShieldCheck,
-  LifeBuoy,
-  Bell,
   FileBarChart,
-  History,
   Wallet2,
   Settings,
   AlertTriangle,
@@ -37,6 +31,7 @@ import {
 import { supabaseClient } from '../lib/supabaseClient'
 import { aiSuggest } from '../lib/aiClient'
 import { brand } from '../theme'
+import { EXTRA_ROUTE_LABELS, NAV_ITEMS } from './navigation'
 
 const glassDark =
   'backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_18px_40px_rgba(0,0,0,0.35)]'
@@ -94,24 +89,6 @@ const fadeVariants = {
   exit: { opacity: 0, y: -18, transition: { duration: 0.35, ease: 'easeIn' } },
 }
 
-const NAV_ITEMS: Array<{ icon: LucideIcon; label: string; path: string }> = [
-  { icon: LayoutGrid, label: 'Painel', path: '/' },
-  { icon: MapIcon, label: 'Mapa', path: '/map' },
-  { icon: Route, label: 'Rotas', path: '/routes' },
-  { icon: Bus, label: 'Veículos', path: '/vehicles' },
-  { icon: Users, label: 'Motoristas', path: '/drivers' },
-  { icon: Building2, label: 'Empresas', path: '/companies' },
-  { icon: ShieldCheck, label: 'Permissões', path: '/permissions' },
-  { icon: LifeBuoy, label: 'Suporte', path: '/support' },
-  { icon: Bell, label: 'Alertas', path: '/alerts' },
-  { icon: FileBarChart, label: 'Relatórios', path: '/reports' },
-  { icon: History, label: 'Histórico', path: '/history' },
-  { icon: Wallet2, label: 'Custos', path: '/costs' },
-]
-
-const EXTRA_ROUTE_LABELS: Record<string, string> = {
-  '/settings': 'Configurações e marca',
-}
 
 type SidebarItemProps = {
   icon: LucideIcon
