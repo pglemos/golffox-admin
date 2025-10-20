@@ -269,6 +269,28 @@ type StatusBadge = {
   description: string
 }
 
+type HistoryRegistro = {
+  id: string
+  titulo: string
+  descricao: string
+  horario: string
+  categoria: 'rota' | 'alerta' | 'exportacao'
+  destaque?: string
+}
+
+type HistoryResumo = {
+  icon: LucideIcon
+  titulo: string
+  valor: number
+  sub: string
+  tone?: string
+}
+
+type HistoryPageProps = {
+  glassClass: string
+  tokens: typeof themeTokens.dark
+}
+
 type DashboardPageProps = {
   kpis: KPIState
   goto: (path: string) => void
@@ -417,6 +439,191 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
     </motion.div>
   </motion.div>
 )
+
+const HistoryPage = ({ glassClass, tokens }: HistoryPageProps) => {
+  const resumos: HistoryResumo[] = [
+    {
+      icon: Route,
+      titulo: 'Rotas finalizadas',
+      valor: 128,
+      sub: '+18% vs. mês anterior',
+      tone: brand.primary,
+    },
+    {
+      icon: Users,
+      titulo: 'Passageiros transportados',
+      valor: 3124,
+      sub: '+246 nesta semana',
+      tone: brand.accent,
+    },
+    {
+      icon: FileBarChart,
+      titulo: 'Relatórios exportados',
+      valor: 42,
+      sub: 'Última exportação há 2h',
+      tone: brand.success,
+    },
+    {
+      icon: AlertTriangle,
+      titulo: 'Ocorrências registradas',
+      valor: 6,
+      sub: '3 resolvidas nas últimas 24h',
+      tone: '#f97316',
+    },
+  ]
+
+  const registros: HistoryRegistro[] = [
+    {
+      id: 'rot-9821',
+      titulo: 'Rota 12 concluída sem atrasos',
+      descricao: 'Linha Centro ↔️ Aeroporto finalizada com ocupação média de 84%.',
+      horario: '09:45',
+      categoria: 'rota',
+      destaque: '+15 min de antecipação',
+    },
+    {
+      id: 'exp-4410',
+      titulo: 'Exportação de relatório de performance',
+      descricao: 'Arquivo .xlsx enviado para ana.lima@golffox.com.',
+      horario: '08:57',
+      categoria: 'exportacao',
+      destaque: 'Formato Excel',
+    },
+    {
+      id: 'rot-9810',
+      titulo: 'Atualização de trajeto no período da tarde',
+      descricao: 'Rotas 8 e 9 ajustadas automaticamente após trânsito intenso.',
+      horario: '07:32',
+      categoria: 'rota',
+    },
+    {
+      id: 'ale-207',
+      titulo: 'Alerta crítico resolvido',
+      descricao: 'Equipe de resgate encerrou ocorrência de pneu furado na Rota 5.',
+      horario: '06:18',
+      categoria: 'alerta',
+      destaque: 'Tempo de resposta: 11 min',
+    },
+  ]
+
+  const exportacoes: Array<{
+    id: string
+    responsavel: string
+    formato: string
+    periodo: string
+    horario: string
+  }> = [
+    { id: 'exp-4410', responsavel: 'Ana Lima', formato: 'Excel (.xlsx)', periodo: 'Semana atual', horario: '08:57' },
+    { id: 'exp-4378', responsavel: 'Bruno Rocha', formato: 'PDF', periodo: 'Rotas críticas', horario: 'Ontem • 19:12' },
+    { id: 'exp-4302', responsavel: 'Equipe BI', formato: 'CSV', periodo: 'Histórico mensal', horario: 'Ontem • 08:05' },
+  ]
+
+  const badgePorCategoria: Record<HistoryRegistro['categoria'], { icon: string; classe: string; texto: string }> = {
+    rota: {
+      icon: '🛣️',
+      classe: 'bg-blue-500/10 border border-blue-400/30 text-blue-100',
+      texto: 'Atualização de rota',
+    },
+    alerta: {
+      icon: '⚠️',
+      classe: 'bg-amber-500/15 border border-amber-400/30 text-amber-100',
+      texto: 'Alerta operacional',
+    },
+    exportacao: {
+      icon: '📤',
+      classe: 'bg-emerald-500/10 border border-emerald-400/30 text-emerald-100',
+      texto: 'Exportação concluída',
+    },
+  }
+
+  return (
+    <motion.div variants={fadeVariants} initial="hidden" animate="visible" exit="exit" className="space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="text-left">
+          <h1 className={`text-2xl font-semibold ${tokens.quickTitle}`}>Histórico operacional</h1>
+          <p className={`text-sm opacity-80 ${tokens.quickDescription}`}>
+            Acompanhe eventos recentes, exportações de relatórios e indicadores consolidados da operação.
+          </p>
+        </div>
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.96 }}
+          className={`px-4 py-2 rounded-full border text-sm font-medium transition ${glassClass}`}
+        >
+          Baixar resumo diário
+        </motion.button>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+        {resumos.map((item) => (
+          <MetricCard
+            key={item.titulo}
+            icon={item.icon}
+            title={item.titulo}
+            value={item.valor}
+            sub={item.sub}
+            tone={item.tone}
+            glassClass={glassClass}
+            titleClass={tokens.quickTitle}
+          />
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+        <motion.div className={`rounded-2xl p-6 transition-all xl:col-span-3 ${glassClass}`} layout>
+          <div className={`flex items-center justify-between mb-4 ${tokens.quickTitle}`}>
+            <span className="font-semibold text-lg">Linha do tempo</span>
+            <span className="text-xs opacity-75">Atualizado há 3 minutos</span>
+          </div>
+
+          <div className="space-y-5">
+            {registros.map((registro) => {
+              const badge = badgePorCategoria[registro.categoria]
+              return (
+                <motion.div
+                  key={registro.id}
+                  whileHover={{ scale: 1.01, translateX: 6 }}
+                  className="rounded-2xl border border-white/10 bg-white/5 p-4 flex flex-col gap-2"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs tracking-wide uppercase opacity-70">{registro.horario}</span>
+                    <span className={`text-[11px] font-medium px-3 py-1 rounded-full flex items-center gap-2 ${badge.classe}`}>
+                      <span>{badge.icon}</span>
+                      {badge.texto}
+                    </span>
+                  </div>
+                  <div className={`text-base font-semibold ${tokens.quickTitle}`}>{registro.titulo}</div>
+                  <p className={`text-sm leading-relaxed opacity-80 ${tokens.quickDescription}`}>{registro.descricao}</p>
+                  {registro.destaque ? (
+                    <span className="text-xs font-medium text-emerald-300">{registro.destaque}</span>
+                  ) : null}
+                </motion.div>
+              )
+            })}
+          </div>
+        </motion.div>
+
+        <motion.div className={`rounded-2xl p-6 transition-all xl:col-span-2 ${glassClass}`} layout>
+          <div className={`font-semibold text-lg mb-4 ${tokens.quickTitle}`}>Exportações recentes</div>
+          <div className="space-y-4">
+            {exportacoes.map((exp) => (
+              <div key={exp.id} className="rounded-xl border border-white/10 bg-white/5 p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold">{exp.formato}</span>
+                  <span className="text-xs opacity-70">{exp.horario}</span>
+                </div>
+                <div className="mt-2 text-sm opacity-80">
+                  Responsável: <span className="font-medium">{exp.responsavel}</span>
+                </div>
+                <div className="text-xs opacity-70">Período: {exp.periodo}</div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
+  )
+}
 
 export default function AdminPremiumResponsive() {
   const [route, setRoute] = useState('/')
@@ -580,7 +787,7 @@ export default function AdminPremiumResponsive() {
     { icon: LifeBuoy, label: 'Support', path: '/support' },
     { icon: Bell, label: 'Alerts', path: '/alerts' },
     { icon: FileBarChart, label: 'Reports', path: '/reports' },
-    { icon: History, label: 'History', path: '/history' },
+    { icon: History, label: 'Histórico', path: '/history' },
     { icon: Wallet2, label: 'Costs', path: '/costs' },
   ]
 
@@ -688,6 +895,8 @@ export default function AdminPremiumResponsive() {
                 statuses={statuses}
                 tokens={tokens}
               />
+            ) : route === '/history' ? (
+              <HistoryPage key="history" glassClass={glassClass} tokens={tokens} />
             ) : (
               <motion.div
                 key={route}
