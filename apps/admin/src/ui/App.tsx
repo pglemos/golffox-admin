@@ -20,6 +20,14 @@ import {
   Menu,
   Sun,
   Moon,
+  Headset,
+  MessageCircle,
+  Phone,
+  Mail,
+  BookOpen,
+  HelpCircle,
+  Clock,
+  FileText,
 } from 'lucide-react'
 import {
   LineChart,
@@ -418,6 +426,255 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
   </motion.div>
 )
 
+type SupportPageProps = {
+  tokens: typeof themeTokens.dark
+  glassClass: string
+}
+
+const SupportPage = ({ tokens, glassClass }: SupportPageProps) => {
+  const canais = [
+    {
+      titulo: 'Chat em tempo real',
+      descricao: 'Fale com um especialista da Golf Fox em português de segunda a sexta das 8h às 20h.',
+      icon: MessageCircle,
+      acoes: [
+        { label: 'Abrir chat web', href: 'https://app.golffox.com/suporte/chat' },
+        { label: 'WhatsApp empresarial', href: 'https://wa.me/5511999999999' },
+      ],
+    },
+    {
+      titulo: 'Central telefônica',
+      descricao: 'Atendimento prioritário para incidentes críticos e emergências de operação.',
+      icon: Phone,
+      acoes: [
+        { label: 'Ligar para 0800-777-4653', href: 'tel:08007774653' },
+        { label: 'Agendar retorno', href: 'https://cal.com/golffox/suporte' },
+      ],
+    },
+    {
+      titulo: 'E-mail & portal',
+      descricao: 'Abra e acompanhe chamados com histórico completo e anexos ilimitados.',
+      icon: Mail,
+      acoes: [
+        { label: 'Enviar e-mail', href: 'mailto:suporte@golffox.com' },
+        { label: 'Acessar portal do cliente', href: 'https://app.golffox.com/central' },
+      ],
+    },
+  ] as const
+
+  const faqs = [
+    {
+      pergunta: 'Como abrir um chamado de emergência?',
+      resposta:
+        'Priorize o canal telefônico. Ligue para 0800-777-4653, informe o código do seu contrato e o número da rota afetada. Nosso time cria o ticket automaticamente e acompanha até a normalização.',
+    },
+    {
+      pergunta: 'Qual o prazo de resposta do suporte?',
+      resposta:
+        'Chamados críticos recebem primeira resposta em até 10 minutos e solução definitiva em até 2 horas. Demandas padrão têm SLA de resposta de 2 horas úteis e resolução em até 1 dia útil.',
+    },
+    {
+      pergunta: 'Posso acompanhar o status dos tickets?',
+      resposta:
+        'Sim. Todos os chamados ficam disponíveis no portal do cliente com histórico de interações, SLA e responsáveis. Você também recebe notificações por e-mail a cada atualização.',
+    },
+  ] as const
+
+  const guias = [
+    {
+      titulo: 'Guia rápido de incidentes',
+      descricao: 'Checklist em 4 passos para restaurar operações críticas e informar as partes interessadas.',
+      icon: FileText,
+      href: 'https://docs.golffox.com/guias/incident-response.pdf',
+    },
+    {
+      titulo: 'Base de conhecimento',
+      descricao: 'Artigos, vídeos e treinamentos sob demanda para administradores e motoristas.',
+      icon: BookOpen,
+      href: 'https://docs.golffox.com/base-de-conhecimento',
+    },
+    {
+      titulo: 'Treinamento personalizado',
+      descricao: 'Agende sessões com especialistas para implantações, integrações e revisões operacionais.',
+      icon: Headset,
+      href: 'https://cal.com/golffox/treinamento',
+    },
+  ] as const
+
+  return (
+    <motion.div variants={fadeVariants} initial="hidden" animate="visible" exit="exit" className="space-y-8 text-left">
+      <motion.div className={`rounded-2xl p-6 md:p-8 ${glassClass}`} layout>
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+          <div className="space-y-3">
+            <div className={`uppercase text-xs tracking-[0.4em] ${tokens.quickDescription}`}>Suporte</div>
+            <h1 className={`text-2xl md:text-3xl font-semibold ${tokens.quickTitle}`}>
+              Central de atendimento em português do Brasil
+            </h1>
+            <p className={`text-sm md:text-base leading-relaxed ${tokens.quickDescription}`}>
+              Nossa equipe está disponível 24/7 para manter suas operações rodoviárias em pleno funcionamento. Escolha o canal
+              ideal, acompanhe indicadores de SLA em tempo real e consulte materiais de autoatendimento sem sair do painel.
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 min-w-[220px]">
+            <div className={`rounded-xl border p-4 ${glassClass}`}>
+              <div className="flex items-center gap-3">
+                <Clock size={20} className="text-emerald-400" />
+                <div>
+                  <div className={`text-sm font-semibold ${tokens.quickTitle}`}>SLA ativo</div>
+                  <p className={`text-xs ${tokens.quickDescription}`}>Tempo médio de resposta atual: 6 minutos</p>
+                </div>
+              </div>
+            </div>
+            <div className={`rounded-xl border p-4 ${glassClass}`}>
+              <div className="flex items-center gap-3">
+                <HelpCircle size={20} className="text-amber-400" />
+                <div>
+                  <div className={`text-sm font-semibold ${tokens.quickTitle}`}>Última atualização</div>
+                  <p className={`text-xs ${tokens.quickDescription}`}>Todos os sistemas operacionais em funcionamento</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {canais.map((canal) => (
+          <motion.div
+            key={canal.titulo}
+            whileHover={{ translateY: -4, scale: 1.01 }}
+            className={`rounded-2xl p-6 border ${glassClass} flex flex-col gap-5`}
+          >
+            <div className="flex items-start gap-3">
+              <span className="grid h-11 w-11 place-items-center rounded-xl bg-blue-500/10 text-blue-400 border border-blue-400/20">
+                <canal.icon size={22} />
+              </span>
+              <div className="space-y-1">
+                <div className={`text-lg font-semibold ${tokens.quickTitle}`}>{canal.titulo}</div>
+                <p className={`text-sm leading-relaxed ${tokens.quickDescription}`}>{canal.descricao}</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {canal.acoes.map((acao) => (
+                <a
+                  key={acao.label}
+                  href={acao.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border border-blue-500/40 bg-blue-500/10 px-3 py-1.5 text-xs font-semibold text-blue-200 transition hover:bg-blue-500/20"
+                >
+                  {acao.label}
+                  <ChevronRight size={14} />
+                </a>
+              ))}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <motion.div className={`rounded-2xl p-6 border ${glassClass} space-y-4`} layout>
+          <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Resumo operacional</div>
+          <ul className={`text-sm space-y-3 ${tokens.quickDescription}`}>
+            <li>
+              <strong className="text-emerald-400">Status:</strong> Atendimento disponível, fila atual com 3 chamados aguardando
+              retorno.
+            </li>
+            <li>
+              <strong className="text-emerald-400">Plantão:</strong> Equipe de plantão com especialistas em telemetria e rotas
+              inteligentes.
+            </li>
+            <li>
+              <strong className="text-emerald-400">Comunicação:</strong> Alertas de indisponibilidade são enviados via SMS e
+              e-mail imediatamente.
+            </li>
+          </ul>
+        </motion.div>
+
+        <motion.div className={`rounded-2xl p-6 border ${glassClass} space-y-4`} layout>
+          <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Escalonamento</div>
+          <p className={`text-sm leading-relaxed ${tokens.quickDescription}`}>
+            Caso a solução exceda o SLA comprometido, escalonamos automaticamente para a gerência técnica e mantemos você
+            informado a cada 15 minutos com atualizações sobre a evolução do incidente.
+          </p>
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-400" /> Atendimento nível 1 — analistas bilíngues
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-blue-400" /> Nível 2 — especialistas em integrações e APIs
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-amber-400" /> Nível 3 — engenharia e produto
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div className={`rounded-2xl p-6 border ${glassClass} space-y-4`} layout>
+          <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Indicadores de satisfação</div>
+          <div className="space-y-3 text-sm">
+            <div className="flex items-center justify-between">
+              <span className={tokens.quickDescription}>NPS (últimos 90 dias)</span>
+              <span className="text-emerald-400 font-semibold">87</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className={tokens.quickDescription}>Tempo médio de resolução</span>
+              <span className="text-emerald-400 font-semibold">1h43</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className={tokens.quickDescription}>Chamados reabertos</span>
+              <span className="text-emerald-400 font-semibold">2%</span>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      <motion.div className={`rounded-2xl p-6 border ${glassClass} space-y-4`} layout>
+        <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Perguntas frequentes</div>
+        <div className="space-y-3">
+          {faqs.map((faq) => (
+            <details
+              key={faq.pergunta}
+              className="group rounded-xl border border-white/10 bg-white/5 p-4 open:bg-white/10"
+            >
+              <summary className={`flex cursor-pointer items-center justify-between text-sm font-semibold ${tokens.quickTitle}`}>
+                {faq.pergunta}
+                <ChevronRight className="transition-transform group-open:rotate-90" size={16} />
+              </summary>
+              <p className={`mt-2 text-sm leading-relaxed ${tokens.quickDescription}`}>{faq.resposta}</p>
+            </details>
+          ))}
+        </div>
+      </motion.div>
+
+      <motion.div className={`rounded-2xl p-6 border ${glassClass} space-y-4`} layout>
+        <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Materiais de apoio</div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {guias.map((guia) => (
+            <a
+              key={guia.titulo}
+              href={guia.href}
+              target="_blank"
+              rel="noreferrer"
+              className={`rounded-2xl border px-5 py-4 transition ${glassClass} hover:translate-y-[-4px] hover:shadow-lg`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="grid h-10 w-10 place-items-center rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                  <guia.icon size={20} />
+                </span>
+                <div>
+                  <div className={`text-sm font-semibold ${tokens.quickTitle}`}>{guia.titulo}</div>
+                  <p className={`text-xs mt-1 leading-relaxed ${tokens.quickDescription}`}>{guia.descricao}</p>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
 export default function AdminPremiumResponsive() {
   const [route, setRoute] = useState('/')
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -688,6 +945,8 @@ export default function AdminPremiumResponsive() {
                 statuses={statuses}
                 tokens={tokens}
               />
+            ) : route === '/support' ? (
+              <SupportPage key="support" tokens={tokens} glassClass={glassClass} />
             ) : (
               <motion.div
                 key={route}
