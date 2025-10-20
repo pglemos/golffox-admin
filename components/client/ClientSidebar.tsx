@@ -49,7 +49,7 @@ const ClientSidebar: React.FC<ClientSidebarProps> = ({ currentView, setCurrentVi
         <ul>
           <NavItem
             icon={<DashboardIcon className="h-6 w-6" variant="premium" />}
-            label="Dashboard"
+            label="Painel"
             isActive={currentView === 'Dashboard'}
             onClick={() => setCurrentView('Dashboard')}
           />
@@ -62,7 +62,7 @@ const ClientSidebar: React.FC<ClientSidebarProps> = ({ currentView, setCurrentVi
         </ul>
       </nav>
       <div className="mt-auto text-center text-golffox-gray-light/50 text-sm">
-        <p>Powered by Golffox</p>
+        <p>Desenvolvido pela Golffox</p>
       </div>
     </aside>
   );

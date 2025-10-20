@@ -64,10 +64,10 @@ const ClientDashboard: React.FC = () => {
                     </div>
                 </div>
                  <div className="flex items-center text-sm text-golffox-gray-medium">
-                    <span className="mr-2">Powered by</span> 
-                    {/* FIX: Use Base64 logo to prevent broken image icon. */}
-                    <Image src="/golffox-logo.svg" alt="Golffox Logo" className="h-6" width={24} height={24} />
-                </div>
+                    <span className="mr-2">Desenvolvido pela</span> 
+                     {/* FIX: Use Base64 logo to prevent broken image icon. */}
+                     <Image src="/golffox-logo.svg" alt="Golffox Logo" className="h-6" width={24} height={24} />
+                 </div>
             </header>
 
             <main className="flex-1 p-8 overflow-y-auto">

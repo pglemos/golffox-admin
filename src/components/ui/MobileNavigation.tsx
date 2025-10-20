@@ -125,7 +125,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ currentView, setCur
         <div className="grid grid-cols-5 gap-1 p-2">
           <MobileNavItem
             icon={<DashboardIcon className="h-5 w-5" variant="premium" />}
-            label="Dashboard"
+            label="Painel"
             isActive={currentView === VIEWS.DASHBOARD}
             onClick={() => setCurrentView(VIEWS.DASHBOARD)}
           />
