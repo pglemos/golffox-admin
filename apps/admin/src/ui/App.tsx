@@ -12,10 +12,14 @@ import {
   Menu,
   Sun,
   Moon,
-  Fuel,
-  Gauge,
-  TrendingUp,
-  PieChart,
+  Headset,
+  MessageCircle,
+  Phone,
+  Mail,
+  BookOpen,
+  HelpCircle,
+  Clock,
+  FileText,
 } from 'lucide-react'
 import {
   LineChart,
@@ -670,9 +674,9 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
       <div className={`font-semibold mb-2 text-lg ${tokens.quickTitle}`}>Ações rápidas</div>
       <div className="flex overflow-x-auto md:grid md:grid-cols-3 gap-6 pb-2 md:pb-0 snap-x snap-mandatory [-webkit-overflow-scrolling:touch]">
         <QuickAction
-          title="Acompanhar veículos"
-          description="Mapa ao vivo com geolocalização em segundos"
-          onClick={() => goto('/mapa')}
+          title="Track vehicles"
+          description="Live map with second-by-second geolocation"
+          onClick={() => goto('/map')}
           icon={MapIcon}
           glassClass={glassClass}
           titleClass={tokens.quickTitle}
@@ -681,7 +685,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
         <QuickAction
           title="View analytics"
           description="Dashboards by route, fleet and occupancy"
-          onClick={() => goto(REPORTS_ROUTE)}
+          onClick={() => goto('/reports')}
           tone={brand.accent}
           icon={FileBarChart}
           glassClass={glassClass}
@@ -689,9 +693,9 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
           descriptionClass={tokens.quickDescription}
         />
         <QuickAction
-          title="Configuração e branding"
-          description="Notificações, tema e integrações"
-          onClick={() => goto('/configuracoes')}
+          title="Setup & branding"
+          description="Notification, theming and integration preferences"
+          onClick={() => goto('/permissions')}
           tone="#94a3b8"
           icon={Settings}
           glassClass={glassClass}
@@ -718,187 +722,244 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
   </motion.div>
 )
 
-const HistoryPage = ({ glassClass, tokens }: HistoryPageProps) => {
-  const resumos: HistoryResumo[] = [
-    {
-      icon: Route,
-      titulo: 'Rotas finalizadas',
-      valor: 128,
-      sub: '+18% vs. mês anterior',
-      tone: brand.primary,
-    },
-    {
-      icon: Users,
-      titulo: 'Passageiros transportados',
-      valor: 3124,
-      sub: '+246 nesta semana',
-      tone: brand.accent,
-    },
-    {
-      icon: FileBarChart,
-      titulo: 'Relatórios exportados',
-      valor: 42,
-      sub: 'Última exportação há 2h',
-      tone: brand.success,
-    },
-    {
-      icon: AlertTriangle,
-      titulo: 'Ocorrências registradas',
-      valor: 6,
-      sub: '3 resolvidas nas últimas 24h',
-      tone: '#f97316',
-    },
-  ]
+type SupportPageProps = {
+  tokens: typeof themeTokens.dark
+  glassClass: string
+}
 
-  const registros: HistoryRegistro[] = [
+const SupportPage = ({ tokens, glassClass }: SupportPageProps) => {
+  const canais = [
     {
-      id: 'rot-9821',
-      titulo: 'Rota 12 concluída sem atrasos',
-      descricao: 'Linha Centro ↔️ Aeroporto finalizada com ocupação média de 84%.',
-      horario: '09:45',
-      categoria: 'rota',
-      destaque: '+15 min de antecipação',
+      titulo: 'Chat em tempo real',
+      descricao: 'Converse com especialistas da Golf Fox em português de segunda a sexta das 8h às 20h.',
+      icon: MessageCircle,
+      acoes: [
+        { label: 'Abrir chat web', href: 'https://app.golffox.com/suporte/chat' },
+        { label: 'WhatsApp empresarial', href: 'https://wa.me/5511999999999' },
+      ],
     },
     {
-      id: 'exp-4410',
-      titulo: 'Exportação de relatório de performance',
-      descricao: 'Arquivo .xlsx enviado para ana.lima@golffox.com.',
-      horario: '08:57',
-      categoria: 'exportacao',
-      destaque: 'Formato Excel',
+      titulo: 'Central telefônica',
+      descricao: 'Atendimento prioritário para incidentes críticos e emergências operacionais.',
+      icon: Phone,
+      acoes: [
+        { label: 'Ligar para 0800-777-4653', href: 'tel:08007774653' },
+        { label: 'Agendar retorno', href: 'https://cal.com/golffox/suporte' },
+      ],
     },
     {
-      id: 'rot-9810',
-      titulo: 'Atualização de trajeto no período da tarde',
-      descricao: 'Rotas 8 e 9 ajustadas automaticamente após trânsito intenso.',
-      horario: '07:32',
-      categoria: 'rota',
+      titulo: 'E-mail e portal',
+      descricao: 'Abra chamados, envie anexos e acompanhe o histórico completo em tempo real.',
+      icon: Mail,
+      acoes: [
+        { label: 'Enviar e-mail', href: 'mailto:suporte@golffox.com' },
+        { label: 'Acessar portal do cliente', href: 'https://app.golffox.com/central' },
+      ],
     },
-    {
-      id: 'ale-207',
-      titulo: 'Alerta crítico resolvido',
-      descricao: 'Equipe de resgate encerrou ocorrência de pneu furado na Rota 5.',
-      horario: '06:18',
-      categoria: 'alerta',
-      destaque: 'Tempo de resposta: 11 min',
-    },
-  ]
+  ] as const
 
-  const exportacoes: Array<{
-    id: string
-    responsavel: string
-    formato: string
-    periodo: string
-    horario: string
-  }> = [
-    { id: 'exp-4410', responsavel: 'Ana Lima', formato: 'Excel (.xlsx)', periodo: 'Semana atual', horario: '08:57' },
-    { id: 'exp-4378', responsavel: 'Bruno Rocha', formato: 'PDF', periodo: 'Rotas críticas', horario: 'Ontem • 19:12' },
-    { id: 'exp-4302', responsavel: 'Equipe BI', formato: 'CSV', periodo: 'Histórico mensal', horario: 'Ontem • 08:05' },
-  ]
+  const faqs = [
+    {
+      pergunta: 'Como abrir um chamado de emergência?',
+      resposta:
+        'Priorize o canal telefônico. Informe o código do contrato e a rota afetada para criarmos o ticket automaticamente e acompanhar até a normalização.',
+    },
+    {
+      pergunta: 'Qual o prazo de resposta do suporte?',
+      resposta:
+        'Chamados críticos recebem primeira resposta em até 10 minutos. Demandas padrão têm SLA de 2 horas úteis e resolução em até 1 dia útil.',
+    },
+    {
+      pergunta: 'Posso acompanhar o status dos tickets?',
+      resposta:
+        'Sim. Todos os chamados ficam disponíveis no portal com histórico, SLA e responsáveis. Enviamos notificações a cada atualização.',
+    },
+  ] as const
 
-  const badgePorCategoria: Record<HistoryRegistro['categoria'], { icon: string; classe: string; texto: string }> = {
-    rota: {
-      icon: '🛣️',
-      classe: 'bg-blue-500/10 border border-blue-400/30 text-blue-100',
-      texto: 'Atualização de rota',
+  const materiais = [
+    {
+      titulo: 'Guia rápido de incidentes',
+      descricao: 'Checklist em 4 passos para restaurar operações críticas com segurança.',
+      icon: FileText,
+      href: 'https://docs.golffox.com/guias/incident-response.pdf',
     },
-    alerta: {
-      icon: '⚠️',
-      classe: 'bg-amber-500/15 border border-amber-400/30 text-amber-100',
-      texto: 'Alerta operacional',
+    {
+      titulo: 'Base de conhecimento',
+      descricao: 'Artigos e vídeos sob demanda para administradores e motoristas.',
+      icon: BookOpen,
+      href: 'https://docs.golffox.com/base-de-conhecimento',
     },
-    exportacao: {
-      icon: '📤',
-      classe: 'bg-emerald-500/10 border border-emerald-400/30 text-emerald-100',
-      texto: 'Exportação concluída',
+    {
+      titulo: 'Treinamento personalizado',
+      descricao: 'Agende sessões com especialistas para implantações e integrações.',
+      icon: Headset,
+      href: 'https://cal.com/golffox/treinamento',
     },
-  }
+  ] as const
 
   return (
-    <motion.div variants={fadeVariants} initial="hidden" animate="visible" exit="exit" className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="text-left">
-          <h1 className={`text-2xl font-semibold ${tokens.quickTitle}`}>Histórico operacional</h1>
-          <p className={`text-sm opacity-80 ${tokens.quickDescription}`}>
-            Acompanhe eventos recentes, exportações de relatórios e indicadores consolidados da operação.
-          </p>
+    <motion.div variants={fadeVariants} initial="hidden" animate="visible" exit="exit" className="space-y-8 text-left">
+      <motion.div className={`rounded-2xl p-6 md:p-8 ${glassClass}`} layout>
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+          <div className="space-y-3">
+            <div className={`uppercase text-xs tracking-[0.4em] ${tokens.quickDescription}`}>Suporte</div>
+            <h1 className={`text-2xl md:text-3xl font-semibold ${tokens.quickTitle}`}>
+              Central de atendimento em português do Brasil
+            </h1>
+            <p className={`text-sm md:text-base leading-relaxed ${tokens.quickDescription}`}>
+              Nossa equipe está disponível para manter as operações rodoviárias em pleno funcionamento. Escolha o canal ideal,
+              acompanhe indicadores de SLA em tempo real e consulte materiais de autoatendimento sem sair do painel.
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 min-w-[220px]">
+            <div className={`rounded-xl border p-4 ${glassClass}`}>
+              <div className="flex items-center gap-3">
+                <Clock size={20} className="text-emerald-400" />
+                <div>
+                  <div className={`text-sm font-semibold ${tokens.quickTitle}`}>SLA ativo</div>
+                  <p className={`text-xs ${tokens.quickDescription}`}>Tempo médio de resposta atual: 6 minutos</p>
+                </div>
+              </div>
+            </div>
+            <div className={`rounded-xl border p-4 ${glassClass}`}>
+              <div className="flex items-center gap-3">
+                <HelpCircle size={20} className="text-amber-400" />
+                <div>
+                  <div className={`text-sm font-semibold ${tokens.quickTitle}`}>Última atualização</div>
+                  <p className={`text-xs ${tokens.quickDescription}`}>Todos os sistemas operacionais em funcionamento</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.96 }}
-          className={`px-4 py-2 rounded-full border text-sm font-medium transition ${glassClass}`}
-        >
-          Baixar resumo diário
-        </motion.button>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-        {resumos.map((item) => (
-          <MetricCard
-            key={item.titulo}
-            icon={item.icon}
-            title={item.titulo}
-            value={item.valor}
-            sub={item.sub}
-            tone={item.tone}
-            glassClass={glassClass}
-            titleClass={tokens.quickTitle}
-          />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {canais.map((canal) => (
+          <motion.div
+            key={canal.titulo}
+            whileHover={{ translateY: -4, scale: 1.01 }}
+            className={`rounded-2xl p-6 border ${glassClass} flex flex-col gap-5`}
+          >
+            <div className="flex items-start gap-3">
+              <span className="grid h-11 w-11 place-items-center rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                <canal.icon size={22} />
+              </span>
+              <div className="space-y-1">
+                <div className={`text-lg font-semibold ${tokens.quickTitle}`}>{canal.titulo}</div>
+                <p className={`text-sm leading-relaxed ${tokens.quickDescription}`}>{canal.descricao}</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {canal.acoes.map((acao) => (
+                <a
+                  key={acao.label}
+                  href={acao.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border border-blue-500/40 bg-blue-500/10 px-3 py-1.5 text-xs font-semibold text-blue-200 transition hover:bg-blue-500/20"
+                >
+                  {acao.label}
+                  <ChevronRight size={14} />
+                </a>
+              ))}
+            </div>
+          </motion.div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-        <motion.div className={`rounded-2xl p-6 transition-all xl:col-span-3 ${glassClass}`} layout>
-          <div className={`flex items-center justify-between mb-4 ${tokens.quickTitle}`}>
-            <span className="font-semibold text-lg">Linha do tempo</span>
-            <span className="text-xs opacity-75">Atualizado há 3 minutos</span>
-          </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <motion.div className={`rounded-2xl p-6 border ${glassClass} space-y-4`} layout>
+          <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Resumo operacional</div>
+          <ul className={`text-sm space-y-3 ${tokens.quickDescription}`}>
+            <li>
+              <strong className="text-emerald-400">Status:</strong> Atendimento disponível, fila atual com 3 chamados aguardando retorno.
+            </li>
+            <li>
+              <strong className="text-emerald-400">Plantão:</strong> Equipe de plantão com especialistas em telemetria e rotas inteligentes.
+            </li>
+            <li>
+              <strong className="text-emerald-400">Comunicação:</strong> Alertas de indisponibilidade enviados via SMS e e-mail imediatamente.
+            </li>
+          </ul>
+        </motion.div>
 
-          <div className="space-y-5">
-            {registros.map((registro) => {
-              const badge = badgePorCategoria[registro.categoria]
-              return (
-                <motion.div
-                  key={registro.id}
-                  whileHover={{ scale: 1.01, translateX: 6 }}
-                  className="rounded-2xl border border-white/10 bg-white/5 p-4 flex flex-col gap-2"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs tracking-wide uppercase opacity-70">{registro.horario}</span>
-                    <span className={`text-[11px] font-medium px-3 py-1 rounded-full flex items-center gap-2 ${badge.classe}`}>
-                      <span>{badge.icon}</span>
-                      {badge.texto}
-                    </span>
-                  </div>
-                  <div className={`text-base font-semibold ${tokens.quickTitle}`}>{registro.titulo}</div>
-                  <p className={`text-sm leading-relaxed opacity-80 ${tokens.quickDescription}`}>{registro.descricao}</p>
-                  {registro.destaque ? (
-                    <span className="text-xs font-medium text-emerald-300">{registro.destaque}</span>
-                  ) : null}
-                </motion.div>
-              )
-            })}
+        <motion.div className={`rounded-2xl p-6 border ${glassClass} space-y-4`} layout>
+          <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Escalonamento</div>
+          <p className={`text-sm leading-relaxed ${tokens.quickDescription}`}>
+            Caso a solução exceda o SLA comprometido, escalonamos automaticamente para a gerência técnica e mantemos você informado a cada 15 minutos.
+          </p>
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-400" /> Atendimento nível 1 — analistas bilíngues
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-blue-400" /> Nível 2 — especialistas em integrações e APIs
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-amber-400" /> Nível 3 — engenharia e produto
+            </div>
           </div>
         </motion.div>
 
-        <motion.div className={`rounded-2xl p-6 transition-all xl:col-span-2 ${glassClass}`} layout>
-          <div className={`font-semibold text-lg mb-4 ${tokens.quickTitle}`}>Exportações recentes</div>
-          <div className="space-y-4">
-            {exportacoes.map((exp) => (
-              <div key={exp.id} className="rounded-xl border border-white/10 bg-white/5 p-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold">{exp.formato}</span>
-                  <span className="text-xs opacity-70">{exp.horario}</span>
-                </div>
-                <div className="mt-2 text-sm opacity-80">
-                  Responsável: <span className="font-medium">{exp.responsavel}</span>
-                </div>
-                <div className="text-xs opacity-70">Período: {exp.periodo}</div>
-              </div>
-            ))}
+        <motion.div className={`rounded-2xl p-6 border ${glassClass} space-y-4`} layout>
+          <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Indicadores de satisfação</div>
+          <div className="space-y-3 text-sm">
+            <div className="flex items-center justify-between">
+              <span className={tokens.quickDescription}>NPS (últimos 90 dias)</span>
+              <span className="text-emerald-400 font-semibold">87</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className={tokens.quickDescription}>Tempo médio de resolução</span>
+              <span className="text-emerald-400 font-semibold">1h43</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className={tokens.quickDescription}>Chamados reabertos</span>
+              <span className="text-emerald-400 font-semibold">2%</span>
+            </div>
           </div>
         </motion.div>
       </div>
+
+      <motion.div className={`rounded-2xl p-6 border ${glassClass} space-y-4`} layout>
+        <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Perguntas frequentes</div>
+        <div className="space-y-3">
+          {faqs.map((faq) => (
+            <details key={faq.pergunta} className="group rounded-xl border border-white/10 bg-white/5 p-4 open:bg-white/10">
+              <summary className={`flex cursor-pointer items-center justify-between text-sm font-semibold ${tokens.quickTitle}`}>
+                {faq.pergunta}
+                <ChevronRight className="transition-transform group-open:rotate-90" size={16} />
+              </summary>
+              <p className={`mt-2 text-sm leading-relaxed ${tokens.quickDescription}`}>{faq.resposta}</p>
+            </details>
+          ))}
+        </div>
+      </motion.div>
+
+      <motion.div className={`rounded-2xl p-6 border ${glassClass} space-y-4`} layout>
+        <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Materiais de apoio</div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {materiais.map((material) => (
+            <a
+              key={material.titulo}
+              href={material.href}
+              target="_blank"
+              rel="noreferrer"
+              className={`rounded-2xl border px-5 py-4 transition ${glassClass} hover:-translate-y-1 hover:shadow-lg`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="grid h-10 w-10 place-items-center rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                  <material.icon size={20} />
+                </span>
+                <div>
+                  <div className={`text-sm font-semibold ${tokens.quickTitle}`}>{material.titulo}</div>
+                  <p className={`text-xs mt-1 leading-relaxed ${tokens.quickDescription}`}>{material.descricao}</p>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </motion.div>
     </motion.div>
   )
 }
@@ -1099,7 +1160,7 @@ export default function AdminPremiumResponsive() {
     { icon: Users, label: 'Drivers', path: '/drivers' },
     { icon: Building2, label: 'Companies', path: '/companies' },
     { icon: ShieldCheck, label: 'Permissions', path: '/permissions' },
-    { icon: LifeBuoy, label: 'Support', path: '/support' },
+    { icon: LifeBuoy, label: 'Suporte', path: '/support' },
     { icon: Bell, label: 'Alerts', path: '/alerts' },
     { icon: FileBarChart, label: 'Relatórios', path: REPORTS_ROUTE },
     { icon: History, label: 'History', path: '/history' },
@@ -1261,17 +1322,8 @@ export default function AdminPremiumResponsive() {
                 statuses={statuses}
                 tokens={tokens}
               />
-            ) : REPORTS_ROUTE_ALIASES.has(route) ? (
-              <motion.div
-                key="reports"
-                variants={fadeVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className={`rounded-2xl p-6 text-left ${glassClass}`}
-              >
-                <Reports />
-              </motion.div>
+            ) : route === '/support' ? (
+              <SupportPage key="support" tokens={tokens} glassClass={glassClass} />
             ) : (
               <motion.div
                 key={route}
