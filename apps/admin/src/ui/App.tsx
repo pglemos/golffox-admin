@@ -834,7 +834,7 @@ export default function AdminPremiumResponsive() {
     { icon: Users, label: 'Drivers', path: '/drivers' },
     { icon: Building2, label: 'Companies', path: '/companies' },
     { icon: ShieldCheck, label: 'Permissions', path: '/permissions' },
-    { icon: LifeBuoy, label: 'Support', path: '/support' },
+    { icon: LifeBuoy, label: 'Suporte', path: '/support' },
     { icon: Bell, label: 'Alerts', path: '/alerts' },
     { icon: FileBarChart, label: 'Reports', path: '/reports' },
     { icon: History, label: 'History', path: '/history' },
@@ -956,8 +956,8 @@ export default function AdminPremiumResponsive() {
                 exit="exit"
                 className={`rounded-2xl p-6 text-center text-sm md:text-base ${glassClass}`}
               >
-                <div className="text-lg font-semibold mb-2">Coming soon</div>
-                The page {route} is in progress.
+                <div className="text-lg font-semibold mb-2">Em breve</div>
+                A página {route} está em desenvolvimento.
               </motion.div>
             )}
           </AnimatePresence>
