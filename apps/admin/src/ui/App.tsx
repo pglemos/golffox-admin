@@ -94,6 +94,25 @@ const fadeVariants = {
   exit: { opacity: 0, y: -18, transition: { duration: 0.35, ease: 'easeIn' } },
 }
 
+const NAV_ITEMS: Array<{ icon: LucideIcon; label: string; path: string }> = [
+  { icon: LayoutGrid, label: 'Painel', path: '/' },
+  { icon: MapIcon, label: 'Mapa', path: '/map' },
+  { icon: Route, label: 'Rotas', path: '/routes' },
+  { icon: Bus, label: 'Veículos', path: '/vehicles' },
+  { icon: Users, label: 'Motoristas', path: '/drivers' },
+  { icon: Building2, label: 'Empresas', path: '/companies' },
+  { icon: ShieldCheck, label: 'Permissões', path: '/permissions' },
+  { icon: LifeBuoy, label: 'Suporte', path: '/support' },
+  { icon: Bell, label: 'Alertas', path: '/alerts' },
+  { icon: FileBarChart, label: 'Relatórios', path: '/reports' },
+  { icon: History, label: 'Histórico', path: '/history' },
+  { icon: Wallet2, label: 'Custos', path: '/costs' },
+]
+
+const EXTRA_ROUTE_LABELS: Record<string, string> = {
+  '/settings': 'Configurações e marca',
+}
+
 type SidebarItemProps = {
   icon: LucideIcon
   label: string
@@ -832,20 +851,9 @@ export default function AdminPremiumResponsive() {
     if (isMobile) setSidebarOpen(false)
   }
 
-  const navItems: Array<{ icon: LucideIcon; label: string; path: string }> = [
-    { icon: LayoutGrid, label: 'Painel', path: '/' },
-    { icon: MapIcon, label: 'Mapa', path: '/map' },
-    { icon: Route, label: 'Rotas', path: '/routes' },
-    { icon: Bus, label: 'Veículos', path: '/vehicles' },
-    { icon: Users, label: 'Motoristas', path: '/drivers' },
-    { icon: Building2, label: 'Empresas', path: '/companies' },
-    { icon: ShieldCheck, label: 'Permissões', path: '/permissions' },
-    { icon: LifeBuoy, label: 'Suporte', path: '/support' },
-    { icon: Bell, label: 'Alertas', path: '/alerts' },
-    { icon: FileBarChart, label: 'Relatórios', path: '/reports' },
-    { icon: History, label: 'Histórico', path: '/history' },
-    { icon: Wallet2, label: 'Custos', path: '/costs' },
-  ]
+  const navItems = NAV_ITEMS
+  const fallbackLabel =
+    navItems.find((item) => item.path === route)?.label ?? EXTRA_ROUTE_LABELS[route] ?? route
 
   return (
     <div className={`min-h-screen flex flex-col overflow-hidden transition-colors duration-500 ${tokens.background}`}>
@@ -963,7 +971,7 @@ export default function AdminPremiumResponsive() {
                 className={`rounded-2xl p-6 text-center text-sm md:text-base ${glassClass}`}
               >
                 <div className="text-lg font-semibold mb-2">Em breve</div>
-                A página {route} está em desenvolvimento.
+                A página {fallbackLabel} está em desenvolvimento.
               </motion.div>
             )}
           </AnimatePresence>
