@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { AnimatePresence, motion, useSpring } from 'framer-motion'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { AnimatePresence, motion, useSpring, type Variants } from 'framer-motion'
 import type { LucideIcon } from 'lucide-react'
 import {
   LayoutGrid,
@@ -16,10 +16,11 @@ import {
   Wallet2,
   Settings,
   AlertTriangle,
-  ChevronRight,
   Menu,
   Sun,
   Moon,
+  CheckCircle2,
+  Clock3,
 } from 'lucide-react'
 import {
   LineChart,
@@ -33,6 +34,9 @@ import {
 import { supabaseClient } from '../lib/supabaseClient'
 import { aiSuggest } from '../lib/aiClient'
 import { brand } from '../theme'
+import { MOCK_ROUTES } from '../../../../constants'
+import type { Route as RouteType } from '../../../../src/types/types'
+import { RouteStatus } from '../../../../src/types/types'
 
 const glassDark =
   'backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_18px_40px_rgba(0,0,0,0.35)]'
@@ -84,10 +88,12 @@ const themeTokens = {
   },
 } as const
 
-const fadeVariants = {
+type ThemeTokens = typeof themeTokens.dark | typeof themeTokens.light
+
+const fadeVariants: Variants = {
   hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: 'easeOut' } },
-  exit: { opacity: 0, y: -18, transition: { duration: 0.35, ease: 'easeIn' } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } },
+  exit: { opacity: 0, y: -18, transition: { duration: 0.35, ease: [0.4, 0, 0.2, 1] } },
 }
 
 type SidebarItemProps = {
@@ -95,7 +101,7 @@ type SidebarItemProps = {
   label: string
   active: boolean
   onClick: () => void
-  tokens: typeof themeTokens.dark
+  tokens: ThemeTokens
 }
 
 const SidebarButton = ({ icon: Icon, label, active, onClick, tokens }: SidebarItemProps) => (
@@ -148,7 +154,7 @@ type MetricCardProps = {
   icon: LucideIcon
   title: string
   value: string | number
-  sub?: string | JSX.Element
+  sub?: ReactNode
   tone?: string
   glassClass: string
   titleClass: string
@@ -269,6 +275,49 @@ type StatusBadge = {
   description: string
 }
 
+type StatusFilter = 'todas' | RouteStatus
+
+const statusDescriptions: Record<RouteStatus, string> = {
+  [RouteStatus.OnTime]: 'Sem desvios relevantes',
+  [RouteStatus.Delayed]: 'Acompanhamento próximo recomendado',
+  [RouteStatus.Problem]: 'Requer intervenção imediata',
+}
+
+const getStatusTone = (status: RouteStatus, isLight: boolean) => {
+  if (isLight) {
+    switch (status) {
+      case RouteStatus.OnTime:
+        return 'bg-emerald-100 text-emerald-700 border border-emerald-300'
+      case RouteStatus.Delayed:
+        return 'bg-amber-100 text-amber-700 border border-amber-300'
+      case RouteStatus.Problem:
+        return 'bg-rose-100 text-rose-700 border border-rose-300'
+    }
+  }
+
+  switch (status) {
+    case RouteStatus.OnTime:
+      return 'bg-emerald-500/20 text-emerald-100 border border-emerald-400/40'
+    case RouteStatus.Delayed:
+      return 'bg-amber-500/20 text-amber-100 border border-amber-400/40'
+    case RouteStatus.Problem:
+      return 'bg-rose-500/20 text-rose-100 border border-rose-400/40'
+    default:
+      return 'bg-slate-500/20 text-slate-100 border border-slate-400/40'
+  }
+}
+
+const formatPunctuality = (value: number) => {
+  if (value === 0) return 'No horário'
+  const minutes = Math.abs(value)
+  return value > 0 ? `Atraso de ${minutes} min` : `Adiantada ${minutes} min`
+}
+
+const getOccupancy = (route: RouteType) => {
+  if (!route.passengers.total) return 0
+  return Math.round((route.passengers.onboard / route.passengers.total) * 100)
+}
+
 type DashboardPageProps = {
   kpis: KPIState
   goto: (path: string) => void
@@ -276,7 +325,7 @@ type DashboardPageProps = {
   chartData: Array<{ hora: string; ocupacao: number }>
   glassClass: string
   statuses: StatusBadge[]
-  tokens: typeof themeTokens.dark
+  tokens: ThemeTokens
 }
 
 const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses, tokens }: DashboardPageProps) => (
@@ -418,6 +467,265 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
   </motion.div>
 )
 
+type RoutesPageProps = {
+  tokens: ThemeTokens
+  glassClass: string
+  isLight: boolean
+}
+
+const RoutesPage = ({ tokens, glassClass, isLight }: RoutesPageProps) => {
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('todas')
+
+  const routes = useMemo<RouteType[]>(() => MOCK_ROUTES, [])
+
+  const metrics = useMemo(() => {
+    const total = routes.length
+    const onTime = routes.filter((route) => route.status === RouteStatus.OnTime).length
+    const delayed = routes.filter((route) => route.status === RouteStatus.Delayed).length
+    const problem = routes.filter((route) => route.status === RouteStatus.Problem).length
+    const boarded = routes.reduce((sum, route) => sum + route.passengers.onboard, 0)
+    const capacity = routes.reduce((sum, route) => sum + route.passengers.total, 0)
+    const avgOccupancy = capacity > 0 ? Math.round((boarded / capacity) * 100) : 0
+    const avgPunctuality =
+      total > 0 ? routes.reduce((sum, route) => sum + route.punctuality, 0) / total : 0
+
+    return {
+      total,
+      onTime,
+      delayed,
+      problem,
+      avgOccupancy,
+      avgPunctuality,
+    }
+  }, [routes])
+
+  const filteredRoutes = useMemo(() => {
+    if (statusFilter === 'todas') return routes
+    return routes.filter((route) => route.status === statusFilter)
+  }, [routes, statusFilter])
+
+  const upcomingRoutes = useMemo(
+    () =>
+      [...routes]
+        .sort((a, b) => a.scheduledStart.localeCompare(b.scheduledStart))
+        .slice(0, 3),
+    [routes]
+  )
+
+  const filterOptions: Array<{ key: StatusFilter; label: string }> = [
+    { key: 'todas', label: 'Todas' },
+    { key: RouteStatus.OnTime, label: RouteStatus.OnTime },
+    { key: RouteStatus.Delayed, label: RouteStatus.Delayed },
+    { key: RouteStatus.Problem, label: RouteStatus.Problem },
+  ]
+
+  const activeFilterClass = isLight
+    ? 'bg-blue-500/15 text-blue-700 border-blue-400/40 shadow-[0_0_16px_rgba(37,99,235,0.18)]'
+    : 'bg-blue-500/20 text-blue-100 border-blue-400/40 shadow-[0_0_18px_rgba(37,99,235,0.28)]'
+
+  const inactiveFilterClass = isLight
+    ? 'border-slate-200/60 text-slate-600 hover:border-blue-400/40 hover:text-blue-600 bg-white/70'
+    : 'border-white/10 text-slate-300 hover:border-blue-400/30 hover:text-blue-100 bg-white/5'
+
+  const tableHeaderClass = isLight ? 'border-slate-200/70 text-slate-500' : 'border-white/10 text-slate-300'
+  const rowHoverClass = isLight ? 'hover:bg-white/75' : 'hover:bg-white/5'
+  const dividerClass = isLight ? 'divide-y divide-slate-200/70' : 'divide-y divide-white/10'
+
+  return (
+    <motion.div variants={fadeVariants} initial="hidden" animate="visible" exit="exit" className="space-y-8">
+      <div className="space-y-2 text-left">
+        <div className={`text-2xl font-semibold ${tokens.quickTitle}`}>Gestão de rotas corporativas</div>
+        <p className="text-sm md:text-base opacity-80">
+          Acompanhe o desempenho das linhas, ajuste desvios em tempo real e garanta a experiência dos
+          passageiros em cada turno.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <MetricCard
+          icon={Route}
+          title="Rotas monitoradas"
+          value={metrics.total}
+          sub="Dados consolidados do turno atual"
+          glassClass={glassClass}
+          titleClass={tokens.quickTitle}
+        />
+        <MetricCard
+          icon={CheckCircle2}
+          title="No horário"
+          value={metrics.onTime}
+          sub={`${Math.round((metrics.onTime / Math.max(metrics.total, 1)) * 100)}% das rotas sem atrasos`}
+          tone="#22c55e"
+          glassClass={glassClass}
+          titleClass={tokens.quickTitle}
+        />
+        <MetricCard
+          icon={Users}
+          title="Ocupação média"
+          value={`${metrics.avgOccupancy}%`}
+          sub="Passageiros embarcados vs. capacidade"
+          glassClass={glassClass}
+          titleClass={tokens.quickTitle}
+        />
+        <MetricCard
+          icon={Clock3}
+          title="Rotas com alerta"
+          value={metrics.delayed + metrics.problem}
+          sub={`${metrics.delayed} atrasadas • ${metrics.problem} com incidente`}
+          tone="#f97316"
+          glassClass={glassClass}
+          titleClass={tokens.quickTitle}
+        />
+      </div>
+
+      <div className={`rounded-2xl p-6 transition-all ${glassClass} space-y-5`}>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Visão geral das rotas</div>
+            <p className="text-sm opacity-75">
+              Filtre por status para priorizar atendimento e antecipar ações corretivas.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {filterOptions.map((option) => (
+              <motion.button
+                key={option.key}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setStatusFilter(option.key)}
+                className={`px-3 py-1.5 rounded-full border text-sm font-medium transition ${
+                  statusFilter === option.key ? activeFilterClass : inactiveFilterClass
+                }`}
+              >
+                {option.label}
+              </motion.button>
+            ))}
+          </div>
+        </div>
+
+        <div className="overflow-x-auto -mx-6 px-6">
+          <table className="min-w-full text-left text-sm">
+            <thead className={`text-xs uppercase tracking-wide ${tableHeaderClass}`}>
+              <tr>
+                <th className="py-3 pr-4 font-semibold">Rota</th>
+                <th className="py-3 pr-4 font-semibold">Motorista</th>
+                <th className="py-3 pr-4 font-semibold">Veículo</th>
+                <th className="py-3 pr-4 font-semibold">Passageiros</th>
+                <th className="py-3 pr-4 font-semibold">Horário previsto</th>
+                <th className="py-3 pr-4 font-semibold">Início real</th>
+                <th className="py-3 pr-4 font-semibold">Pontualidade</th>
+                <th className="py-3 font-semibold">Status</th>
+              </tr>
+            </thead>
+            <tbody className={`${dividerClass}`}>
+              {filteredRoutes.map((route) => (
+                <tr key={route.id} className={`transition ${rowHoverClass}`}>
+                  <td className="py-3 pr-4">
+                    <div className="font-semibold text-sm md:text-base">{route.name}</div>
+                    <div className="text-xs opacity-70">{statusDescriptions[route.status]}</div>
+                  </td>
+                  <td className="py-3 pr-4">
+                    <div className="font-medium">{route.driver}</div>
+                    <div className="text-xs opacity-70">Escala confirmada</div>
+                  </td>
+                  <td className="py-3 pr-4">
+                    <div className="font-medium">{route.vehicle}</div>
+                    <div className="text-xs opacity-70">Capacidade {route.passengers.total} passageiros</div>
+                  </td>
+                  <td className="py-3 pr-4">
+                    <div className="font-medium">
+                      {route.passengers.onboard}/{route.passengers.total}
+                    </div>
+                    <div className="text-xs opacity-70">{getOccupancy(route)}% de ocupação</div>
+                  </td>
+                  <td className="py-3 pr-4 font-medium">{route.scheduledStart}</td>
+                  <td className="py-3 pr-4 font-medium">{route.actualStart}</td>
+                  <td className="py-3 pr-4">
+                    <div className="font-medium">{formatPunctuality(route.punctuality)}</div>
+                    <div className="text-xs opacity-70">
+                      {route.punctuality > 5
+                        ? 'Alerte o time operacional'
+                        : 'Monitoramento automático ativo'}
+                    </div>
+                  </td>
+                  <td className="py-3">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusTone(route.status, isLight)}`}>
+                      {route.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div className={`rounded-2xl p-6 transition-all ${glassClass} space-y-3 xl:col-span-2`}>
+          <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Insights operacionais</div>
+          <ul className="space-y-3 text-sm opacity-80">
+            <li className="flex items-start gap-2">
+              <CheckCircle2 className="mt-1 h-4 w-4 text-emerald-400" />
+              <span>
+                {metrics.onTime} rotas estão dentro do SLA. Priorize auditoria nas linhas com ocupação acima de 80% para evitar
+                superlotação.
+              </span>
+            </li>
+            <li className="flex items-start gap-2">
+              <Clock3 className="mt-1 h-4 w-4 text-amber-400" />
+              <span>
+                A média de pontualidade é de {metrics.avgPunctuality.toFixed(1)} min. Utilize os dados de GPS para ajustar
+                janelas de embarque nos próximos turnos.
+              </span>
+            </li>
+            <li className="flex items-start gap-2">
+              <AlertTriangle className="mt-1 h-4 w-4 text-rose-400" />
+              <span>
+                Configure notificações automáticas para as {metrics.delayed + metrics.problem} rotas em estado crítico e alinhe
+                o plano de contingência com o suporte.
+              </span>
+            </li>
+          </ul>
+        </div>
+        <div className={`rounded-2xl p-6 transition-all ${glassClass} space-y-4`}>
+          <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Próximas partidas</div>
+          <div className="space-y-3">
+            {upcomingRoutes.map((route) => (
+              <div
+                key={route.id}
+                className={`rounded-xl border px-4 py-3 transition ${
+                  isLight
+                    ? 'bg-white/80 border-slate-200/70 shadow-[0_8px_20px_rgba(15,23,42,0.08)]'
+                    : 'bg-white/5 border-white/10 shadow-[0_8px_24px_rgba(15,23,42,0.25)]'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-semibold">{route.name}</div>
+                    <div className="text-xs opacity-70">Motorista {route.driver}</div>
+                  </div>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusTone(route.status, isLight)}`}>
+                    {route.status}
+                  </span>
+                </div>
+                <div className="mt-3 flex items-center justify-between text-sm">
+                  <div>
+                    <div className="font-medium">Partida {route.scheduledStart}</div>
+                    <div className="text-xs opacity-70">Última atualização às {route.actualStart}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-medium">{getOccupancy(route)}% de ocupação</div>
+                    <div className="text-xs opacity-70">{route.passengers.onboard} passageiros embarcados</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
 export default function AdminPremiumResponsive() {
   const [route, setRoute] = useState('/')
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -434,7 +742,7 @@ export default function AdminPremiumResponsive() {
   })
 
   const isLight = theme === 'light'
-  const tokens = themeTokens[theme]
+  const tokens: ThemeTokens = themeTokens[theme]
   const glassClass = tokens.glass
 
   useEffect(() => {
@@ -572,7 +880,7 @@ export default function AdminPremiumResponsive() {
   const navItems: Array<{ icon: LucideIcon; label: string; path: string }> = [
     { icon: LayoutGrid, label: 'Dashboard', path: '/' },
     { icon: MapIcon, label: 'Map', path: '/map' },
-    { icon: Route, label: 'Routes', path: '/routes' },
+    { icon: Route, label: 'Rotas', path: '/routes' },
     { icon: Bus, label: 'Vehicles', path: '/vehicles' },
     { icon: Users, label: 'Drivers', path: '/drivers' },
     { icon: Building2, label: 'Companies', path: '/companies' },
@@ -688,6 +996,8 @@ export default function AdminPremiumResponsive() {
                 statuses={statuses}
                 tokens={tokens}
               />
+            ) : route === '/routes' ? (
+              <RoutesPage key="routes" tokens={tokens} glassClass={glassClass} isLight={isLight} />
             ) : (
               <motion.div
                 key={route}
