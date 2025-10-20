@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { supabaseAdmin } from '../../../lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
@@ -41,9 +41,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(500).json({ error: 'Missing Supabase envs' })
     }
 
-    if (!supabaseAdmin) {
-      return res.status(500).json({ error: 'Supabase admin client not initialized' })
-    }
+    // Create a local admin client (avoid importing shared client to prevent env validation crashes)
+    const supabaseAdmin = createClient(supabaseUrl, serviceRole, {
+      auth: { autoRefreshToken: false, persistSession: false },
+      global: { headers: { 'X-Client-Info': 'golffox-admin-provision' } },
+    })
 
     // GET -> status check
     if (req.method === 'GET') {

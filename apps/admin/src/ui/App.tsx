@@ -32,6 +32,7 @@ import {
 } from 'recharts'
 import { supabaseClient } from '../lib/supabaseClient'
 import { aiSuggest } from '../lib/aiClient'
+import { brand } from '../theme'
 
 const glassDark =
   'backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_18px_40px_rgba(0,0,0,0.35)]'

@@ -1,0 +1,60 @@
+// theme.config.js
+export const brand = {
+  primary: '#0056b3',
+  secondary: '#6c757d',
+  success: '#28a745',
+  danger: '#dc3545',
+  warning: '#ffc107',
+  info: '#17a2b8',
+  light: '#f8f9fa',
+  dark: '#343a40',
+};
+
+export default {
+  brand,
+  colors: {
+    background: '#ffffff',
+    foreground: '#000000',
+    primary: brand.primary,
+    secondary: brand.secondary,
+    success: brand.success,
+    danger: brand.danger,
+    warning: brand.warning,
+    info: brand.info,
+    light: brand.light,
+    dark: brand.dark,
+  },
+  fonts: {
+    body: 'Inter, system-ui, sans-serif',
+    heading: 'Inter, system-ui, sans-serif',
+  },
+  fontSizes: {
+    xs: '0.75rem',
+    sm: '0.875rem',
+    md: '1rem',
+    lg: '1.125rem',
+    xl: '1.25rem',
+    '2xl': '1.5rem',
+    '3xl': '1.875rem',
+    '4xl': '2.25rem',
+    '5xl': '3rem',
+    '6xl': '3.75rem',
+  },
+  space: {
+    xs: '0.5rem',
+    sm: '0.75rem',
+    md: '1rem',
+    lg: '1.5rem',
+    xl: '2rem',
+    '2xl': '3rem',
+    '3xl': '4rem',
+  },
+  radii: {
+    sm: '0.125rem',
+    md: '0.25rem',
+    lg: '0.5rem',
+    xl: '0.75rem',
+    '2xl': '1rem',
+    full: '9999px',
+  },
+};
