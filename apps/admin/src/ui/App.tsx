@@ -29,7 +29,7 @@ import {
 import { supabaseClient } from '../lib/supabaseClient'
 import { aiSuggest } from '../lib/aiClient'
 import { brand } from '../theme'
-import { EXTRA_ROUTE_LABELS, NAV_ITEMS } from './navigation'
+import Reports from '@/components/Reports'
 
 const glassDark =
   'backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_18px_40px_rgba(0,0,0,0.35)]'
@@ -98,25 +98,8 @@ type PermissionArea = {
   descricao: string
 }
 
-const adminNavItems = [
-  { icon: LayoutGrid, label: 'Visão geral', path: '/' },
-  { icon: MapIcon, label: 'Mapa', path: '/mapa' },
-  { icon: Route, label: 'Rotas', path: '/rotas' },
-  { icon: Bus, label: 'Veículos', path: '/veiculos' },
-  { icon: Users, label: 'Motoristas', path: '/motoristas' },
-  { icon: Building2, label: 'Empresas', path: '/empresas' },
-  { icon: ShieldCheck, label: 'Permissões', path: '/permissoes' },
-  { icon: LifeBuoy, label: 'Suporte', path: '/suporte' },
-  { icon: Bell, label: 'Alertas', path: '/alertas' },
-  { icon: FileBarChart, label: 'Relatórios', path: '/relatorios' },
-  { icon: History, label: 'Histórico', path: '/historico' },
-  { icon: Wallet2, label: 'Custos', path: '/custos' },
-] as const
-
-type AdminRoute = (typeof adminNavItems)[number]['path'] | '/configuracoes'
-
-const isValidAdminRoute = (path: string | null | undefined): path is AdminRoute =>
-  path === '/configuracoes' || adminNavItems.some((item) => item.path === path)
+const REPORTS_ROUTE = '/reports'
+const REPORTS_ROUTE_ALIASES = new Set([REPORTS_ROUTE, '/relatorios'])
 
 type SidebarItemProps = {
   icon: LucideIcon
@@ -696,9 +679,9 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
           descriptionClass={tokens.quickDescription}
         />
         <QuickAction
-          title="Ver análises"
-          description="Painéis por rota, frota e ocupação"
-          onClick={() => goto('/relatorios')}
+          title="View analytics"
+          description="Dashboards by route, fleet and occupancy"
+          onClick={() => goto(REPORTS_ROUTE)}
           tone={brand.accent}
           icon={FileBarChart}
           glassClass={glassClass}
@@ -1102,44 +1085,26 @@ export default function AdminPremiumResponsive() {
       return
     }
 
-    setRoute(path)
-    if (typeof window !== 'undefined') {
-      window.history.pushState({ path }, '', path)
-    }
+  const goto = (path: string) => {
+    const normalizedPath = REPORTS_ROUTE_ALIASES.has(path) ? REPORTS_ROUTE : path
+    setRoute(normalizedPath)
     if (isMobile) setSidebarOpen(false)
   }
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    const ensureValidRoute = (path: string | null | undefined): AdminRoute => {
-      if (isValidAdminRoute(path)) return path
-      return '/'
-    }
-
-    const syncRoute = (nextPath?: string | null) => {
-      setRoute((current) => {
-        const safePath = ensureValidRoute(nextPath)
-        return current === safePath ? current : safePath
-      })
-    }
-
-    const initialPath = ensureValidRoute(window.location.pathname)
-    syncRoute(initialPath)
-    if (!window.history.state?.path) {
-      window.history.replaceState({ path: initialPath }, '', initialPath)
-    }
-
-    const handlePopState = (event: PopStateEvent) => {
-      const nextPath = ensureValidRoute(
-        typeof event.state?.path === 'string' ? event.state.path : window.location.pathname
-      )
-      syncRoute(nextPath)
-    }
-
-    window.addEventListener('popstate', handlePopState)
-    return () => window.removeEventListener('popstate', handlePopState)
-  }, [])
+  const navItems: Array<{ icon: LucideIcon; label: string; path: string }> = [
+    { icon: LayoutGrid, label: 'Dashboard', path: '/' },
+    { icon: MapIcon, label: 'Map', path: '/map' },
+    { icon: Route, label: 'Routes', path: '/routes' },
+    { icon: Bus, label: 'Vehicles', path: '/vehicles' },
+    { icon: Users, label: 'Drivers', path: '/drivers' },
+    { icon: Building2, label: 'Companies', path: '/companies' },
+    { icon: ShieldCheck, label: 'Permissions', path: '/permissions' },
+    { icon: LifeBuoy, label: 'Support', path: '/support' },
+    { icon: Bell, label: 'Alerts', path: '/alerts' },
+    { icon: FileBarChart, label: 'Relatórios', path: REPORTS_ROUTE },
+    { icon: History, label: 'History', path: '/history' },
+    { icon: Wallet2, label: 'Costs', path: '/costs' },
+  ]
 
   return (
     <div className={`min-h-screen flex flex-col overflow-hidden transition-colors duration-500 ${tokens.background}`}>
@@ -1296,8 +1261,17 @@ export default function AdminPremiumResponsive() {
                 statuses={statuses}
                 tokens={tokens}
               />
-            ) : route === '/historico' ? (
-              <HistoryPage key="history" glassClass={glassClass} tokens={tokens} />
+            ) : REPORTS_ROUTE_ALIASES.has(route) ? (
+              <motion.div
+                key="reports"
+                variants={fadeVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className={`rounded-2xl p-6 text-left ${glassClass}`}
+              >
+                <Reports />
+              </motion.div>
             ) : (
               <motion.div
                 key={route}
