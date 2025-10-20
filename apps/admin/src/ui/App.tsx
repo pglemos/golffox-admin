@@ -19,8 +19,7 @@ import {
   Menu,
   Sun,
   Moon,
-  CheckCircle2,
-  Clock3,
+  PlusCircle,
 } from 'lucide-react'
 import {
   LineChart,
@@ -206,7 +205,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
         icon={Users}
         title="Passageiros em trânsito"
         value={kpis.emTransito}
-        sub="+12% vs. ontem"
+        sub="+12% em relação a ontem"
         tone={brand.success}
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
@@ -221,9 +220,9 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
       />
       <MetricCard
         icon={Route}
-        title="Rotas hoje"
+        title="Rotas do dia"
         value={kpis.rotasDia}
-        sub="+3 vs. planejamento"
+        sub="+3 em relação ao plano"
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
       />
@@ -231,7 +230,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
         icon={AlertTriangle}
         title="Alertas críticos"
         value={kpis.alertasCriticos}
-        sub={<span className="text-red-400">Ação imediata necessária</span>}
+        sub={<span className="text-red-400">Requer ação imediata</span>}
         tone="#ef4444"
         glassClass={glassClass}
         titleClass={tokens.quickTitle}
@@ -290,9 +289,9 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
       <div className={`font-semibold mb-2 text-lg ${tokens.quickTitle}`}>Ações rápidas</div>
       <div className="flex overflow-x-auto md:grid md:grid-cols-3 gap-6 pb-2 md:pb-0 snap-x snap-mandatory [-webkit-overflow-scrolling:touch]">
         <QuickAction
-          title="Monitorar veículos"
-          description="Mapa ao vivo com geolocalização em segundos"
-          onClick={() => goto('/mapa')}
+          title="Acompanhar veículos"
+          description="Mapa em tempo real com geolocalização por segundo"
+          onClick={() => goto('/map')}
           icon={MapIcon}
           glassClass={glassClass}
           titleClass={tokens.quickTitle}
@@ -301,7 +300,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
         <QuickAction
           title="Ver análises"
           description="Dashboards por rota, frota e ocupação"
-          onClick={() => goto('/relatorios')}
+          onClick={() => goto('/reports')}
           tone={brand.accent}
           icon={FileBarChart}
           glassClass={glassClass}
@@ -309,8 +308,8 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
           descriptionClass={tokens.quickDescription}
         />
         <QuickAction
-          title="Configurações e identidade"
-          description="Preferências de notificações, tema e integrações"
+          title="Configurar e personalizar"
+          description="Preferências de notificações, identidade visual e integrações"
           onClick={() => goto('/config')}
           tone="#94a3b8"
           icon={Settings}
@@ -327,7 +326,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
       className={`rounded-2xl p-4 border ${glassClass} border-red-500/30 bg-red-500/10`}
     >
       <div className="flex items-center gap-3 text-red-300">
-        <AlertTriangle className="animate-pulse" /> {kpis.alertasCriticos} alerta(s) crítico(s) exigem ação imediata.
+        <AlertTriangle className="animate-pulse" /> {kpis.alertasCriticos} alertas críticos exigem ação imediata.
       </div>
     </motion.div>
 
@@ -338,258 +337,205 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
   </motion.div>
 )
 
-type RoutesPageProps = {
-  tokens: ThemeTokens
+type VehiclesPageProps = {
   glassClass: string
-  isLight: boolean
 }
 
-const RoutesPage = ({ tokens, glassClass, isLight }: RoutesPageProps) => {
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('todas')
+const VehiclesPage = ({ glassClass }: VehiclesPageProps) => {
+  const resumoCards = [
+    {
+      titulo: 'Veículos em rota',
+      valor: 18,
+      detalhe: 'Operando em linhas prioritárias',
+      destaque: 'text-emerald-500 dark:text-emerald-300',
+    },
+    {
+      titulo: 'Disponíveis para despacho',
+      valor: 9,
+      detalhe: 'Prontos para novos itinerários',
+      destaque: 'text-blue-500 dark:text-blue-300',
+    },
+    {
+      titulo: 'Em manutenção programada',
+      valor: 3,
+      detalhe: 'Retorno previsto até 12/10',
+      destaque: 'text-amber-500 dark:text-amber-300',
+    },
+    {
+      titulo: 'Frota total monitorada',
+      valor: 30,
+      detalhe: 'Inclui reserva estratégica',
+      destaque: 'text-slate-500 dark:text-slate-300',
+    },
+  ] as const
 
-  const routes = useMemo<RouteType[]>(() => MOCK_ROUTES, [])
+  const veiculos = [
+    {
+      id: 1,
+      placa: 'ABC-1234',
+      modelo: 'Mercedes Sprinter 415',
+      capacidade: '20 passageiros',
+      motorista: 'João Silva',
+      status: 'em_rota',
+      ultimaAtualizacao: 'Há 5 minutos',
+    },
+    {
+      id: 2,
+      placa: 'DEF-5678',
+      modelo: 'Iveco Daily 35-150',
+      capacidade: '18 passageiros',
+      motorista: 'Maria Oliveira',
+      status: 'disponivel',
+      ultimaAtualizacao: 'Há 12 minutos',
+    },
+    {
+      id: 3,
+      placa: 'GHI-7890',
+      modelo: 'Renault Master Executivo',
+      capacidade: '16 passageiros',
+      motorista: 'Carlos Souza',
+      status: 'manutencao',
+      ultimaAtualizacao: 'Na oficina desde ontem',
+    },
+    {
+      id: 4,
+      placa: 'JKL-2468',
+      modelo: 'Volkswagen 9.160 OD',
+      capacidade: '26 passageiros',
+      motorista: 'Patrícia Lima',
+      status: 'em_rota',
+      ultimaAtualizacao: 'Há 2 minutos',
+    },
+  ] as const
 
-  const metrics = useMemo(() => {
-    const total = routes.length
-    const onTime = routes.filter((route) => route.status === RouteStatus.OnTime).length
-    const delayed = routes.filter((route) => route.status === RouteStatus.Delayed).length
-    const problem = routes.filter((route) => route.status === RouteStatus.Problem).length
-    const boarded = routes.reduce((sum, route) => sum + route.passengers.onboard, 0)
-    const capacity = routes.reduce((sum, route) => sum + route.passengers.total, 0)
-    const avgOccupancy = capacity > 0 ? Math.round((boarded / capacity) * 100) : 0
-    const avgPunctuality =
-      total > 0 ? routes.reduce((sum, route) => sum + route.punctuality, 0) / total : 0
+  const statusLabel: Record<'em_rota' | 'disponivel' | 'manutencao', { texto: string; classe: string }> = {
+    em_rota: {
+      texto: 'Em rota',
+      classe:
+        'bg-emerald-500/15 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-200 border border-emerald-500/20',
+    },
+    disponivel: {
+      texto: 'Disponível',
+      classe:
+        'bg-blue-500/15 text-blue-600 dark:bg-blue-500/20 dark:text-blue-200 border border-blue-500/20',
+    },
+    manutencao: {
+      texto: 'Em manutenção',
+      classe:
+        'bg-amber-500/15 text-amber-600 dark:bg-amber-500/20 dark:text-amber-200 border border-amber-500/20',
+    },
+  }
 
-    return {
-      total,
-      onTime,
-      delayed,
-      problem,
-      avgOccupancy,
-      avgPunctuality,
-    }
-  }, [routes])
-
-  const filteredRoutes = useMemo(() => {
-    if (statusFilter === 'todas') return routes
-    return routes.filter((route) => route.status === statusFilter)
-  }, [routes, statusFilter])
-
-  const upcomingRoutes = useMemo(
-    () =>
-      [...routes]
-        .sort((a, b) => a.scheduledStart.localeCompare(b.scheduledStart))
-        .slice(0, 3),
-    [routes]
-  )
-
-  const filterOptions: Array<{ key: StatusFilter; label: string }> = [
-    { key: 'todas', label: 'Todas' },
-    { key: RouteStatus.OnTime, label: RouteStatus.OnTime },
-    { key: RouteStatus.Delayed, label: RouteStatus.Delayed },
-    { key: RouteStatus.Problem, label: RouteStatus.Problem },
-  ]
-
-  const activeFilterClass = isLight
-    ? 'bg-blue-500/15 text-blue-700 border-blue-400/40 shadow-[0_0_16px_rgba(37,99,235,0.18)]'
-    : 'bg-blue-500/20 text-blue-100 border-blue-400/40 shadow-[0_0_18px_rgba(37,99,235,0.28)]'
-
-  const inactiveFilterClass = isLight
-    ? 'border-slate-200/60 text-slate-600 hover:border-blue-400/40 hover:text-blue-600 bg-white/70'
-    : 'border-white/10 text-slate-300 hover:border-blue-400/30 hover:text-blue-100 bg-white/5'
-
-  const tableHeaderClass = isLight ? 'border-slate-200/70 text-slate-500' : 'border-white/10 text-slate-300'
-  const rowHoverClass = isLight ? 'hover:bg-white/75' : 'hover:bg-white/5'
-  const dividerClass = isLight ? 'divide-y divide-slate-200/70' : 'divide-y divide-white/10'
+  const proximasManutencoes = [
+    {
+      titulo: 'Troca de óleo e filtros',
+      placa: 'DEF-5678',
+      data: 'Agendado para 11/10 às 08:00',
+    },
+    {
+      titulo: 'Revisão do sistema de freios',
+      placa: 'GHI-7890',
+      data: 'Agendado para 13/10 às 14:30',
+    },
+    {
+      titulo: 'Calibração de pneus',
+      placa: 'JKL-2468',
+      data: 'Agendado para 14/10 às 07:45',
+    },
+  ] as const
 
   return (
-    <motion.div variants={fadeVariants} initial="hidden" animate="visible" exit="exit" className="space-y-8">
-      <div className="space-y-2 text-left">
-        <div className={`text-2xl font-semibold ${tokens.quickTitle}`}>Gestão de rotas corporativas</div>
-        <p className="text-sm md:text-base opacity-80">
-          Acompanhe o desempenho das linhas, ajuste desvios em tempo real e garanta a experiência dos
-          passageiros em cada turno.
-        </p>
+    <motion.div variants={fadeVariants} initial="hidden" animate="visible" exit="exit" className="space-y-8 text-left">
+      <div className={`flex flex-col gap-4 rounded-2xl p-6 md:flex-row md:items-center md:justify-between ${glassClass}`}>
+        <div>
+          <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Central de Veículos</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-300">
+            Monitoramento completo da frota corporativa, com atualização em tempo real das operações e disponibilidade.
+          </p>
+        </div>
+        <motion.button
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.96 }}
+          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition hover:bg-blue-700"
+        >
+          <PlusCircle size={18} />
+          Cadastrar novo veículo
+        </motion.button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <MetricCard
-          icon={Route}
-          title="Rotas monitoradas"
-          value={metrics.total}
-          sub="Dados consolidados do turno atual"
-          glassClass={glassClass}
-          titleClass={tokens.quickTitle}
-        />
-        <MetricCard
-          icon={CheckCircle2}
-          title="No horário"
-          value={metrics.onTime}
-          sub={`${Math.round((metrics.onTime / Math.max(metrics.total, 1)) * 100)}% das rotas sem atrasos`}
-          tone="#22c55e"
-          glassClass={glassClass}
-          titleClass={tokens.quickTitle}
-        />
-        <MetricCard
-          icon={Users}
-          title="Ocupação média"
-          value={`${metrics.avgOccupancy}%`}
-          sub="Passageiros embarcados vs. capacidade"
-          glassClass={glassClass}
-          titleClass={tokens.quickTitle}
-        />
-        <MetricCard
-          icon={Clock3}
-          title="Rotas com alerta"
-          value={metrics.delayed + metrics.problem}
-          sub={`${metrics.delayed} atrasadas • ${metrics.problem} com incidente`}
-          tone="#f97316"
-          glassClass={glassClass}
-          titleClass={tokens.quickTitle}
-        />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {resumoCards.map((card) => (
+          <motion.div
+            key={card.titulo}
+            whileHover={{ translateY: -4 }}
+            className={`rounded-2xl p-5 shadow-sm transition-shadow ${glassClass}`}
+          >
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              {card.titulo}
+            </p>
+            <div className={`mt-2 text-4xl font-bold ${card.destaque}`}>{card.valor}</div>
+            <p className="mt-3 text-sm text-slate-500 dark:text-slate-300">{card.detalhe}</p>
+          </motion.div>
+        ))}
       </div>
 
-      <div className={`rounded-2xl p-6 transition-all ${glassClass} space-y-5`}>
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
+        <div className={`overflow-hidden rounded-2xl ${glassClass}`}>
+          <div className="flex items-center justify-between border-b border-white/10 bg-white/40 px-6 py-4 backdrop-blur dark:border-slate-700/40 dark:bg-white/5">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Veículos monitorados</h3>
+            <span className="text-sm text-slate-500 dark:text-slate-400">Atualizado há 2 minutos</span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-white/10 text-sm">
+              <thead className="bg-white/30 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 backdrop-blur dark:bg-white/5 dark:text-slate-300">
+                <tr>
+                  <th className="px-6 py-3">Placa</th>
+                  <th className="px-6 py-3">Modelo</th>
+                  <th className="px-6 py-3">Capacidade</th>
+                  <th className="px-6 py-3">Motorista</th>
+                  <th className="px-6 py-3">Status</th>
+                  <th className="px-6 py-3">Última atualização</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5 dark:divide-slate-700/40">
+                {veiculos.map((veiculo) => (
+                  <tr key={veiculo.id} className="hover:bg-white/40 dark:hover:bg-white/5">
+                    <td className="px-6 py-3 font-mono text-sm text-slate-900 dark:text-slate-200">{veiculo.placa}</td>
+                    <td className="px-6 py-3 text-slate-600 dark:text-slate-300">{veiculo.modelo}</td>
+                    <td className="px-6 py-3 text-slate-600 dark:text-slate-300">{veiculo.capacidade}</td>
+                    <td className="px-6 py-3 text-slate-600 dark:text-slate-300">{veiculo.motorista}</td>
+                    <td className="px-6 py-3">
+                      <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${statusLabel[veiculo.status as keyof typeof statusLabel].classe}`}>
+                        <span className="inline-block h-2 w-2 rounded-full bg-current" />
+                        {statusLabel[veiculo.status as keyof typeof statusLabel].texto}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3 text-slate-500 dark:text-slate-400">{veiculo.ultimaAtualizacao}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className={`flex flex-col gap-4 rounded-2xl p-6 ${glassClass}`}>
           <div>
-            <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Visão geral das rotas</div>
-            <p className="text-sm opacity-75">
-              Filtre por status para priorizar atendimento e antecipar ações corretivas.
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Próximas manutenções</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-300">
+              Cronograma preventivo para manter a disponibilidade da frota.
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {filterOptions.map((option) => (
-              <motion.button
-                key={option.key}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setStatusFilter(option.key)}
-                className={`px-3 py-1.5 rounded-full border text-sm font-medium transition ${
-                  statusFilter === option.key ? activeFilterClass : inactiveFilterClass
-                }`}
-              >
-                {option.label}
-              </motion.button>
+          <ul className="space-y-4">
+            {proximasManutencoes.map((item) => (
+              <li key={item.placa} className="rounded-xl bg-white/60 p-4 text-sm shadow-sm backdrop-blur dark:bg-white/5">
+                <p className="font-semibold text-slate-900 dark:text-white">{item.titulo}</p>
+                <p className="text-slate-500 dark:text-slate-300">Veículo {item.placa}</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500">{item.data}</p>
+              </li>
             ))}
-          </div>
-        </div>
-
-        <div className="overflow-x-auto -mx-6 px-6">
-          <table className="min-w-full text-left text-sm">
-            <thead className={`text-xs uppercase tracking-wide ${tableHeaderClass}`}>
-              <tr>
-                <th className="py-3 pr-4 font-semibold">Rota</th>
-                <th className="py-3 pr-4 font-semibold">Motorista</th>
-                <th className="py-3 pr-4 font-semibold">Veículo</th>
-                <th className="py-3 pr-4 font-semibold">Passageiros</th>
-                <th className="py-3 pr-4 font-semibold">Horário previsto</th>
-                <th className="py-3 pr-4 font-semibold">Início real</th>
-                <th className="py-3 pr-4 font-semibold">Pontualidade</th>
-                <th className="py-3 font-semibold">Status</th>
-              </tr>
-            </thead>
-            <tbody className={`${dividerClass}`}>
-              {filteredRoutes.map((route) => (
-                <tr key={route.id} className={`transition ${rowHoverClass}`}>
-                  <td className="py-3 pr-4">
-                    <div className="font-semibold text-sm md:text-base">{route.name}</div>
-                    <div className="text-xs opacity-70">{statusDescriptions[route.status]}</div>
-                  </td>
-                  <td className="py-3 pr-4">
-                    <div className="font-medium">{route.driver}</div>
-                    <div className="text-xs opacity-70">Escala confirmada</div>
-                  </td>
-                  <td className="py-3 pr-4">
-                    <div className="font-medium">{route.vehicle}</div>
-                    <div className="text-xs opacity-70">Capacidade {route.passengers.total} passageiros</div>
-                  </td>
-                  <td className="py-3 pr-4">
-                    <div className="font-medium">
-                      {route.passengers.onboard}/{route.passengers.total}
-                    </div>
-                    <div className="text-xs opacity-70">{getOccupancy(route)}% de ocupação</div>
-                  </td>
-                  <td className="py-3 pr-4 font-medium">{route.scheduledStart}</td>
-                  <td className="py-3 pr-4 font-medium">{route.actualStart}</td>
-                  <td className="py-3 pr-4">
-                    <div className="font-medium">{formatPunctuality(route.punctuality)}</div>
-                    <div className="text-xs opacity-70">
-                      {route.punctuality > 5
-                        ? 'Alerte o time operacional'
-                        : 'Monitoramento automático ativo'}
-                    </div>
-                  </td>
-                  <td className="py-3">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusTone(route.status, isLight)}`}>
-                      {route.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <div className={`rounded-2xl p-6 transition-all ${glassClass} space-y-3 xl:col-span-2`}>
-          <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Insights operacionais</div>
-          <ul className="space-y-3 text-sm opacity-80">
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="mt-1 h-4 w-4 text-emerald-400" />
-              <span>
-                {metrics.onTime} rotas estão dentro do SLA. Priorize auditoria nas linhas com ocupação acima de 80% para evitar
-                superlotação.
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <Clock3 className="mt-1 h-4 w-4 text-amber-400" />
-              <span>
-                A média de pontualidade é de {metrics.avgPunctuality.toFixed(1)} min. Utilize os dados de GPS para ajustar
-                janelas de embarque nos próximos turnos.
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <AlertTriangle className="mt-1 h-4 w-4 text-rose-400" />
-              <span>
-                Configure notificações automáticas para as {metrics.delayed + metrics.problem} rotas em estado crítico e alinhe
-                o plano de contingência com o suporte.
-              </span>
-            </li>
           </ul>
-        </div>
-        <div className={`rounded-2xl p-6 transition-all ${glassClass} space-y-4`}>
-          <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Próximas partidas</div>
-          <div className="space-y-3">
-            {upcomingRoutes.map((route) => (
-              <div
-                key={route.id}
-                className={`rounded-xl border px-4 py-3 transition ${
-                  isLight
-                    ? 'bg-white/80 border-slate-200/70 shadow-[0_8px_20px_rgba(15,23,42,0.08)]'
-                    : 'bg-white/5 border-white/10 shadow-[0_8px_24px_rgba(15,23,42,0.25)]'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-semibold">{route.name}</div>
-                    <div className="text-xs opacity-70">Motorista {route.driver}</div>
-                  </div>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusTone(route.status, isLight)}`}>
-                    {route.status}
-                  </span>
-                </div>
-                <div className="mt-3 flex items-center justify-between text-sm">
-                  <div>
-                    <div className="font-medium">Partida {route.scheduledStart}</div>
-                    <div className="text-xs opacity-70">Última atualização às {route.actualStart}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-medium">{getOccupancy(route)}% de ocupação</div>
-                    <div className="text-xs opacity-70">{route.passengers.onboard} passageiros embarcados</div>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="rounded-xl bg-emerald-500/15 p-4 text-sm text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-200">
+            Índice de conformidade com a manutenção preventiva em 96% este mês.
           </div>
         </div>
       </div>
@@ -601,8 +547,9 @@ export default function AdminPremiumResponsive() {
   const [route, setRoute] = useState('/')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
-  const [theme, setTheme] = useState<ThemeMode>('dark')
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [aiSummary, setAiSummary] = useState('Carregando insights inteligentes...')
+  const [bootNoticeVisible, setBootNoticeVisible] = useState(true)
   const sb = useMemo(() => supabaseClient, [])
   const [kpis, setKpis] = useState<KPIState>({
     emTransito: 65,
@@ -621,6 +568,12 @@ export default function AdminPremiumResponsive() {
     handler()
     window.addEventListener('resize', handler)
     return () => window.removeEventListener('resize', handler)
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const timeout = window.setTimeout(() => setBootNoticeVisible(false), 1600)
+    return () => window.clearTimeout(timeout)
   }, [])
 
   useEffect(() => {
@@ -648,7 +601,9 @@ export default function AdminPremiumResponsive() {
       } catch (error) {
         console.warn('[admin] AI fallback', error)
         if (active)
-          setAiSummary('Operações estáveis. Continue monitorando ocupação, rotas críticas e alertas em tempo real.')
+          setAiSummary(
+            'Operações estáveis. Continue monitorando a ocupação, rotas críticas e alertas em tempo real.'
+          )
       }
     })()
     return () => {
@@ -725,19 +680,19 @@ export default function AdminPremiumResponsive() {
         icon: '🟢',
         label: 'Operação estável',
         tone: tokens.statusChip.emerald,
-        description: `Ocupação média ${kpis.emTransito}%`,
+        description: `Ocupação média de ${kpis.emTransito}%`,
       },
       {
         icon: '🟠',
         label: 'Monitorar rotas',
         tone: tokens.statusChip.amber,
-        description: 'Mantenha desvio de rota abaixo de 10%',
+        description: 'Mantenha o desvio das rotas abaixo de 10%',
       },
       {
         icon: '🔴',
         label: 'Alertas pendentes',
         tone: tokens.statusChip.rose,
-        description: `${kpis.alertasCriticos} tarefa(s) urgente(s)`,
+        description: `${kpis.alertasCriticos} tarefas urgentes`,
       },
     ],
     [kpis.alertasCriticos, kpis.emTransito, tokens]
@@ -749,25 +704,49 @@ export default function AdminPremiumResponsive() {
   }
 
   const navItems: Array<{ icon: LucideIcon; label: string; path: string }> = [
-    { icon: LayoutGrid, label: 'Painel', path: '/' },
-    { icon: MapIcon, label: 'Mapa', path: '/mapa' },
-    { icon: Route, label: 'Rotas', path: '/rotas' },
-    { icon: Bus, label: 'Veículos', path: '/veiculos' },
+    { icon: LayoutGrid, label: 'Visão geral', path: '/' },
+    { icon: MapIcon, label: 'Mapa tático', path: '/map' },
+    { icon: Route, label: 'Rotas', path: '/routes' },
+    { icon: Bus, label: 'Veículos', path: '/vehicles' },
     { icon: Users, label: 'Motoristas', path: '/drivers' },
-    { icon: Building2, label: 'Empresas', path: '/empresas' },
-    { icon: ShieldCheck, label: 'Permissões', path: '/permissoes' },
-    { icon: LifeBuoy, label: 'Suporte', path: '/suporte' },
-    { icon: Bell, label: 'Alertas', path: '/alertas' },
-    { icon: FileBarChart, label: 'Relatórios', path: '/relatorios' },
-    { icon: History, label: 'Histórico', path: '/historico' },
-    { icon: Wallet2, label: 'Custos', path: '/custos' },
+    { icon: Building2, label: 'Empresas', path: '/companies' },
+    { icon: ShieldCheck, label: 'Permissões', path: '/permissions' },
+    { icon: LifeBuoy, label: 'Suporte', path: '/support' },
+    { icon: Bell, label: 'Alertas', path: '/alerts' },
+    { icon: FileBarChart, label: 'Relatórios', path: '/reports' },
+    { icon: History, label: 'Histórico', path: '/history' },
+    { icon: Wallet2, label: 'Custos', path: '/costs' },
   ]
+
+  const renderRouteContent = () => {
+    if (route === '/vehicles') {
+      return <VehiclesPage key="vehicles" glassClass={glassClass} />
+    }
+
+    return (
+      <motion.div
+        key={route}
+        variants={fadeVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        className={`rounded-2xl p-6 text-center text-sm md:text-base ${glassClass}`}
+      >
+        <div className="text-lg font-semibold mb-2">Em breve</div>
+        <p className="text-slate-500 dark:text-slate-400">
+          Estamos preparando esta área com todo cuidado. Volte mais tarde para conferir as novidades.
+        </p>
+      </motion.div>
+    )
+  }
 
   return (
     <div className={`min-h-screen flex flex-col overflow-hidden transition-colors duration-500 ${tokens.background}`}>
-      <div className="fixed top-2 left-1/2 -translate-x-1/2 z-50 rounded-full bg-black/70 text-white px-4 py-1 text-xs tracking-wide shadow-lg">
-        Renderizando painel do Golf Fox Admin…
-      </div>
+      {bootNoticeVisible ? (
+        <div className="fixed top-2 left-1/2 -translate-x-1/2 z-50 rounded-full bg-black/70 text-white px-4 py-1 text-xs tracking-wide shadow-lg">
+          Carregando painel Golf Fox Admin…
+        </div>
+      ) : null}
       <motion.div className="fixed top-5 right-5 z-50 flex items-center gap-3">
         <motion.button
           whileHover={{ rotate: 25, scale: 1.08 }}
@@ -870,17 +849,7 @@ export default function AdminPremiumResponsive() {
             ) : route === '/drivers' ? (
               <DriversPage key="drivers" glassClass={glassClass} tokens={tokens} isLight={isLight} />
             ) : (
-              <motion.div
-                key={route}
-                variants={fadeVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className={`rounded-2xl p-6 text-center text-sm md:text-base ${glassClass}`}
-              >
-                <div className="text-lg font-semibold mb-2">Em breve</div>
-                A página {route} está em desenvolvimento.
-              </motion.div>
+              renderRouteContent()
             )}
           </AnimatePresence>
         </motion.main>
