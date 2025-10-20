@@ -380,7 +380,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
         <QuickAction
           title="Track vehicles"
           description="Live map with second-by-second geolocation"
-          onClick={() => goto('/mapa')}
+          onClick={() => goto('/map')}
           icon={MapIcon}
           glassClass={glassClass}
           titleClass={tokens.quickTitle}
@@ -389,7 +389,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
         <QuickAction
           title="View analytics"
           description="Dashboards by route, fleet and occupancy"
-          onClick={() => goto('/relatorios')}
+          onClick={() => goto('/reports')}
           tone={brand.accent}
           icon={FileBarChart}
           glassClass={glassClass}
@@ -399,7 +399,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
         <QuickAction
           title="Setup & branding"
           description="Notification, theming and integration preferences"
-          onClick={() => goto('/config')}
+          onClick={() => goto('/permissions')}
           tone="#94a3b8"
           icon={Settings}
           glassClass={glassClass}
@@ -435,7 +435,7 @@ const SupportPage = ({ tokens, glassClass }: SupportPageProps) => {
   const canais = [
     {
       titulo: 'Chat em tempo real',
-      descricao: 'Fale com um especialista da Golf Fox em português de segunda a sexta das 8h às 20h.',
+      descricao: 'Converse com especialistas da Golf Fox em português de segunda a sexta das 8h às 20h.',
       icon: MessageCircle,
       acoes: [
         { label: 'Abrir chat web', href: 'https://app.golffox.com/suporte/chat' },
@@ -444,7 +444,7 @@ const SupportPage = ({ tokens, glassClass }: SupportPageProps) => {
     },
     {
       titulo: 'Central telefônica',
-      descricao: 'Atendimento prioritário para incidentes críticos e emergências de operação.',
+      descricao: 'Atendimento prioritário para incidentes críticos e emergências operacionais.',
       icon: Phone,
       acoes: [
         { label: 'Ligar para 0800-777-4653', href: 'tel:08007774653' },
@@ -452,8 +452,8 @@ const SupportPage = ({ tokens, glassClass }: SupportPageProps) => {
       ],
     },
     {
-      titulo: 'E-mail & portal',
-      descricao: 'Abra e acompanhe chamados com histórico completo e anexos ilimitados.',
+      titulo: 'E-mail e portal',
+      descricao: 'Abra chamados, envie anexos e acompanhe o histórico completo em tempo real.',
       icon: Mail,
       acoes: [
         { label: 'Enviar e-mail', href: 'mailto:suporte@golffox.com' },
@@ -466,36 +466,36 @@ const SupportPage = ({ tokens, glassClass }: SupportPageProps) => {
     {
       pergunta: 'Como abrir um chamado de emergência?',
       resposta:
-        'Priorize o canal telefônico. Ligue para 0800-777-4653, informe o código do seu contrato e o número da rota afetada. Nosso time cria o ticket automaticamente e acompanha até a normalização.',
+        'Priorize o canal telefônico. Informe o código do contrato e a rota afetada para criarmos o ticket automaticamente e acompanhar até a normalização.',
     },
     {
       pergunta: 'Qual o prazo de resposta do suporte?',
       resposta:
-        'Chamados críticos recebem primeira resposta em até 10 minutos e solução definitiva em até 2 horas. Demandas padrão têm SLA de resposta de 2 horas úteis e resolução em até 1 dia útil.',
+        'Chamados críticos recebem primeira resposta em até 10 minutos. Demandas padrão têm SLA de 2 horas úteis e resolução em até 1 dia útil.',
     },
     {
       pergunta: 'Posso acompanhar o status dos tickets?',
       resposta:
-        'Sim. Todos os chamados ficam disponíveis no portal do cliente com histórico de interações, SLA e responsáveis. Você também recebe notificações por e-mail a cada atualização.',
+        'Sim. Todos os chamados ficam disponíveis no portal com histórico, SLA e responsáveis. Enviamos notificações a cada atualização.',
     },
   ] as const
 
-  const guias = [
+  const materiais = [
     {
       titulo: 'Guia rápido de incidentes',
-      descricao: 'Checklist em 4 passos para restaurar operações críticas e informar as partes interessadas.',
+      descricao: 'Checklist em 4 passos para restaurar operações críticas com segurança.',
       icon: FileText,
       href: 'https://docs.golffox.com/guias/incident-response.pdf',
     },
     {
       titulo: 'Base de conhecimento',
-      descricao: 'Artigos, vídeos e treinamentos sob demanda para administradores e motoristas.',
+      descricao: 'Artigos e vídeos sob demanda para administradores e motoristas.',
       icon: BookOpen,
       href: 'https://docs.golffox.com/base-de-conhecimento',
     },
     {
       titulo: 'Treinamento personalizado',
-      descricao: 'Agende sessões com especialistas para implantações, integrações e revisões operacionais.',
+      descricao: 'Agende sessões com especialistas para implantações e integrações.',
       icon: Headset,
       href: 'https://cal.com/golffox/treinamento',
     },
@@ -511,8 +511,8 @@ const SupportPage = ({ tokens, glassClass }: SupportPageProps) => {
               Central de atendimento em português do Brasil
             </h1>
             <p className={`text-sm md:text-base leading-relaxed ${tokens.quickDescription}`}>
-              Nossa equipe está disponível 24/7 para manter suas operações rodoviárias em pleno funcionamento. Escolha o canal
-              ideal, acompanhe indicadores de SLA em tempo real e consulte materiais de autoatendimento sem sair do painel.
+              Nossa equipe está disponível para manter as operações rodoviárias em pleno funcionamento. Escolha o canal ideal,
+              acompanhe indicadores de SLA em tempo real e consulte materiais de autoatendimento sem sair do painel.
             </p>
           </div>
           <div className="flex flex-col gap-3 min-w-[220px]">
@@ -546,7 +546,7 @@ const SupportPage = ({ tokens, glassClass }: SupportPageProps) => {
             className={`rounded-2xl p-6 border ${glassClass} flex flex-col gap-5`}
           >
             <div className="flex items-start gap-3">
-              <span className="grid h-11 w-11 place-items-center rounded-xl bg-blue-500/10 text-blue-400 border border-blue-400/20">
+              <span className="grid h-11 w-11 place-items-center rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
                 <canal.icon size={22} />
               </span>
               <div className="space-y-1">
@@ -577,16 +577,13 @@ const SupportPage = ({ tokens, glassClass }: SupportPageProps) => {
           <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Resumo operacional</div>
           <ul className={`text-sm space-y-3 ${tokens.quickDescription}`}>
             <li>
-              <strong className="text-emerald-400">Status:</strong> Atendimento disponível, fila atual com 3 chamados aguardando
-              retorno.
+              <strong className="text-emerald-400">Status:</strong> Atendimento disponível, fila atual com 3 chamados aguardando retorno.
             </li>
             <li>
-              <strong className="text-emerald-400">Plantão:</strong> Equipe de plantão com especialistas em telemetria e rotas
-              inteligentes.
+              <strong className="text-emerald-400">Plantão:</strong> Equipe de plantão com especialistas em telemetria e rotas inteligentes.
             </li>
             <li>
-              <strong className="text-emerald-400">Comunicação:</strong> Alertas de indisponibilidade são enviados via SMS e
-              e-mail imediatamente.
+              <strong className="text-emerald-400">Comunicação:</strong> Alertas de indisponibilidade enviados via SMS e e-mail imediatamente.
             </li>
           </ul>
         </motion.div>
@@ -594,8 +591,7 @@ const SupportPage = ({ tokens, glassClass }: SupportPageProps) => {
         <motion.div className={`rounded-2xl p-6 border ${glassClass} space-y-4`} layout>
           <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Escalonamento</div>
           <p className={`text-sm leading-relaxed ${tokens.quickDescription}`}>
-            Caso a solução exceda o SLA comprometido, escalonamos automaticamente para a gerência técnica e mantemos você
-            informado a cada 15 minutos com atualizações sobre a evolução do incidente.
+            Caso a solução exceda o SLA comprometido, escalonamos automaticamente para a gerência técnica e mantemos você informado a cada 15 minutos.
           </p>
           <div className="space-y-2 text-sm">
             <div className="flex items-center gap-2">
@@ -633,10 +629,7 @@ const SupportPage = ({ tokens, glassClass }: SupportPageProps) => {
         <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Perguntas frequentes</div>
         <div className="space-y-3">
           {faqs.map((faq) => (
-            <details
-              key={faq.pergunta}
-              className="group rounded-xl border border-white/10 bg-white/5 p-4 open:bg-white/10"
-            >
+            <details key={faq.pergunta} className="group rounded-xl border border-white/10 bg-white/5 p-4 open:bg-white/10">
               <summary className={`flex cursor-pointer items-center justify-between text-sm font-semibold ${tokens.quickTitle}`}>
                 {faq.pergunta}
                 <ChevronRight className="transition-transform group-open:rotate-90" size={16} />
@@ -650,21 +643,21 @@ const SupportPage = ({ tokens, glassClass }: SupportPageProps) => {
       <motion.div className={`rounded-2xl p-6 border ${glassClass} space-y-4`} layout>
         <div className={`text-lg font-semibold ${tokens.quickTitle}`}>Materiais de apoio</div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {guias.map((guia) => (
+          {materiais.map((material) => (
             <a
-              key={guia.titulo}
-              href={guia.href}
+              key={material.titulo}
+              href={material.href}
               target="_blank"
               rel="noreferrer"
-              className={`rounded-2xl border px-5 py-4 transition ${glassClass} hover:translate-y-[-4px] hover:shadow-lg`}
+              className={`rounded-2xl border px-5 py-4 transition ${glassClass} hover:-translate-y-1 hover:shadow-lg`}
             >
               <div className="flex items-center gap-3">
                 <span className="grid h-10 w-10 place-items-center rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                  <guia.icon size={20} />
+                  <material.icon size={20} />
                 </span>
                 <div>
-                  <div className={`text-sm font-semibold ${tokens.quickTitle}`}>{guia.titulo}</div>
-                  <p className={`text-xs mt-1 leading-relaxed ${tokens.quickDescription}`}>{guia.descricao}</p>
+                  <div className={`text-sm font-semibold ${tokens.quickTitle}`}>{material.titulo}</div>
+                  <p className={`text-xs mt-1 leading-relaxed ${tokens.quickDescription}`}>{material.descricao}</p>
                 </div>
               </div>
             </a>
@@ -680,7 +673,7 @@ export default function AdminPremiumResponsive() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
-  const [aiSummary, setAiSummary] = useState('Carregando insights inteligentes...')
+  const [aiSummary, setAiSummary] = useState('Loading intelligent insights...')
   const sb = useMemo(() => supabaseClient, [])
   const [kpis, setKpis] = useState<KPIState>({
     emTransito: 65,
@@ -726,9 +719,7 @@ export default function AdminPremiumResponsive() {
       } catch (error) {
         console.warn('[admin] AI fallback', error)
         if (active)
-          setAiSummary(
-            'Operações estáveis. Continue monitorando ocupação, rotas críticas e alertas em tempo real.'
-          )
+          setAiSummary('Operations stable. Keep monitoring occupancy, critical routes and alerts in real time.')
       }
     })()
     return () => {
@@ -803,21 +794,21 @@ export default function AdminPremiumResponsive() {
     () => [
       {
         icon: '🟢',
-        label: 'Operação estável',
+        label: 'Stable operation',
         tone: tokens.statusChip.emerald,
-        description: `Ocupação média de ${kpis.emTransito}%`,
+        description: `Average occupancy ${kpis.emTransito}%`,
       },
       {
         icon: '🟠',
-        label: 'Monitorar rotas',
+        label: 'Monitor routes',
         tone: tokens.statusChip.amber,
-        description: 'Mantenha o desvio das rotas abaixo de 10%',
+        description: 'Keep route deviation below 10%',
       },
       {
         icon: '🔴',
-        label: 'Alertas pendentes',
+        label: 'Pending alerts',
         tone: tokens.statusChip.rose,
-        description: `${kpis.alertasCriticos} tarefas urgentes`,
+        description: `${kpis.alertasCriticos} urgent tasks`,
       },
     ],
     [kpis.alertasCriticos, kpis.emTransito, tokens]
@@ -829,24 +820,24 @@ export default function AdminPremiumResponsive() {
   }
 
   const navItems: Array<{ icon: LucideIcon; label: string; path: string }> = [
-    { icon: LayoutGrid, label: 'Visão geral', path: '/' },
-    { icon: MapIcon, label: 'Mapa', path: '/map' },
-    { icon: Route, label: 'Rotas', path: '/routes' },
-    { icon: Bus, label: 'Veículos', path: '/vehicles' },
-    { icon: Users, label: 'Motoristas', path: '/drivers' },
-    { icon: Building2, label: 'Empresas', path: '/companies' },
-    { icon: ShieldCheck, label: 'Permissões', path: '/permissions' },
+    { icon: LayoutGrid, label: 'Dashboard', path: '/' },
+    { icon: MapIcon, label: 'Map', path: '/map' },
+    { icon: Route, label: 'Routes', path: '/routes' },
+    { icon: Bus, label: 'Vehicles', path: '/vehicles' },
+    { icon: Users, label: 'Drivers', path: '/drivers' },
+    { icon: Building2, label: 'Companies', path: '/companies' },
+    { icon: ShieldCheck, label: 'Permissions', path: '/permissions' },
     { icon: LifeBuoy, label: 'Suporte', path: '/support' },
-    { icon: Bell, label: 'Alertas', path: '/alerts' },
-    { icon: FileBarChart, label: 'Relatórios', path: '/reports' },
-    { icon: History, label: 'Histórico', path: '/history' },
-    { icon: Wallet2, label: 'Custos', path: '/costs' },
+    { icon: Bell, label: 'Alerts', path: '/alerts' },
+    { icon: FileBarChart, label: 'Reports', path: '/reports' },
+    { icon: History, label: 'History', path: '/history' },
+    { icon: Wallet2, label: 'Costs', path: '/costs' },
   ]
 
   return (
     <div className={`min-h-screen flex flex-col overflow-hidden transition-colors duration-500 ${tokens.background}`}>
       <div className="fixed top-2 left-1/2 -translate-x-1/2 z-50 rounded-full bg-black/70 text-white px-4 py-1 text-xs tracking-wide shadow-lg">
-        Renderizando painel Golf Fox Admin…
+        Golf Fox Admin dashboard rendering…
       </div>
       <motion.div className="fixed top-5 right-5 z-50 flex items-center gap-3">
         <motion.button
@@ -958,8 +949,8 @@ export default function AdminPremiumResponsive() {
                 exit="exit"
                 className={`rounded-2xl p-6 text-center text-sm md:text-base ${glassClass}`}
               >
-                <div className="text-lg font-semibold mb-2">Em breve</div>
-                A página {route} está em desenvolvimento.
+                <div className="text-lg font-semibold mb-2">Coming soon</div>
+                The page {route} is in progress.
               </motion.div>
             )}
           </AnimatePresence>
