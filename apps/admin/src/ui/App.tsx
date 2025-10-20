@@ -33,7 +33,7 @@ import {
 import { supabaseClient } from '../lib/supabaseClient'
 import { aiSuggest } from '../lib/aiClient'
 import { brand } from '../theme'
-import Reports from '../../../../components/Reports'
+import Reports from '@/components/Reports'
 
 const glassDark =
   'backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_18px_40px_rgba(0,0,0,0.35)]'
@@ -90,6 +90,9 @@ const fadeVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: 'easeOut' } },
   exit: { opacity: 0, y: -18, transition: { duration: 0.35, ease: 'easeIn' } },
 }
+
+const REPORTS_ROUTE = '/reports'
+const REPORTS_ROUTE_ALIASES = new Set([REPORTS_ROUTE, '/relatorios'])
 
 type SidebarItemProps = {
   icon: LucideIcon
@@ -382,7 +385,7 @@ const DashboardPage = ({ kpis, goto, aiSummary, chartData, glassClass, statuses,
         <QuickAction
           title="View analytics"
           description="Dashboards by route, fleet and occupancy"
-          onClick={() => goto('/relatorios')}
+          onClick={() => goto(REPORTS_ROUTE)}
           tone={brand.accent}
           icon={FileBarChart}
           glassClass={glassClass}
@@ -566,7 +569,8 @@ export default function AdminPremiumResponsive() {
   )
 
   const goto = (path: string) => {
-    setRoute(path)
+    const normalizedPath = REPORTS_ROUTE_ALIASES.has(path) ? REPORTS_ROUTE : path
+    setRoute(normalizedPath)
     if (isMobile) setSidebarOpen(false)
   }
 
@@ -580,7 +584,7 @@ export default function AdminPremiumResponsive() {
     { icon: ShieldCheck, label: 'Permissions', path: '/permissions' },
     { icon: LifeBuoy, label: 'Support', path: '/support' },
     { icon: Bell, label: 'Alerts', path: '/alerts' },
-    { icon: FileBarChart, label: 'Relatórios', path: '/relatorios' },
+    { icon: FileBarChart, label: 'Relatórios', path: REPORTS_ROUTE },
     { icon: History, label: 'History', path: '/history' },
     { icon: Wallet2, label: 'Costs', path: '/costs' },
   ]
@@ -689,7 +693,7 @@ export default function AdminPremiumResponsive() {
                 statuses={statuses}
                 tokens={tokens}
               />
-            ) : route === '/relatorios' ? (
+            ) : REPORTS_ROUTE_ALIASES.has(route) ? (
               <motion.div
                 key="reports"
                 variants={fadeVariants}
