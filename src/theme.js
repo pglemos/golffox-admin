@@ -12,7 +12,7 @@ export const brand = {
   info: '#38BDF8',
 };
 
-export default {
+const theme = {
   brand,
   colors: {
     background: '#ffffff',
@@ -27,3 +27,5 @@ export default {
     dark: brand.dark,
   }
 };
+
+export default theme;

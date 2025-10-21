@@ -47,7 +47,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ currentView, setCur
       {/* Mobile Header */}
       <header className="lg:hidden bg-golffox-blue-dark text-white p-4 safe-top flex items-center justify-between shadow-lg">
         <div className="flex items-center">
-          <Image src="/golffox-logo.svg" alt="Golffox Logo" className="h-8" width={32} height={32} priority />
+          <Image src="/golffox-logo.svg" alt="Logotipo da Golffox" className="h-8" width={32} height={32} priority />
           <span className="ml-2 font-semibold text-lg">Golffox</span>
         </div>
         <button
@@ -71,7 +71,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ currentView, setCur
           <div className="bg-golffox-blue-dark w-80 h-full p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center">
-                <Image src="/golffox-logo.svg" alt="Golffox Logo" className="h-10" width={40} height={40} />
+                <Image src="/golffox-logo.svg" alt="Logotipo da Golffox" className="h-10" width={40} height={40} />
                 <span className="ml-3 font-semibold text-xl text-white">Golffox</span>
               </div>
               <button
@@ -125,7 +125,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ currentView, setCur
         <div className="grid grid-cols-5 gap-1 p-2">
           <MobileNavItem
             icon={<DashboardIcon className="h-5 w-5" variant="premium" />}
-            label="Dashboard"
+            label="Painel"
             isActive={currentView === VIEWS.DASHBOARD}
             onClick={() => setCurrentView(VIEWS.DASHBOARD)}
           />

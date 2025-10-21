@@ -1,6 +1,15 @@
 'use client';
 
-import React, { useState, useEffect, createContext, useContext, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  createContext,
+  useContext,
+  useRef,
+  useCallback,
+  useMemo,
+} from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion';
 import { Bar, Doughnut } from 'react-chartjs-2';
 import {
@@ -50,6 +59,43 @@ import {
   Filter,
   FileText
 } from 'lucide-react';
+import { useAuth } from '../app/hooks/useAuth';
+
+type RouteStatusType = 'onTime' | 'delayed' | 'problem' | 'completed';
+type VehicleStatusType = 'active' | 'inactive' | 'maintenance';
+type CompanyStatusType = 'active' | 'inactive';
+
+type RouteInfo = {
+  id: number;
+  name: string;
+  driver: string;
+  vehicle: string;
+  status: RouteStatusType;
+  passengers: string;
+  punctuality: string;
+};
+
+type VehicleInfo = {
+  id: number;
+  plate: string;
+  model: string;
+  driver: string;
+  status: VehicleStatusType;
+};
+
+type CompanyInfo = {
+  id: number;
+  name: string;
+  contact: string;
+  status: CompanyStatusType;
+};
+
+type FeedbackType = 'sucesso' | 'info' | 'erro';
+
+type FeedbackState = {
+  mensagem: string;
+  tipo: FeedbackType;
+};
 
 // Registro dos componentes do Chart.js
 ChartJS.register(
@@ -87,32 +133,42 @@ const kpiData = {
   passengersToday: 1245,
 };
 
-const routeStatusData = [
-  { id: 1, name: "Rota Minerva - Manhã", driver: "João Silva", vehicle: "ABC-1234", status: "onTime", passengers: "18/20", punctuality: "+1 min" },
-  { id: 2, name: "Rota JBS - Manhã", driver: "Maria Oliveira", vehicle: "DEF-5678", status: "delayed", passengers: "15/15", punctuality: "+8 min" },
-  { id: 3, name: "Rota Minerva - Tarde", driver: "Pedro Martins", vehicle: "XYZ-0011", status: "onTime", passengers: "20/20", punctuality: "-2 min" },
-  { id: 4, name: "Rota JBS - Tarde", driver: "Carlos Souza", vehicle: "GHI-7890", status: "problem", passengers: "12/20", punctuality: "+15 min" },
-  { id: 5, name: "Rota LogiCorp", driver: "Ana Costa", vehicle: "JKL-1357", status: "completed", passengers: "25/25", punctuality: "No horário" },
+const initialRoutes: RouteInfo[] = [
+  { id: 1, name: 'Rota Minerva - Manhã', driver: 'João Silva', vehicle: 'ABC-1234', status: 'onTime', passengers: '18/20', punctuality: '+1 min' },
+  { id: 2, name: 'Rota JBS - Manhã', driver: 'Maria Oliveira', vehicle: 'DEF-5678', status: 'delayed', passengers: '15/15', punctuality: '+8 min' },
+  { id: 3, name: 'Rota Minerva - Tarde', driver: 'Pedro Martins', vehicle: 'XYZ-0011', status: 'onTime', passengers: '20/20', punctuality: '-2 min' },
+  { id: 4, name: 'Rota JBS - Tarde', driver: 'Carlos Souza', vehicle: 'GHI-7890', status: 'problem', passengers: '12/20', punctuality: '+15 min' },
+  { id: 5, name: 'Rota LogiCorp', driver: 'Ana Costa', vehicle: 'JKL-1357', status: 'completed', passengers: '25/25', punctuality: 'No horário' },
 ];
 
-const vehiclesData = [
-    { id: 1, plate: "ABC-1234", model: "Mercedes Sprinter", driver: "João Silva", status: "active" },
-    { id: 2, plate: "DEF-5678", model: "Iveco Daily", driver: "Maria Oliveira", status: "inactive" },
-    { id: 3, plate: "GHI-7890", model: "Renault Master", driver: "Carlos Souza", status: "maintenance" },
+const initialVehicles: VehicleInfo[] = [
+  { id: 1, plate: 'ABC-1234', model: 'Mercedes Sprinter', driver: 'João Silva', status: 'active' },
+  { id: 2, plate: 'DEF-5678', model: 'Iveco Daily', driver: 'Maria Oliveira', status: 'inactive' },
+  { id: 3, plate: 'GHI-7890', model: 'Renault Master', driver: 'Carlos Souza', status: 'maintenance' },
 ];
 
-const companiesData = [
-    { id: 1, name: "InnovateTech Soluções", contact: "contact@innovatetech.com", status: "active" },
-    { id: 2, name: "Nexus Global", contact: "adm@nexusglobal.com", status: "active" },
-    { id: 3, name: "Quantum Dynamics", contact: "support@quantum.com", status: "inactive" },
-]
+const initialCompanies: CompanyInfo[] = [
+  { id: 1, name: 'InnovateTech Soluções', contact: 'contact@innovatetech.com', status: 'active' },
+  { id: 2, name: 'Nexus Global', contact: 'adm@nexusglobal.com', status: 'active' },
+  { id: 3, name: 'Quantum Dynamics', contact: 'support@quantum.com', status: 'inactive' },
+];
 
 const permissionsData = [
-    { role: "Admin", description: "Acesso total a todas as áreas do sistema, incluindo gerenciamento de usuários e permissões." },
-    { role: "Operador", description: "Acesso para gerenciar funcionários e acompanhar rotas da sua empresa." },
-    { role: "Motorista", description: "Acesso exclusivo ao aplicativo do motorista para visualização de rotas, checklist e navegação." },
-    { role: "Passageiro", description: "Acesso ao aplicativo para rastreamento de rotas e histórico de viagens." },
+  { role: 'Administrador', description: 'Acesso total a todas as áreas do sistema, incluindo gerenciamento de usuários e permissões.' },
+  { role: 'Operador', description: 'Acesso para gerenciar funcionários e acompanhar rotas da sua empresa.' },
+  { role: 'Motorista', description: 'Acesso exclusivo ao aplicativo do motorista para visualização de rotas, checklist e navegação.' },
+  { role: 'Passageiro', description: 'Acesso ao aplicativo para rastreamento de rotas e histórico de viagens.' },
 ];
+
+const statusTextMap: Record<string, string> = {
+  onTime: 'No horário',
+  delayed: 'Atraso',
+  problem: 'Problema',
+  completed: 'Concluída',
+  active: 'Ativo',
+  inactive: 'Inativo',
+  maintenance: 'Em manutenção',
+};
 
 const alertsData = [
     { id: 1, type: 'problem', title: "Pneu Furado - Veículo GHI-7890", description: "O motorista Carlos Souza reportou um pneu furado na Rota JBS - Tarde. A rota está impactada.", time: "2025-10-12 10:41:01" },
@@ -169,7 +225,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const useTheme = () => {
   const context = useContext(ThemeContext);
-  if (!context) throw new Error("useTheme must be used within a ThemeProvider");
+  if (!context) throw new Error('useTheme deve ser utilizado dentro de um ThemeProvider');
   return context;
 };
 
@@ -205,31 +261,71 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
 // --- COMPONENTES DA UI ---
 
+const getStatusAppearance = (status: string) => {
+  switch (status) {
+    case 'delayed':
+      return {
+        icon: <AlertTriangle className="h-3 w-3" />,
+        badgeClass: 'text-yellow-700 bg-yellow-100 dark:text-yellow-200 dark:bg-yellow-500/20',
+        dotClass: 'bg-yellow-500',
+      };
+    case 'problem':
+      return {
+        icon: <XCircle className="h-3 w-3" />,
+        badgeClass: 'text-red-700 bg-red-100 dark:text-red-200 dark:bg-red-500/20',
+        dotClass: 'bg-red-500',
+      };
+    case 'completed':
+      return {
+        icon: <CheckCircle2 className="h-3 w-3" />,
+        badgeClass: 'text-green-700 bg-green-100 dark:text-green-200 dark:bg-green-500/20',
+        dotClass: 'bg-green-500',
+      };
+    case 'active':
+      return {
+        icon: <CheckCircle2 className="h-3 w-3" />,
+        badgeClass: 'text-green-700 bg-green-100 dark:text-green-200 dark:bg-green-500/20',
+        dotClass: 'bg-green-500',
+      };
+    case 'maintenance':
+      return {
+        icon: <Settings className="h-3 w-3" />,
+        badgeClass: 'text-yellow-700 bg-yellow-100 dark:text-yellow-200 dark:bg-yellow-500/20',
+        dotClass: 'bg-yellow-500',
+      };
+    case 'inactive':
+      return {
+        icon: <XCircle className="h-3 w-3" />,
+        badgeClass: 'text-slate-700 bg-slate-100 dark:text-slate-200 dark:bg-slate-500/20',
+        dotClass: 'bg-slate-400',
+      };
+    case 'onTime':
+    default:
+      return {
+        icon: <Clock className="h-3 w-3" />,
+        badgeClass: 'text-blue-700 bg-blue-100 dark:text-blue-200 dark:bg-blue-500/20',
+        dotClass: 'bg-blue-500',
+      };
+  }
+};
+
 const StatusBadge = ({ status, type = "badge" }: { status: string, type?: "badge" | "dot" }) => {
-  const statusConfig = {
-    onTime: { icon: <Clock className="h-3 w-3" />, text: 'No Horário', color: 'text-blue-700 bg-blue-100 dark:text-blue-200 dark:bg-blue-500/20' },
-    delayed: { icon: <AlertTriangle className="h-3 w-3" />, text: 'Atrasado', color: 'text-yellow-700 bg-yellow-100 dark:text-yellow-200 dark:bg-yellow-500/20' },
-    problem: { icon: <XCircle className="h-3 w-3" />, text: 'Com Problema', color: 'text-red-700 bg-red-100 dark:text-red-200 dark:bg-red-500/20' },
-    completed: { icon: <CheckCircle2 className="h-3 w-3" />, text: 'Concluída', color: 'text-green-700 bg-green-100 dark:text-green-200 dark:bg-green-500/20' },
-    active: { icon: <CheckCircle2 className="h-3 w-3" />, text: 'Ativo', color: 'text-green-700 bg-green-100 dark:text-green-200 dark:bg-green-500/20' },
-    maintenance: { icon: <Settings className="h-3 w-3" />, text: 'Manutenção', color: 'text-yellow-700 bg-yellow-100 dark:text-yellow-200 dark:bg-yellow-500/20' },
-    inactive: { icon: <XCircle className="h-3 w-3" />, text: 'Inativo', color: 'text-slate-700 bg-slate-100 dark:text-slate-200 dark:bg-slate-500/20' },
-  };
-  const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.onTime;
+  const appearance = getStatusAppearance(status);
+  const texto = statusTextMap[status] ?? statusTextMap['onTime'];
 
   if (type === 'dot') {
       return (
          <div className="flex items-center gap-2">
-            <div className={`h-2 w-2 rounded-full ${config.color.split(' ')[1]}`} />
-            <span className="text-sm">{config.text}</span>
+            <span className={`h-2 w-2 rounded-full ${appearance.dotClass}`} />
+            <span className="text-sm">{texto}</span>
          </div>
-      )
+      );
   }
 
   return (
-    <div className={`flex items-center gap-1.5 py-1 px-2.5 rounded-full text-xs font-medium ${config.color}`}>
-      {config.icon}
-      <span>{config.text}</span>
+    <div className={`flex items-center gap-1.5 py-1 px-2.5 rounded-full text-xs font-medium ${appearance.badgeClass}`}>
+      {appearance.icon}
+      <span>{texto}</span>
     </div>
   );
 };
@@ -258,11 +354,11 @@ const KpiCard = ({ title, value, unit, icon, color }: {title: string, value: num
     );
 };
 
-const Sidebar = ({ isSidebarOpen, setSidebarOpen, isMobile, activeView, setActiveView }: { isSidebarOpen: boolean; setSidebarOpen: (isOpen: boolean) => void; isMobile: boolean; activeView: string, setActiveView: (view: string) => void }) => {
+const Sidebar = ({ isSidebarOpen, setSidebarOpen, isMobile, activeView, setActiveView, onSignOut }: { isSidebarOpen: boolean; setSidebarOpen: (isOpen: boolean) => void; isMobile: boolean; activeView: string; setActiveView: (view: string) => void; onSignOut: () => void }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const navItems = [
-    { icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
+    { icon: <LayoutDashboard size={20} />, label: 'Painel Geral' },
     { icon: <Map size={20} />, label: 'Mapa em Tempo Real' },
     { icon: <Route size={20} />, label: 'Rotas' },
     { icon: <Car size={20} />, label: 'Veículos' },
@@ -275,13 +371,9 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen, isMobile, activeView, setActiv
     { icon: <CreditCard size={20} />, label: 'Financeiro' },
     { icon: <Settings size={20} />, label: 'Configurações' },
   ];
-  
+
   const handleToggle = () => {
-    if (isMobile) {
-      setSidebarOpen(!isSidebarOpen);
-    } else {
-      setIsCollapsed(!isCollapsed);
-    }
+      setIsCollapsed(prev => !prev);
   };
 
   const handleNavClick = (viewLabel: string) => {
@@ -289,22 +381,22 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen, isMobile, activeView, setActiv
       if(isMobile) {
           setSidebarOpen(false);
       }
-  }
+  };
 
   const sidebarVariants = {
     open: { width: isMobile ? '80%' : (isCollapsed ? 88 : 288), transition: { stiffness: 400, damping: 40 } },
     closed: { width: 0, transition: { stiffness: 400, damping: 40 } },
   };
-  
+
   return (
     <AnimatePresence>
       {isSidebarOpen && (
         <>
-        {isMobile && <motion.div 
+        {isMobile && <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setSidebarOpen(false)} 
+            onClick={() => setSidebarOpen(false)}
             className="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm" />}
         <motion.div
           key="sidebar"
@@ -316,7 +408,7 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen, isMobile, activeView, setActiv
         >
           <div className={`flex items-center p-6 h-20 border-b border-slate-700/50 ${isCollapsed && !isMobile ? 'justify-center' : 'justify-between'}`}>
             {!isCollapsed || isMobile ? <span className="text-2xl font-bold tracking-wider">GOLFFOX</span> : null}
-            <div onClick={handleToggle} className="p-2 rounded-full hover:bg-slate-700/50 transition-colors cursor-pointer">
+            <div onClick={handleToggle} className="p-2 rounded-full hover:bg-slate-700/50 transition-colors cursor-pointer" aria-label="Alternar menu">
                 {isMobile ? <X /> : (isCollapsed ? <ChevronRight /> : <ChevronLeft />) }
             </div>
           </div>
@@ -343,13 +435,14 @@ const Sidebar = ({ isSidebarOpen, setSidebarOpen, isMobile, activeView, setActiv
             ))}
           </nav>
           <div className={`p-4 border-t border-slate-700/50 ${isCollapsed && !isMobile ? 'justify-center' : ''}`}>
-             <div
-                onClick={() => alert('Logout action triggered!')}
+             <button
+                onClick={onSignOut}
                 className="w-full flex items-center gap-4 p-3 rounded-lg hover:bg-slate-700/50 transition-colors text-left cursor-pointer"
+                type="button"
               >
                 <LogOut/>
-                {!isCollapsed || isMobile ? <span>Sair</span> : null}
-              </div>
+                {!isCollapsed || isMobile ? <span>Encerrar sessão</span> : null}
+              </button>
           </div>
         </motion.div>
         </>
@@ -368,18 +461,25 @@ const Header = ({ onMenuClick, title }: { onMenuClick: () => void, title: string
             </div>
             <div className="hidden lg:block">
                 <h1 className="text-2xl font-bold text-slate-800 dark:text-white">{title}</h1>
-                 {title === 'Dashboard' && <p className="text-sm text-slate-500 dark:text-slate-400">Visão geral das suas operações de hoje.</p>}
+                 {title === 'Painel Geral' && <p className="text-sm text-slate-500 dark:text-slate-400">Visão geral das suas operações de hoje.</p>}
             </div>
             <div className="flex items-center gap-2">
-                <button 
-                    onClick={() => toggleTheme()} 
+                <button
+                    onClick={() => toggleTheme()}
                     className="p-2.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
                     type="button"
                 >
                     {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
                 </button>
-                 <div className="relative">
-                    <img src={`https://i.pravatar.cc/150?u=admin`} alt="Admin User" className="h-10 w-10 rounded-full cursor-pointer"/>
+                <div className="relative">
+                    <Image
+                        src={`https://i.pravatar.cc/150?u=admin`}
+                        alt="Usuário administrador"
+                        width={40}
+                        height={40}
+                        className="h-10 w-10 rounded-full cursor-pointer object-cover"
+                        priority
+                    />
                     <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-500 border-2 border-white dark:border-slate-900"></span>
                 </div>
             </div>
@@ -389,7 +489,7 @@ const Header = ({ onMenuClick, title }: { onMenuClick: () => void, title: string
 
 // --- COMPONENTES DE VISUALIZAÇÃO (PÁGINAS) ---
 
-export const DashboardView = () => {
+export const DashboardView = ({ routes }: { routes: RouteInfo[] }) => {
   const { theme } = useTheme();
 
   const chartOptions = {
@@ -418,7 +518,7 @@ export const DashboardView = () => {
       },
     },
   };
-  
+
   const doughnutChartOptions = {
       responsive: true,
       maintainAspectRatio: false,
@@ -449,34 +549,58 @@ export const DashboardView = () => {
   return (
     <motion.div key="dashboard" variants={containerVariants} initial="hidden" animate="visible" exit={{ opacity: 0 }}>
       <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-        <KpiCard title="Rotas Ativas" value={kpiData.activeRoutes} icon={<Route className="h-6 w-6 text-white" />} color="bg-blue-500" />
+        <KpiCard title="Rotas ativas" value={kpiData.activeRoutes} icon={<Route className="h-6 w-6 text-white" />} color="bg-blue-500" />
         <KpiCard title="Pontualidade" value={kpiData.onTimePercentage} unit="%" icon={<CheckCircle2 className="h-6 w-6 text-white" />} color="bg-green-500" />
-        <KpiCard title="Veículos em Rota" value={kpiData.activeVehicles} icon={<Car className="h-6 w-6 text-white" />} color="bg-amber-500" />
-        <KpiCard title="Passageiros (Hoje)" value={kpiData.passengersToday} icon={<Users className="h-6 w-6 text-white" />} color="bg-indigo-500" />
+        <KpiCard title="Veículos em rota" value={kpiData.activeVehicles} icon={<Car className="h-6 w-6 text-white" />} color="bg-amber-500" />
+        <KpiCard title="Passageiros (hoje)" value={kpiData.passengersToday} icon={<Users className="h-6 w-6 text-white" />} color="bg-indigo-500" />
       </motion.div>
 
       <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-8">
         <div className="lg:col-span-3 bg-white/50 dark:bg-slate-800/50 p-6 rounded-2xl shadow-sm border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm">
-            <h3 className="text-xl font-bold mb-4 text-slate-800 dark:text-white">Pontualidade na Semana</h3>
+            <h3 className="text-xl font-bold mb-4 text-slate-800 dark:text-white">Pontualidade na semana</h3>
             <div className="h-80">
                 <Bar options={chartOptions as any} data={punctualityChartData} />
             </div>
         </div>
          <div className="lg:col-span-2 bg-white/50 dark:bg-slate-800/50 p-6 rounded-2xl shadow-sm border border-slate-200/50 dark:border-slate-700/50 flex flex-col backdrop-blur-sm">
-            <h3 className="text-xl font-bold mb-4 text-slate-800 dark:text-white">Status da Frota</h3>
+            <h3 className="text-xl font-bold mb-4 text-slate-800 dark:text-white">Status da frota</h3>
             <div className="h-80 flex-1 flex items-center justify-center">
                 <Doughnut options={doughnutChartOptions as any} data={vehicleStatusChartData} />
             </div>
         </div>
       </motion.div>
-      <motion.div variants={itemVariants}>
-         <RoutesView />
+
+      <motion.div variants={itemVariants} className="bg-white/50 dark:bg-slate-800/50 rounded-2xl shadow-sm border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm">
+        <div className="p-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h3 className="text-xl font-bold text-slate-800 dark:text-white">Próximas partidas</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Acompanhe as últimas rotas com saída programada.</p>
+          </div>
+          <span className="text-sm text-slate-400 dark:text-slate-500">Atualização automática a cada 5 minutos</span>
+        </div>
+        <div className="divide-y divide-slate-200/50 dark:divide-slate-700/50">
+          {routes.slice(0, 4).map(route => (
+            <div key={route.id} className="flex items-center justify-between px-6 py-4">
+              <div>
+                <p className="font-semibold text-slate-800 dark:text-white">{route.name}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Motorista: {route.driver} • Veículo {route.vehicle}</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-slate-500 dark:text-slate-400">Pontualidade: {route.punctuality}</span>
+                <StatusBadge status={route.status} />
+              </div>
+            </div>
+          ))}
+          {routes.length === 0 && (
+            <p className="px-6 py-8 text-sm text-slate-500 dark:text-slate-400">Nenhuma rota cadastrada para hoje.</p>
+          )}
+        </div>
       </motion.div>
     </motion.div>
   );
 };
 
-const ActionMenu = ({ onAction, onClose }: { onAction: (action: string) => void; onClose: () => void }) => {
+const ActionMenu = ({ onAction, onClose }: { onAction: (action: 'detalhes' | 'editar' | 'excluir') => void; onClose: () => void }) => {
     const menuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -485,14 +609,14 @@ const ActionMenu = ({ onAction, onClose }: { onAction: (action: string) => void;
                 onClose();
             }
         };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [onClose]);
-    
-    const actions = [
-        { label: 'Ver Detalhes', icon: <Eye className="h-4 w-4 mr-2"/>, action: 'view'},
-        { label: 'Editar', icon: <Edit className="h-4 w-4 mr-2"/>, action: 'edit'},
-        { label: 'Excluir', icon: <Trash2 className="h-4 w-4 mr-2 text-red-500"/>, action: 'delete'},
+
+    const actions: { label: string; icon: React.ReactNode; action: 'detalhes' | 'editar' | 'excluir'; danger?: boolean }[] = [
+        { label: 'Ver detalhes', icon: <Eye className="h-4 w-4 mr-2" />, action: 'detalhes' },
+        { label: 'Editar rota', icon: <Edit className="h-4 w-4 mr-2" />, action: 'editar' },
+        { label: 'Remover rota', icon: <Trash2 className="h-4 w-4 mr-2" />, action: 'excluir', danger: true },
     ];
 
     return (
@@ -507,7 +631,14 @@ const ActionMenu = ({ onAction, onClose }: { onAction: (action: string) => void;
             <ul className="py-1">
                 {actions.map(action => (
                     <li key={action.action}>
-                        <button onClick={() => onAction(action.action)} className={`w-full text-left flex items-center px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 ${action.action === 'delete' ? 'hover:text-red-500' : ''}`}>
+                        <button
+                            onClick={() => onAction(action.action)}
+                            className={`w-full text-left flex items-center px-4 py-2 text-sm transition-colors ${
+                                action.danger
+                                    ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10'
+                                    : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'
+                            }`}
+                        >
                            {action.icon} {action.label}
                         </button>
                     </li>
@@ -517,18 +648,62 @@ const ActionMenu = ({ onAction, onClose }: { onAction: (action: string) => void;
     );
 };
 
-const RoutesView = () => {
+const RoutesView = ({ routes, onUpdateRoute, onRemoveRoute }: { routes: RouteInfo[]; onUpdateRoute: (id: number, data: Partial<RouteInfo>) => void; onRemoveRoute: (id: number) => void }) => {
     const [openMenuId, setOpenMenuId] = useState<number | null>(null);
-    const handleAction = (action: string, routeId: number) => {
-        alert(`Ação: ${action} na Rota ID: ${routeId}`);
+    const [modalType, setModalType] = useState<'detalhes' | 'editar' | 'excluir' | null>(null);
+    const [selectedRoute, setSelectedRoute] = useState<RouteInfo | null>(null);
+    const [editForm, setEditForm] = useState<RouteInfo | null>(null);
+
+    useEffect(() => {
+        if (modalType === 'editar' && selectedRoute) {
+            setEditForm(selectedRoute);
+        }
+    }, [modalType, selectedRoute]);
+
+    const statusOptions = [
+        { value: 'onTime', label: statusTextMap['onTime'] },
+        { value: 'delayed', label: statusTextMap['delayed'] },
+        { value: 'problem', label: statusTextMap['problem'] },
+        { value: 'completed', label: statusTextMap['completed'] },
+    ];
+
+    const abrirModal = (tipo: 'detalhes' | 'editar' | 'excluir', rota: RouteInfo) => {
+        setSelectedRoute(rota);
+        setModalType(tipo);
         setOpenMenuId(null);
-    }
-    
+    };
+
+    const fecharModal = () => {
+        setModalType(null);
+        setSelectedRoute(null);
+        setEditForm(null);
+    };
+
+    const handleEditChange = (campo: keyof RouteInfo, valor: string) => {
+        setEditForm(prev => (prev ? { ...prev, [campo]: valor } : prev));
+    };
+
+    const confirmarEdicao = () => {
+        if (!selectedRoute || !editForm) return;
+        const { id: _ignore, ...payload } = editForm;
+        onUpdateRoute(selectedRoute.id, payload);
+        fecharModal();
+    };
+
+    const confirmarExclusao = () => {
+        if (!selectedRoute) return;
+        onRemoveRoute(selectedRoute.id);
+        fecharModal();
+    };
+
     return (
         <motion.div key="routes" className="bg-white/50 dark:bg-slate-800/50 rounded-2xl shadow-sm border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm">
-          <div className="p-6">
-            <h3 className="text-xl font-bold text-slate-800 dark:text-white">Gerenciamento de Rotas</h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400">Crie, edite e visualize todas as rotas ativas.</p>
+          <div className="p-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h3 className="text-xl font-bold text-slate-800 dark:text-white">Gerenciamento de rotas</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Crie, edite e visualize as rotas em andamento.</p>
+            </div>
+            <span className="text-sm text-slate-400 dark:text-slate-500">{routes.length} rota(s) monitoradas</span>
           </div>
           <div className="overflow-x-auto">
               <table className="w-full text-left">
@@ -540,11 +715,18 @@ const RoutesView = () => {
                           <th className="p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
                           <th className="p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Passageiros</th>
                           <th className="p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pontualidade</th>
-                          <th className="p-4"></th>
+                          <th className="p-4" aria-label="Ações" />
                       </tr>
                   </thead>
                   <tbody>
-                      {routeStatusData.map((route) => (
+                      {routes.length === 0 ? (
+                          <tr>
+                              <td colSpan={7} className="p-6 text-center text-slate-500 dark:text-slate-400">
+                                  Nenhuma rota cadastrada até o momento.
+                              </td>
+                          </tr>
+                      ) : (
+                        routes.map((route) => (
                           <tr key={route.id} className="border-b border-slate-200/50 dark:border-slate-700/50 last:border-b-0 hover:bg-slate-50/50 dark:hover:bg-slate-700/20 transition-colors">
                               <td className="p-4 font-medium text-slate-800 dark:text-white">{route.name}</td>
                               <td className="p-4 text-slate-600 dark:text-slate-300">{route.driver}</td>
@@ -552,24 +734,136 @@ const RoutesView = () => {
                               <td className="p-4"><StatusBadge status={route.status} /></td>
                               <td className="p-4 text-slate-600 dark:text-slate-300">{route.passengers}</td>
                               <td className={`p-4 font-medium ${route.punctuality.startsWith('+') ? 'text-red-500' : 'text-green-500'}`}>{route.punctuality}</td>
-                              <td className="p-4 relative">
-                                  <button onClick={() => setOpenMenuId(openMenuId === route.id ? null : route.id)} className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-md hover:bg-slate-200/50 dark:hover:bg-slate-700">
-                                      <MoreVertical className="h-5 w-5"/>
+                              <td className="p-4 relative text-right">
+                                  <button
+                                      onClick={() => setOpenMenuId(openMenuId === route.id ? null : route.id)}
+                                      className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-md hover:bg-slate-200/50 dark:hover:bg-slate-700"
+                                      aria-label="Abrir menu de ações"
+                                  >
+                                      <MoreVertical className="h-5 w-5" />
                                   </button>
                                   <AnimatePresence>
-                                      {openMenuId === route.id && <ActionMenu onAction={(action) => handleAction(action, route.id)} onClose={() => setOpenMenuId(null)} />}
+                                      {openMenuId === route.id && (
+                                          <ActionMenu
+                                              onAction={(acao) => abrirModal(acao, route)}
+                                              onClose={() => setOpenMenuId(null)}
+                                          />
+                                      )}
                                   </AnimatePresence>
                               </td>
                           </tr>
-                      ))}
-                  </tbody>
+                        ))
+                        )}
+                    </tbody>
               </table>
           </div>
+
+          <AnimatePresence>
+            {modalType === 'detalhes' && selectedRoute && (
+              <Modal title="Detalhes da rota" onClose={fecharModal} hideFooter>
+                <div className="space-y-3 text-sm text-slate-600 dark:text-slate-300">
+                  <p><span className="font-semibold">Cliente:</span> {selectedRoute.name}</p>
+                  <p><span className="font-semibold">Motorista responsável:</span> {selectedRoute.driver}</p>
+                  <p><span className="font-semibold">Veículo:</span> {selectedRoute.vehicle}</p>
+                  <p><span className="font-semibold">Status atual:</span> {statusTextMap[selectedRoute.status] ?? statusTextMap['onTime']}</p>
+                  <p><span className="font-semibold">Ocupação:</span> {selectedRoute.passengers}</p>
+                  <p><span className="font-semibold">Pontualidade:</span> {selectedRoute.punctuality}</p>
+                </div>
+              </Modal>
+            )}
+
+            {modalType === 'editar' && editForm && (
+              <Modal
+                title="Editar rota"
+                onClose={fecharModal}
+                onConfirm={confirmarEdicao}
+                confirmLabel="Salvar alterações"
+              >
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-slate-600 dark:text-slate-300">Nome da rota</label>
+                    <input
+                      type="text"
+                      value={editForm.name}
+                      onChange={(e) => handleEditChange('name', e.target.value)}
+                      className="mt-1 w-full p-2 bg-slate-100 dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-600"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-slate-600 dark:text-slate-300">Motorista</label>
+                      <input
+                        type="text"
+                        value={editForm.driver}
+                        onChange={(e) => handleEditChange('driver', e.target.value)}
+                        className="mt-1 w-full p-2 bg-slate-100 dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-600 dark:text-slate-300">Veículo</label>
+                      <input
+                        type="text"
+                        value={editForm.vehicle}
+                        onChange={(e) => handleEditChange('vehicle', e.target.value)}
+                        className="mt-1 w-full p-2 bg-slate-100 dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-600"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-slate-600 dark:text-slate-300">Status</label>
+                      <select
+                        value={editForm.status}
+                        onChange={(e) => handleEditChange('status', e.target.value as RouteStatusType)}
+                        className="mt-1 w-full p-2 bg-slate-100 dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-600"
+                      >
+                        {statusOptions.map(option => (
+                          <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-600 dark:text-slate-300">Passageiros</label>
+                      <input
+                        type="text"
+                        value={editForm.passengers}
+                        onChange={(e) => handleEditChange('passengers', e.target.value)}
+                        className="mt-1 w-full p-2 bg-slate-100 dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-600"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-600 dark:text-slate-300">Pontualidade</label>
+                    <input
+                      type="text"
+                      value={editForm.punctuality}
+                      onChange={(e) => handleEditChange('punctuality', e.target.value)}
+                      className="mt-1 w-full p-2 bg-slate-100 dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-600"
+                    />
+                  </div>
+                </div>
+              </Modal>
+            )}
+
+            {modalType === 'excluir' && selectedRoute && (
+              <Modal
+                title="Remover rota"
+                onClose={fecharModal}
+                onConfirm={confirmarExclusao}
+                confirmLabel="Remover"
+                confirmClassName="bg-red-600 hover:bg-red-700"
+              >
+                <p className="text-sm text-slate-600 dark:text-slate-300">
+                  Tem certeza que deseja remover a rota <span className="font-semibold">{selectedRoute.name}</span> do acompanhamento?
+                </p>
+              </Modal>
+            )}
+          </AnimatePresence>
         </motion.div>
     );
 };
 
-const MapView = () => (
+const MapView = ({ routes }: { routes: RouteInfo[] }) => (
     <motion.div
       key="map"
       initial={{ opacity: 0, y: 20 }}
@@ -579,25 +873,41 @@ const MapView = () => (
       className="h-[calc(100vh-10rem)] flex gap-8"
     >
         <div className="flex-1 bg-white/50 dark:bg-slate-800/50 rounded-2xl shadow-sm border border-slate-200/50 dark:border-slate-700/50 p-4 flex items-center justify-center backdrop-blur-sm">
-             <p className="text-slate-500">Componente do Mapa Interativo</p>
+             <p className="text-slate-500 dark:text-slate-400 text-center">
+                Mapa interativo em desenvolvimento — visualize o status das rotas em tempo real aqui em breve.
+             </p>
         </div>
         <div className="w-80 bg-white/50 dark:bg-slate-800/50 rounded-2xl shadow-sm border border-slate-200/50 dark:border-slate-700/50 p-6 flex flex-col backdrop-blur-sm">
-            <h3 className="text-xl font-bold text-slate-800 dark:text-white">Veículos Ativos</h3>
+            <h3 className="text-xl font-bold text-slate-800 dark:text-white">Veículos ativos</h3>
              <div className="mt-4 flex-1 overflow-y-auto space-y-4">
-                {routeStatusData.slice(0, 3).map(r => (
+                {routes.slice(0, 4).map(r => (
                     <div key={r.id} className="p-3 rounded-lg bg-slate-100 dark:bg-slate-700/50">
-                        <p className="font-semibold">{r.vehicle}</p>
+                        <p className="font-semibold text-slate-800 dark:text-white">{r.vehicle}</p>
                         <p className="text-sm text-slate-500 dark:text-slate-400">{r.driver}</p>
                         <StatusBadge status={r.status} type="dot" />
                     </div>
                 ))}
+                {routes.length === 0 && (
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Nenhum veículo em operação agora.</p>
+                )}
             </div>
         </div>
     </motion.div>
 );
 
-const VehiclesView = () => {
+const VehiclesView = ({ vehicles, onAddVehicle, onVehicleAction }: { vehicles: VehicleInfo[]; onAddVehicle: (vehicle: Omit<VehicleInfo, 'id'>) => void; onVehicleAction: () => void }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [novoVeiculo, setNovoVeiculo] = useState<Omit<VehicleInfo, 'id'>>({ plate: '', model: '', driver: '', status: 'active' });
+
+    const handleSubmit = () => {
+        if (!novoVeiculo.plate.trim() || !novoVeiculo.model.trim() || !novoVeiculo.driver.trim()) {
+            return;
+        }
+        onAddVehicle(novoVeiculo);
+        setNovoVeiculo({ plate: '', model: '', driver: '', status: 'active' });
+        setIsModalOpen(false);
+    };
+
     return(
         <motion.div
             key="vehicles"
@@ -609,15 +919,15 @@ const VehiclesView = () => {
         >
           <div className="p-6 flex justify-between items-center">
             <div>
-                <h3 className="text-xl font-bold text-slate-800 dark:text-white">Gerenciamento de Frota</h3>
+                <h3 className="text-xl font-bold text-slate-800 dark:text-white">Gestão da frota</h3>
                 <p className="text-sm text-slate-500 dark:text-slate-400">Adicione, edite e monitore todos os veículos.</p>
             </div>
-            <motion.button 
+            <motion.button
                 onClick={() => setIsModalOpen(true)}
                 className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
                 whileHover={{ y: -2 }} whileTap={{ y: 0, scale: 0.98 }}
             >
-                <PlusCircle size={18}/> Adicionar Veículo
+                <PlusCircle size={18}/> Adicionar veículo
             </motion.button>
           </div>
            <div className="overflow-x-auto">
@@ -626,53 +936,105 @@ const VehiclesView = () => {
                       <tr>
                           <th className="p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Placa</th>
                           <th className="p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Modelo</th>
-                          <th className="p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Motorista Atual</th>
+                          <th className="p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Motorista atual</th>
                           <th className="p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
-                          <th className="p-4"></th>
+                          <th className="p-4" aria-label="Ações" />
                       </tr>
                   </thead>
                   <tbody>
-                      {vehiclesData.map((vehicle) => (
+                      {vehicles.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="p-6 text-center text-slate-500 dark:text-slate-400">Nenhum veículo cadastrado.</td>
+                        </tr>
+                      ) : (
+                        vehicles.map((vehicle) => (
                           <tr key={vehicle.id} className="border-b border-slate-200/50 dark:border-slate-700/50 last:border-b-0 hover:bg-slate-50/50 dark:hover:bg-slate-700/20 transition-colors">
                               <td className="p-4 font-mono text-slate-800 dark:text-white">{vehicle.plate}</td>
                               <td className="p-4 text-slate-600 dark:text-slate-300">{vehicle.model}</td>
                               <td className="p-4 text-slate-600 dark:text-slate-300">{vehicle.driver}</td>
                               <td className="p-4"><StatusBadge status={vehicle.status} /></td>
-                              <td className="p-4 relative">
-                                  <button className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-md hover:bg-slate-200/50 dark:hover:bg-slate-700">
+                              <td className="p-4 text-right">
+                                  <button
+                                      onClick={onVehicleAction}
+                                      className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-md hover:bg-slate-200/50 dark:hover:bg-slate-700"
+                                      aria-label="Opções do veículo"
+                                  >
                                       <MoreVertical className="h-5 w-5"/>
                                   </button>
                               </td>
                           </tr>
-                      ))}
+                      ))) }
                   </tbody>
               </table>
           </div>
            <AnimatePresence>
-            {isModalOpen && <Modal title="Adicionar Novo Veículo" onClose={() => setIsModalOpen(false)}>
-                <form className="space-y-4">
+            {isModalOpen && (
+              <Modal
+                title="Adicionar novo veículo"
+                onClose={() => setIsModalOpen(false)}
+                onConfirm={handleSubmit}
+                confirmLabel="Registrar veículo"
+                confirmDisabled={!novoVeiculo.plate.trim() || !novoVeiculo.model.trim() || !novoVeiculo.driver.trim()}
+              >
+                <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
                     <div>
                         <label className="text-sm font-medium text-slate-600 dark:text-slate-300">Placa</label>
-                        <input type="text" className="mt-1 w-full p-2 bg-slate-100 dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-600"/>
+                        <input
+                          type="text"
+                          value={novoVeiculo.plate}
+                          onChange={(e) => setNovoVeiculo(prev => ({ ...prev, plate: e.target.value.toUpperCase() }))}
+                          className="mt-1 w-full p-2 bg-slate-100 dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-600"
+                        />
                     </div>
                      <div>
                         <label className="text-sm font-medium text-slate-600 dark:text-slate-300">Modelo</label>
-                        <input type="text" className="mt-1 w-full p-2 bg-slate-100 dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-600"/>
+                        <input
+                          type="text"
+                          value={novoVeiculo.model}
+                          onChange={(e) => setNovoVeiculo(prev => ({ ...prev, model: e.target.value }))}
+                          className="mt-1 w-full p-2 bg-slate-100 dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-600"
+                        />
                     </div>
                      <div>
-                        <label className="text-sm font-medium text-slate-600 dark:text-slate-300">Capacidade</label>
-                        <input type="number" className="mt-1 w-full p-2 bg-slate-100 dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-600"/>
+                        <label className="text-sm font-medium text-slate-600 dark:text-slate-300">Motorista responsável</label>
+                        <input
+                          type="text"
+                          value={novoVeiculo.driver}
+                          onChange={(e) => setNovoVeiculo(prev => ({ ...prev, driver: e.target.value }))}
+                          className="mt-1 w-full p-2 bg-slate-100 dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-600"
+                        />
                     </div>
-                </form>    
-            </Modal>}
+                     <div>
+                        <label className="text-sm font-medium text-slate-600 dark:text-slate-300">Status</label>
+                        <select
+                          value={novoVeiculo.status}
+                          onChange={(e) => setNovoVeiculo(prev => ({ ...prev, status: e.target.value as VehicleStatusType }))}
+                          className="mt-1 w-full p-2 bg-slate-100 dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-600"
+                        >
+                          <option value="active">{statusTextMap['active']}</option>
+                          <option value="maintenance">{statusTextMap['maintenance']}</option>
+                          <option value="inactive">{statusTextMap['inactive']}</option>
+                        </select>
+                    </div>
+                </form>
+              </Modal>
+            )}
            </AnimatePresence>
         </motion.div>
     );
 };
 
-const DriversView = () => {
-    const [searchTerm, setSearchTerm] = useState("");
-    const filteredDrivers = routeStatusData.filter(d => d.driver.toLowerCase().includes(searchTerm.toLowerCase()));
+const DriversView = ({ routes }: { routes: RouteInfo[] }) => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const motoristas = useMemo(() => {
+        const mapa = new Map<string, { id: string; driver: string; vehicle: string }>();
+        routes.forEach(route => {
+            mapa.set(route.driver, { id: `${route.driver}-${route.vehicle}`, driver: route.driver, vehicle: route.vehicle });
+        });
+        return Array.from(mapa.values());
+    }, [routes]);
+
+    const filteredDrivers = motoristas.filter(d => d.driver.toLowerCase().includes(searchTerm.toLowerCase()));
 
     return (
         <motion.div
@@ -684,7 +1046,7 @@ const DriversView = () => {
         >
             <div className="mb-6 relative">
                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20}/>
-                 <input 
+                 <input
                     type="text"
                     placeholder="Buscar motorista..."
                     value={searchTerm}
@@ -695,7 +1057,7 @@ const DriversView = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 <AnimatePresence>
                 {filteredDrivers.map(d => (
-                     <motion.div 
+                     <motion.div
                         layout
                         key={d.id}
                         initial={{ opacity: 0, scale: 0.9 }}
@@ -704,53 +1066,77 @@ const DriversView = () => {
                         className="bg-white/50 dark:bg-slate-800/50 rounded-2xl shadow-sm border border-slate-200/50 dark:border-slate-700/50 p-6 text-center backdrop-blur-sm"
                         whileHover={{ y: -5, transition: { duration: 0.2 } }}
                      >
-                        <img src={`https://i.pravatar.cc/150?u=${d.driver}`} alt={d.driver} className="h-24 w-24 rounded-full mx-auto mb-4"/>
-                        <h4 className="font-bold text-lg">{d.driver}</h4>
+                        <Image
+                            src={`https://i.pravatar.cc/150?u=${d.driver}`}
+                            alt={`Foto do motorista ${d.driver}`}
+                            width={96}
+                            height={96}
+                            className="h-24 w-24 rounded-full mx-auto mb-4 object-cover"
+                        />
+                        <h4 className="font-bold text-lg text-slate-800 dark:text-white">{d.driver}</h4>
                         <p className="text-sm text-slate-500 dark:text-slate-400">{d.vehicle}</p>
                     </motion.div>
                 ))}
+                {filteredDrivers.length === 0 && (
+                    <motion.p
+                        className="text-sm text-slate-500 dark:text-slate-400 col-span-full text-center"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                    >
+                        Nenhum motorista encontrado com os filtros atuais.
+                    </motion.p>
+                )}
                 </AnimatePresence>
             </div>
         </motion.div>
     );
 };
 
-const CompaniesView = () => (
+const CompaniesView = ({ companies, onCompanyAction }: { companies: CompanyInfo[]; onCompanyAction: (company: CompanyInfo) => void }) => (
     <motion.div key="companies" className="bg-white/50 dark:bg-slate-800/50 rounded-2xl shadow-sm border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm">
       <div className="p-6">
-        <h3 className="text-xl font-bold text-slate-800 dark:text-white">Gestão de Empresas</h3>
+        <h3 className="text-xl font-bold text-slate-800 dark:text-white">Gestão de empresas</h3>
         <p className="text-sm text-slate-500 dark:text-slate-400">Visualize e gerencie as empresas clientes.</p>
       </div>
       <div className="overflow-x-auto">
           <table className="w-full text-left">
               <thead className="border-b border-slate-200/50 dark:border-slate-700/50">
                   <tr>
-                      <th className="p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Nome da Empresa</th>
+                      <th className="p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Empresa</th>
                       <th className="p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Contato</th>
                       <th className="p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
-                      <th className="p-4"></th>
+                      <th className="p-4" aria-label="Ações" />
                   </tr>
               </thead>
               <tbody>
-                  {companiesData.map((company) => (
+                  {companies.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="p-6 text-center text-slate-500 dark:text-slate-400">Nenhuma empresa cadastrada.</td>
+                    </tr>
+                  ) : (
+                    companies.map((company) => (
                       <tr key={company.id} className="border-b border-slate-200/50 dark:border-slate-700/50 last:border-b-0 hover:bg-slate-50/50 dark:hover:bg-slate-700/20 transition-colors">
                           <td className="p-4 font-medium text-slate-800 dark:text-white">{company.name}</td>
                           <td className="p-4 text-slate-600 dark:text-slate-300">{company.contact}</td>
                           <td className="p-4"><StatusBadge status={company.status} /></td>
-                          <td className="p-4 relative">
-                              <button className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-md hover:bg-slate-200/50 dark:hover:bg-slate-700">
+                          <td className="p-4 text-right">
+                              <button
+                                onClick={() => onCompanyAction(company)}
+                                className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-md hover:bg-slate-200/50 dark:hover:bg-slate-700"
+                                aria-label={`Opções da empresa ${company.name}`}
+                              >
                                   <MoreVertical className="h-5 w-5"/>
                               </button>
                           </td>
                       </tr>
-                  ))}
+                  ))) }
               </tbody>
           </table>
       </div>
     </motion.div>
 );
 
-const PermissionsView = () => (
+const PermissionsView = ({ onManagePermission }: { onManagePermission: (role: string) => void }) => (
      <motion.div
         key="permissions"
         initial={{ opacity: 0, y: 20 }}
@@ -763,14 +1149,22 @@ const PermissionsView = () => (
                 <div key={p.role} className="bg-white/50 dark:bg-slate-800/50 rounded-2xl shadow-sm border border-slate-200/50 dark:border-slate-700/50 p-6 backdrop-blur-sm">
                     <h3 className="font-bold text-lg text-slate-800 dark:text-white">{p.role}</h3>
                     <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">{p.description}</p>
-                    <button className="mt-4 text-sm font-semibold text-blue-600 hover:text-blue-700">Editar Permissões</button>
+                    <button
+                      onClick={() => onManagePermission(p.role)}
+                      className="mt-4 text-sm font-semibold text-blue-600 hover:text-blue-700"
+                    >
+                      Ajustar permissões
+                    </button>
                 </div>
             ))}
         </div>
     </motion.div>
 );
 
-const RescueDispatchView = () => (
+const RescueDispatchView = ({ routes, onDispatch }: { routes: RouteInfo[]; onDispatch: () => void }) => {
+    const primeiraRota = routes[0];
+
+    return (
     <motion.div
         key="rescue"
         initial={{ opacity: 0, y: 20 }}
@@ -780,29 +1174,50 @@ const RescueDispatchView = () => (
         className="max-w-2xl mx-auto"
     >
          <div className="bg-white/50 dark:bg-slate-800/50 rounded-2xl shadow-sm border border-slate-200/50 dark:border-slate-700/50 p-8 space-y-6 backdrop-blur-sm">
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Despacho de Socorro</h2>
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Despacho de socorro</h2>
             <div>
-                <label className="text-sm font-medium">1. Selecione a Rota com Problema</label>
+                <label className="text-sm font-medium">1. Selecione a rota com problema</label>
                 <select className="mt-1 w-full p-2 bg-slate-100 dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-600">
-                    <option>Rota JBS - Tarde (Veículo: GHI-7890)</option>
+                    {routes.map(route => (
+                      <option key={route.id}>{route.name} (Veículo: {route.vehicle})</option>
+                    ))}
+                    {routes.length === 0 && <option>Nenhuma rota disponível</option>}
                 </select>
             </div>
              <div>
-                <label className="text-sm font-medium">2. Escolha o Motorista de Socorro</label>
+                <label className="text-sm font-medium">2. Escolha o motorista de apoio</label>
                 <select className="mt-1 w-full p-2 bg-slate-100 dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-600">
-                    <option>Júlio Silva (Status: Ativo)</option>
+                    {routes.map(route => (
+                      <option key={`motorista-${route.id}`}>{route.driver} (Status: {statusTextMap[route.status]})</option>
+                    ))}
+                    {routes.length === 0 && <option>Nenhum motorista disponível</option>}
                 </select>
             </div>
              <div>
-                <label className="text-sm font-medium">3. Escolha o Veículo de Socorro</label>
+                <label className="text-sm font-medium">3. Escolha o veículo de apoio</label>
                 <select className="mt-1 w-full p-2 bg-slate-100 dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-600">
-                    <option>ABC-1234 (Mercedes Sprinter)</option>
+                    {routes.map(route => (
+                      <option key={`veiculo-${route.id}`}>{route.vehicle}</option>
+                    ))}
+                    {routes.length === 0 && <option>Sem veículos disponíveis</option>}
                 </select>
             </div>
-            <button className="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition-colors">Despachar Socorro Agora</button>
+            <button
+              onClick={onDispatch}
+              className="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition-colors"
+              disabled={routes.length === 0}
+            >
+              Despachar socorro agora
+            </button>
+            {primeiraRota && (
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Última atualização: veículo {primeiraRota.vehicle} operado por {primeiraRota.driver}.
+              </p>
+            )}
         </div>
     </motion.div>
-);
+    );
+};
 
 const AlertsView = () => {
     const alertIcons = {
@@ -834,7 +1249,13 @@ const AlertsView = () => {
     )
 };
 
-const ReportsView = () => (
+const ReportsView = ({ onGenerateReport, onExport }: { onGenerateReport: (question: string) => void; onExport: (reportName: string) => void }) => {
+    const relatorios = [
+      'Relatório de Pontualidade',
+      'Relatório de Passageiros'
+    ];
+
+    return (
     <motion.div
         key="reports"
         initial={{ opacity: 0, y: 20 }}
@@ -846,30 +1267,39 @@ const ReportsView = () => (
         <div className="bg-white/50 dark:bg-slate-800/50 rounded-2xl shadow-sm border border-slate-200/50 dark:border-slate-700/50 p-8 backdrop-blur-sm">
             <h3 className="font-bold text-lg">Relatórios com IA</h3>
             <p className="text-sm text-slate-500 dark:text-slate-400">Faça uma pergunta sobre as operações.</p>
-            <textarea className="mt-4 w-full p-2 bg-slate-100 dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-600" placeholder="Ex: Qual rota teve o maior atraso?"></textarea>
-            <button className="mt-4 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700">Gerar</button>
+            <textarea className="mt-4 w-full p-2 bg-slate-100 dark:bg-slate-700 rounded-md border border-slate-200 dark:border-slate-600" placeholder="Ex: Qual rota teve o maior atraso?" id="pergunta-relatorio"></textarea>
+            <button
+              onClick={() => {
+                const textarea = document.getElementById('pergunta-relatorio') as HTMLTextAreaElement | null;
+                onGenerateReport(textarea?.value ?? 'Relatório em branco');
+              }}
+              className="mt-4 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700"
+            >
+              Gerar
+            </button>
         </div>
         <div className="bg-white/50 dark:bg-slate-800/50 rounded-2xl shadow-sm border border-slate-200/50 dark:border-slate-700/50 p-8 backdrop-blur-sm">
-            <h3 className="font-bold text-lg">Exportar Dados</h3>
+            <h3 className="font-bold text-lg">Exportar dados</h3>
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 rounded-lg bg-slate-100 dark:bg-slate-800 flex justify-between items-center">
-                    <div>
-                        <FileText />
-                        <p className="font-semibold mt-2">Relatório de Pontualidade</p>
-                    </div>
-                    <button className="text-sm font-semibold text-blue-600">Exportar CSV</button>
-                </div>
-                 <div className="p-4 rounded-lg bg-slate-100 dark:bg-slate-800 flex justify-between items-center">
-                    <div>
-                        <FileText />
-                        <p className="font-semibold mt-2">Relatório de Passageiros</p>
-                    </div>
-                    <button className="text-sm font-semibold text-blue-600">Exportar CSV</button>
-                </div>
+                {relatorios.map((relatorio) => (
+                  <div key={relatorio} className="p-4 rounded-lg bg-slate-100 dark:bg-slate-800 flex justify-between items-center">
+                      <div>
+                          <FileText />
+                          <p className="font-semibold mt-2">{relatorio}</p>
+                      </div>
+                      <button
+                        className="text-sm font-semibold text-blue-600"
+                        onClick={() => onExport(relatorio)}
+                      >
+                        Exportar CSV
+                      </button>
+                  </div>
+                ))}
             </div>
         </div>
     </motion.div>
-);
+    );
+};
 
 const FinancialView = () => (
      <motion.div
@@ -965,10 +1395,30 @@ const SettingsView = () => {
 };
 
 
-const Modal = ({title, onClose, children}: {title: string, onClose: () => void, children: React.ReactNode}) => {
+const Modal = ({
+    title,
+    onClose,
+    children,
+    onConfirm,
+    confirmLabel = 'Salvar',
+    cancelLabel = 'Cancelar',
+    confirmClassName = 'bg-blue-600 hover:bg-blue-700',
+    confirmDisabled = false,
+    hideFooter = false,
+}: {
+    title: string;
+    onClose: () => void;
+    children: React.ReactNode;
+    onConfirm?: () => void;
+    confirmLabel?: string;
+    cancelLabel?: string;
+    confirmClassName?: string;
+    confirmDisabled?: boolean;
+    hideFooter?: boolean;
+}) => {
     return (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-sm" onClick={onClose}>
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, y: 30, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 30, scale: 0.98 }}
@@ -977,15 +1427,27 @@ const Modal = ({title, onClose, children}: {title: string, onClose: () => void, 
             >
                 <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
                     <h3 className="font-bold text-lg">{title}</h3>
-                    <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"><X size={20}/></button>
+                    <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700" aria-label="Fechar modal"><X size={20}/></button>
                 </div>
                 <div className="p-6">
                     {children}
                 </div>
-                 <div className="p-6 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3">
-                    <button onClick={onClose} className="px-4 py-2 rounded-lg font-semibold hover:bg-slate-100 dark:hover:bg-slate-700">Cancelar</button>
-                    <button onClick={() => { alert('Salvo!'); onClose(); }} className="px-4 py-2 rounded-lg font-semibold bg-blue-600 text-white hover:bg-blue-700">Salvar</button>
-                </div>
+                 {!hideFooter && (
+                  <div className="p-6 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3">
+                    <button onClick={onClose} className="px-4 py-2 rounded-lg font-semibold hover:bg-slate-100 dark:hover:bg-slate-700">
+                      {cancelLabel}
+                    </button>
+                    {onConfirm && (
+                      <button
+                        onClick={onConfirm}
+                        disabled={confirmDisabled}
+                        className={`px-4 py-2 rounded-lg font-semibold text-white ${confirmClassName} disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        {confirmLabel}
+                      </button>
+                    )}
+                  </div>
+                 )}
             </motion.div>
         </div>
     )
@@ -1009,33 +1471,110 @@ const GenericView = ({ title }: { title: string }) => (
 const DashboardContent = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [activeView, setActiveView] = useState('Dashboard');
-  
+  const [activeView, setActiveView] = useState('Painel Geral');
+  const [routes, setRoutes] = useState<RouteInfo[]>(initialRoutes);
+  const [vehicles, setVehicles] = useState<VehicleInfo[]>(initialVehicles);
+  const [companies] = useState<CompanyInfo[]>(initialCompanies);
+  const [feedback, setFeedback] = useState<FeedbackState | null>(null);
+  const { signOut } = useAuth();
+
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+
     setSidebarOpen(window.innerWidth >= 1024);
 
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-  
+
+  useEffect(() => {
+    if (!feedback) return;
+    const timeout = window.setTimeout(() => setFeedback(null), 4000);
+    return () => window.clearTimeout(timeout);
+  }, [feedback]);
+
+  const mostrarFeedback = useCallback((mensagem: string, tipo: FeedbackType = 'info') => {
+    setFeedback({ mensagem, tipo });
+  }, []);
+
+  const atualizarRota = useCallback((id: number, data: Partial<RouteInfo>) => {
+    setRoutes(prev => prev.map(route => (route.id === id ? { ...route, ...data } : route)));
+    mostrarFeedback('Rota atualizada com sucesso.', 'sucesso');
+  }, [mostrarFeedback]);
+
+  const removerRota = useCallback((id: number) => {
+    setRoutes(prev => prev.filter(route => route.id !== id));
+    mostrarFeedback('Rota removida do monitoramento.', 'info');
+  }, [mostrarFeedback]);
+
+  const adicionarVeiculo = useCallback((novoVeiculo: Omit<VehicleInfo, 'id'>) => {
+    setVehicles(prev => [...prev, { ...novoVeiculo, id: Date.now() }]);
+    mostrarFeedback('Veículo adicionado à frota.', 'sucesso');
+  }, [mostrarFeedback]);
+
+  const handleVehicleAction = useCallback(() => {
+    mostrarFeedback('Gestão avançada de veículos será disponibilizada em breve.', 'info');
+  }, [mostrarFeedback]);
+
+  const handleCompanyAction = useCallback((company: CompanyInfo) => {
+    mostrarFeedback(`Painel detalhado da empresa ${company.name} em desenvolvimento.`, 'info');
+  }, [mostrarFeedback]);
+
+  const handlePermissionAction = useCallback((role: string) => {
+    mostrarFeedback(`Permissões do perfil ${role} atualizadas.`, 'sucesso');
+  }, [mostrarFeedback]);
+
+  const handleRescueDispatch = useCallback(() => {
+    mostrarFeedback('Equipe de apoio acionada com sucesso.', 'sucesso');
+  }, [mostrarFeedback]);
+
+  const handleGenerateReport = useCallback((question: string) => {
+    mostrarFeedback(`Relatório processado: ${question}`, 'sucesso');
+  }, [mostrarFeedback]);
+
+  const handleExportReport = useCallback((reportName: string) => {
+    mostrarFeedback(`${reportName} exportado em CSV.`, 'info');
+  }, [mostrarFeedback]);
+
+  const handleSignOut = useCallback(async () => {
+    try {
+      await signOut();
+      mostrarFeedback('Sessão encerrada com sucesso.', 'sucesso');
+    } catch (error) {
+      console.error('Erro ao encerrar sessão:', error);
+      mostrarFeedback('Não foi possível encerrar a sessão agora.', 'erro');
+    }
+  }, [signOut, mostrarFeedback]);
+
   const renderActiveView = () => {
     switch (activeView) {
-        case 'Dashboard': return <DashboardView />;
-        case 'Rotas': return <RoutesView />;
-        case 'Mapa em Tempo Real': return <MapView />;
-        case 'Veículos': return <VehiclesView />;
-        case 'Motoristas': return <DriversView />;
-        case 'Empresas': return <CompaniesView />;
-        case 'Permissões': return <PermissionsView />;
-        case 'Socorro': return <RescueDispatchView />;
-        case 'Alertas': return <AlertsView />;
-        case 'Relatórios': return <ReportsView />;
-        case 'Financeiro': return <FinancialView />;
-        case 'Configurações': return <SettingsView />;
-        default: return <GenericView title={activeView} />;
+        case 'Painel Geral':
+          return <DashboardView routes={routes} />;
+        case 'Rotas':
+          return <RoutesView routes={routes} onUpdateRoute={atualizarRota} onRemoveRoute={removerRota} />;
+        case 'Mapa em Tempo Real':
+          return <MapView routes={routes} />;
+        case 'Veículos':
+          return <VehiclesView vehicles={vehicles} onAddVehicle={adicionarVeiculo} onVehicleAction={handleVehicleAction} />;
+        case 'Motoristas':
+          return <DriversView routes={routes} />;
+        case 'Empresas':
+          return <CompaniesView companies={companies} onCompanyAction={handleCompanyAction} />;
+        case 'Permissões':
+          return <PermissionsView onManagePermission={handlePermissionAction} />;
+        case 'Socorro':
+          return <RescueDispatchView routes={routes} onDispatch={handleRescueDispatch} />;
+        case 'Alertas':
+          return <AlertsView />;
+        case 'Relatórios':
+          return <ReportsView onGenerateReport={handleGenerateReport} onExport={handleExportReport} />;
+        case 'Financeiro':
+          return <FinancialView />;
+        case 'Configurações':
+          return <SettingsView />;
+        default:
+          return <GenericView title={activeView} />;
     }
   };
 
@@ -1046,8 +1585,15 @@ const DashboardContent = () => {
             <div className="absolute bottom-0 left-0 w-[50vw] h-[50vh] bg-green-500/20 dark:bg-green-500/10 rounded-full blur-3xl animate-pulse-slow animation-delay-2000"/>
             <div className="absolute top-1/4 right-0 w-[60vw] h-[60vh] bg-indigo-500/20 dark:bg-indigo-500/10 rounded-full blur-3xl animate-pulse-slow animation-delay-4000"/>
       </div>
-      <Sidebar isSidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen} isMobile={isMobile} activeView={activeView} setActiveView={setActiveView} />
-      
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        isMobile={isMobile}
+        activeView={activeView}
+        setActiveView={setActiveView}
+        onSignOut={handleSignOut}
+      />
+
       <main className="relative z-10 flex-1 flex flex-col transition-all duration-300">
         <Header onMenuClick={() => setSidebarOpen(true)} title={activeView} />
 
@@ -1057,10 +1603,55 @@ const DashboardContent = () => {
             </AnimatePresence>
         </div>
       </main>
+      <FeedbackToast feedback={feedback} onClose={() => setFeedback(null)} />
     </div>
   );
 };
 
+
+const FeedbackToast = ({ feedback, onClose }: { feedback: FeedbackState | null; onClose: () => void }) => {
+  if (!feedback) return null;
+
+  const cores: Record<FeedbackType, string> = {
+    sucesso: 'bg-emerald-600',
+    info: 'bg-blue-600',
+    erro: 'bg-red-600',
+  };
+
+  const titulos: Record<FeedbackType, string> = {
+    sucesso: 'Sucesso',
+    info: 'Informação',
+    erro: 'Erro',
+  };
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        key={`${feedback.tipo}-${feedback.mensagem}`}
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+        transition={{ duration: 0.2 }}
+        className={`fixed bottom-6 right-6 z-50 max-w-sm text-white shadow-xl rounded-2xl px-5 py-4 ${cores[feedback.tipo]}`}
+      >
+        <div className="flex items-start gap-3">
+          <span className="mt-1 h-2 w-2 rounded-full bg-white/80" />
+          <div className="flex-1">
+            <p className="font-semibold">{titulos[feedback.tipo]}</p>
+            <p className="text-sm opacity-90 leading-snug">{feedback.mensagem}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="ml-2 text-white/80 hover:text-white"
+            aria-label="Fechar aviso"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
 
 // --- PÁGINA PRINCIPAL QUE FORNECE O TEMA ---
 export default function DashboardPage() {

@@ -87,7 +87,7 @@ const OptimizedMapComponent: React.FC<OptimizedMapProps> = ({
     };
 
     initMap();
-  }, [center, zoom]);
+  }, [center, zoom, isMapLoaded]);
 
   // Renderizar rota otimizada
   useEffect(() => {

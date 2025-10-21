@@ -237,27 +237,27 @@ export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
   
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useAuth deve ser utilizado dentro de um AuthProvider');
   }
-  
+
   return context;
 }
 
 export function useRequireAuth(): AuthUser {
   const { user, loading } = useAuth();
-  
+
   if (loading) {
-    throw new Error('Authentication is loading');
+    throw new Error('Autenticação em andamento');
   }
-  
+
   if (!user) {
-    throw new Error('Usuario nao autenticado');
+    throw new Error('Usuário não autenticado');
   }
-  
+
   return user;
 }
 
-export function ProtectedRoute({ 
+export function ProtectedRoute({
   children, 
   requiredRole, 
   requiredPermission,
@@ -282,15 +282,15 @@ export function ProtectedRoute({
   }
 
   if (!user) {
-    return fallback || React.createElement('div', null, 'Usuario nao autenticado');
+    return fallback || React.createElement('div', null, 'Usuário não autenticado');
   }
 
   if (requiredRole && user.role !== requiredRole) {
-    return fallback || React.createElement('div', null, 'Permissao insuficiente');
+    return fallback || React.createElement('div', null, 'Permissão insuficiente');
   }
 
   if (!permissionOk) {
-    return fallback || React.createElement('div', null, 'Permissao insuficiente');
+    return fallback || React.createElement('div', null, 'Permissão insuficiente');
   }
 
   return React.createElement(React.Fragment, null, children);
