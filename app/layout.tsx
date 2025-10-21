@@ -8,8 +8,8 @@ import { Roboto } from 'next/font/google'
 const roboto = Roboto({ subsets: ['latin'], weight: ['300', '400', '500', '700'] })
 
 export const metadata: Metadata = {
-  title: 'Golffox Management Panel',
-  description: 'Sistema de gestão e rastreamento de veículos Golffox',
+  title: 'Painel de Gestão GolfFox',
+  description: 'Sistema de gestão e rastreamento de veículos GolfFox',
 }
 
 export default function RootLayout({
