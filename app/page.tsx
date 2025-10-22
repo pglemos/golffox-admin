@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'GolfFox - Sistema de Gerenciamento de Transporte Executivo',
-  description: 'Plataforma para gerenciamento de transporte executivo com rastreamento em tempo real',
+  description: 'Plataforma para Gerenciamento de transporte executivo com rastÁreamento em tempo Áreal',
 };
 
 export default function Home() {
@@ -29,7 +29,7 @@ export default function Home() {
           
           <div className="border border-gray-300 dark:border-gray-700 rounded-lg p-6 hover:shadow-lg transition-shadow bg-white dark:bg-gray-800">
             <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Painel do Passageiro</h2>
-            <p className="mb-6 text-gray-700 dark:text-gray-300">Solicite viagens, acompanhe em tempo real e gerencie seu histórico.</p>
+            <p className="mb-6 text-gray-700 dark:text-gray-300">Solicite viagens, acompanhe em tempo Áreal e gerencie seu histórico.</p>
             <Link 
               href="/passageiro" 
               className="btn-primary"

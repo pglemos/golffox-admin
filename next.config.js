@@ -1,21 +1,18 @@
-/** @type {import('next').NextConfig} */
+/** @type {import(''next'').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  // Desabilita a renderiza√ß√£o do lado do servidor para evitar problemas com o tema
+  // GeraÁ„o est·tica (sem SSR)
   output: 'export',
-  // Configura o diret√≥rio de sa√≠da para 'out'
-  distDir: 'out',
-  // Configura o caminho base para o site
-  basePath: '',
-  // Desabilita a gera√ß√£o de imagens est√°ticas
-  images: {
-    unoptimized: true
-  },
-  // Adiciona vari√°veis de ambiente p√∫blicas
+  // LocalizaÁ„o padr„o pt-BR
+  i18n: { locales: ['pt-BR'], defaultLocale: 'pt-BR' },
+  // Imagens sem otimizaÁ„o (compatÌvel com export)
+  images: { unoptimized: true },
+  // Vari·veis p˙blicas
   env: {
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'https://golffox-admin.vercel.app'
-  }
+    NEXT_PUBLIC_APP_URL:
+      process.env.NEXT_PUBLIC_APP_URL || 'https://golffox-admin.vercel.app',
+  },
 }
 
 module.exports = nextConfig

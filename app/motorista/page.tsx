@@ -19,7 +19,7 @@ export default function MotoristaPage() {
       >
         <div className="h-full w-full">
           <div className="p-4">
-            <h1 className="text-2xl font-bold">Área do Motorista</h1>
+            <h1 className="text-2xl font-bold">ÁÁrea do Motorista</h1>
           </div>
         </div>
       </ProtectedRoute>
