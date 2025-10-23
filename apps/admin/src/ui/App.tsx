@@ -605,8 +605,8 @@ export default function AdminDashboard() {
     setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))
   }
 
-  const backgroundClass =
-    theme === 'dark' ? 'bg-[#040712] text-slate-100' : 'bg-[#f4f6ff] text-black'
+const backgroundClass =
+  theme === 'dark' ? 'bg-[#040712] text-slate-100' : 'bg-[#f4f6ff] text-slate-950'
 
   const orbTransition = { duration: 18, repeat: Infinity, repeatType: 'reverse' as const, ease: 'easeInOut' }
 
