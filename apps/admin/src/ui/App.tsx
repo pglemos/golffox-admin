@@ -1457,11 +1457,11 @@ const backgroundClass =
                 </div>
               </div>
               <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={toggleTheme}
                 type="button"
-                className="relative inline-flex w-full items-center gap-3 overflow-hidden rounded-full border border-slate-200/70 bg-white/80 px-2 py-2 text-sm font-semibold text-black shadow-[0_16px_35px_rgba(15,23,42,0.12)] transition-all duration-500 hover:shadow-[0_20px_45px_rgba(99,102,241,0.18)] dark:border-white/10 dark:bg-white/10 dark:text-slate-100 dark:shadow-[0_26px_60px_rgba(2,6,23,0.55)] dark:hover:shadow-[0_32px_70px_rgba(8,12,24,0.6)] sm:w-auto"
+                className="relative inline-flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-slate-200/70 bg-white/80 text-black shadow-[0_16px_35px_rgba(15,23,42,0.12)] transition-all duration-500 hover:shadow-[0_20px_45px_rgba(99,102,241,0.18)] dark:border-white/10 dark:bg-white/10 dark:text-slate-100 dark:shadow-[0_26px_60px_rgba(2,6,23,0.55)] dark:hover:shadow-[0_32px_70px_rgba(8,12,24,0.6)] sm:h-12 sm:w-12"
                 style={{ backdropFilter: 'blur(18px)' }}
               >
                 <motion.span
@@ -1470,20 +1470,15 @@ const backgroundClass =
                     theme === 'dark' ? 'opacity-90' : 'opacity-0'
                   }`}
                 />
-                <span className="relative flex items-center gap-3 px-2">
-                  <motion.span
-                    layout
-                    transition={{ type: 'spring', stiffness: 320, damping: 26 }}
-                    className="grid h-9 w-9 place-items-center rounded-full bg-white/90 text-black shadow-inner shadow-white/40 dark:bg-white/10 dark:text-white/90"
-                  >
-                    {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-                  </motion.span>
-                  <span className="flex flex-col text-left">
-                    <span>{theme === 'light' ? 'Modo escuro' : 'Modo claro'}</span>
-                    <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-black dark:text-slate-300">
-                      {theme === 'light' ? 'Inspiração noir' : 'Experiência luminosa'}
-                    </span>
-                  </span>
+                <motion.span
+                  layout
+                  transition={{ type: 'spring', stiffness: 320, damping: 26 }}
+                  className="grid h-9 w-9 place-items-center rounded-full bg-white/90 text-black shadow-inner shadow-white/40 dark:bg-white/10 dark:text-white/90"
+                >
+                  {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                </motion.span>
+                <span className="sr-only">
+                  {theme === 'light' ? 'Ativar modo escuro' : 'Ativar modo claro'}
                 </span>
               </motion.button>
             </header>
