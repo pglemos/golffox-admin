@@ -14,7 +14,7 @@ export type User = {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'operator' | 'driver' | 'passenger';
+  role: 'admin' | 'operator' | 'driver' | 'passenger' | 'carrier';
   company_id?: string;
   phone?: string;
   avatar_url?: string;

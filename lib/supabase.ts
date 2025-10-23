@@ -74,7 +74,7 @@ export type Database = {
           id: string
           email: string
           name: string
-          role: 'admin' | 'operator' | 'driver' | 'passenger'
+          role: 'admin' | 'operator' | 'driver' | 'passenger' | 'carrier'
           company_id?: string
           created_at: string
           updated_at: string
@@ -83,7 +83,7 @@ export type Database = {
           id?: string
           email: string
           name: string
-          role: 'admin' | 'operator' | 'driver' | 'passenger'
+          role: 'admin' | 'operator' | 'driver' | 'passenger' | 'carrier'
           company_id?: string
           created_at?: string
           updated_at?: string
@@ -92,7 +92,7 @@ export type Database = {
           id?: string
           email?: string
           name?: string
-          role?: 'admin' | 'operator' | 'driver' | 'passenger'
+          role?: 'admin' | 'operator' | 'driver' | 'passenger' | 'carrier'
           company_id?: string
           created_at?: string
           updated_at?: string
