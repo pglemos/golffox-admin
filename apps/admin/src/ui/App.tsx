@@ -162,7 +162,7 @@ const quickActions: QuickAction[] = [
     icon: Settings,
     tone: {
       light:
-        'from-[#f7f9fc] via-slate-100/75 to-slate-200/70 text-slate-900 hover:shadow-[0_18px_40px_rgba(71,85,105,0.18)]',
+        'from-[#f7f9fc] via-slate-100/75 to-slate-200/70 text-slate-950 hover:shadow-[0_18px_40px_rgba(71,85,105,0.18)]',
       dark: 'from-white/10 via-white/5 to-transparent text-slate-100 hover:shadow-[0_25px_45px_rgba(148,163,184,0.25)]',
     },
   },
@@ -179,7 +179,7 @@ const occupancyData = [
 ]
 
 const cardBase =
-  'group relative overflow-hidden rounded-3xl border border-slate-200/60 bg-white/90 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.08)] transition-all duration-500 ease-out backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-[0_24px_65px_rgba(2,6,23,0.55)]'
+  'group relative overflow-hidden rounded-3xl border border-slate-200/60 bg-white/95 p-6 text-slate-950 shadow-[0_18px_45px_rgba(15,23,42,0.08)] transition-all duration-500 ease-out backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-100 dark:shadow-[0_24px_65px_rgba(2,6,23,0.55)]'
 
 const pillBase =
   'inline-flex items-center gap-3 rounded-full border px-5 py-2 text-sm font-semibold transition-all duration-400 ease-out backdrop-blur-sm'
@@ -212,14 +212,14 @@ const MetricCard = ({ title, value, description, icon: Icon, accent, glow, theme
       />
       <div className="relative z-10 flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-900 dark:text-slate-300">{title}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-950 dark:text-slate-300">{title}</p>
           <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-4xl font-semibold text-slate-900 dark:text-white">{value}</span>
+            <span className="text-4xl font-semibold text-slate-950 dark:text-white">{value}</span>
           </div>
-          <p className="mt-3 text-sm text-slate-900 dark:text-slate-300">{description}</p>
+          <p className="mt-3 text-sm text-slate-950 dark:text-slate-300">{description}</p>
         </div>
         <motion.div
-          className="grid h-12 w-12 place-items-center rounded-2xl bg-white/70 text-slate-900 shadow-inner dark:bg-white/10 dark:text-white/90"
+          className="grid h-12 w-12 place-items-center rounded-2xl bg-white/80 text-slate-950 shadow-inner dark:bg-white/10 dark:text-white/90"
           whileHover={{ rotate: 6 }}
         >
           <Icon className="h-5 w-5" />
@@ -234,7 +234,9 @@ const QuickActionCard = ({ title, description, icon: Icon, tone, theme }: QuickA
     whileHover={{ y: -6 }}
     whileTap={{ scale: 0.995 }}
     transition={{ type: 'spring', stiffness: 260, damping: 24 }}
-    className={`group relative flex w-full flex-col items-start gap-3 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br p-5 text-left text-sm font-semibold transition-all duration-500 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/70 ${tone[theme]}`}
+    className={`group relative flex w-full flex-col items-start gap-3 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br p-5 text-left text-sm font-semibold transition-all duration-500 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/70 ${tone[theme]} ${
+      theme === 'light' ? 'text-slate-950' : 'text-slate-100'
+    }`}
     type="button"
     style={{
       backdropFilter: 'blur(18px)',
@@ -350,7 +352,7 @@ export default function AdminDashboard() {
   }
 
   const backgroundClass =
-    theme === 'dark' ? 'bg-[#040712] text-slate-100' : 'bg-[#f6f8ff] text-slate-900'
+    theme === 'dark' ? 'bg-[#040712] text-slate-100' : 'bg-[#f4f6ff] text-slate-950'
 
   const orbTransition = { duration: 18, repeat: Infinity, repeatType: 'reverse' as const, ease: 'easeInOut' }
 
@@ -416,7 +418,7 @@ export default function AdminDashboard() {
                       className={`relative flex w-full items-center gap-3 overflow-hidden rounded-xl px-4 py-2 text-sm font-semibold transition-colors duration-300 ${
                         isActive
                           ? 'text-white drop-shadow-[0_6px_16px_rgba(15,23,42,0.28)]'
-                          : 'text-slate-950 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'
+                          : 'text-slate-950 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'
                       }`}
                       style={{ backdropFilter: 'blur(18px)' }}
                     >
@@ -494,7 +496,7 @@ export default function AdminDashboard() {
             >
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Ocupação por hora</h2>
+                  <h2 className="text-lg font-semibold text-slate-950 dark:text-white">Ocupação por hora</h2>
                   <p className="text-sm text-slate-950 dark:text-slate-300">
                     Monitore picos e vales de carregamento das rotas para otimizar a frota.
                   </p>
@@ -541,7 +543,7 @@ export default function AdminDashboard() {
                   className={`${pillBase} ${chip.tone[theme]} shadow-sm`}
                 >
                   {chip.label}
-                  <span className="text-xs font-normal opacity-80">{chip.description}</span>
+                  <span className="text-xs font-normal text-slate-900/90 dark:text-slate-200/90">{chip.description}</span>
                 </motion.span>
               ))}
             </div>
@@ -563,7 +565,7 @@ export default function AdminDashboard() {
                   </span>
                   <div className="space-y-1">
                     <p className="text-sm font-semibold">Alerta crítico: veículo parado há 2 minutos.</p>
-                    <p className="text-xs opacity-80">
+                    <p className="text-xs text-rose-700/90 dark:text-rose-100/90">
                       Rota 4 · Ônibus GHI-7890 — assistência avançada já foi acionada e está a caminho.
                     </p>
                   </div>
