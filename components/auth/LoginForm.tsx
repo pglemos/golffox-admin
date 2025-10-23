@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useAuth } from '../../app/hooks/useAuth';
+import clsx from 'clsx';
 import { Eye, EyeOff, LogIn, Mail, Lock, AlertCircle } from 'lucide-react';
+import { useAuth, UserProfile } from '../../app/hooks/useAuth';
 
 interface LoginFormProps {
-  onSuccess?: () => void;
+  onSuccess?: (user: UserProfile) => void;
   onForgotPassword?: () => void;
   className?: string;
 }
@@ -62,13 +63,13 @@ export function LoginForm({ onSuccess, onForgotPassword, className = '' }: Login
       const { user, error: signInError } = await signIn(formData.email, formData.password);
 
       if (signInError) {
-        setError(signInError.message || 'Erro ao fazer login');
+        setError(signInError);
         return;
       }
 
       if (user) {
         console.log('Login realizado com sucesso:', user.email);
-        onSuccess?.();
+        onSuccess?.(user);
       }
     } catch (err) {
       console.error('Erro no login:', err);
@@ -83,39 +84,40 @@ export function LoginForm({ onSuccess, onForgotPassword, className = '' }: Login
   };
 
   return (
-    <div className={`w-full max-w-md mx-auto ${className}`}>
-      <div className="bg-white rounded-lg shadow-lg p-8">
+    <div className={clsx('relative mx-auto w-full max-w-md', className)}>
+      <div className="absolute -inset-0.5 rounded-[30px] bg-gradient-to-br from-[#0F4C92] via-[#0B2C53] to-[#FF5F00] opacity-70 blur-lg" aria-hidden />
+      <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-[#031431]/90 p-10 text-white shadow-xl backdrop-blur-2xl">
+        <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-            <LogIn className="w-8 h-8 text-blue-600" />
+        <div className="mb-8 space-y-3 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-white/10 via-white/5 to-transparent">
+            <LogIn className="h-7 w-7 text-[#FF5F00]" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Bem-vindo ao Golffox
-          </h2>
-          <p className="text-gray-600">
-            Faça login para acessar sua conta
+          <h2 className="text-2xl font-semibold text-white">Bem-vindo ao GolfFox</h2>
+          <p className="text-sm text-white/70">
+            Acesse com suas credenciais corporativas para continuar.
           </p>
         </div>
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
-            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
-            <p className="text-red-700 text-sm">{error}</p>
+          <div className="mb-6 flex items-center gap-3 rounded-2xl border border-red-400/40 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+            <AlertCircle className="h-5 w-5 text-red-300" />
+            <p>{error}</p>
           </div>
         )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Email Field */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="space-y-2">
+            <label htmlFor="email" className="text-sm font-medium text-white/80">
               Usuário ou Email
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Mail className="h-5 w-5 text-gray-400" />
+            <div className="group relative">
+              <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
+                <Mail className="h-5 w-5 text-white/40 transition-colors group-focus-within:text-white" />
               </div>
               <input
                 id="email"
@@ -125,7 +127,7 @@ export function LoginForm({ onSuccess, onForgotPassword, className = '' }: Login
                 required
                 value={formData.email}
                 onChange={handleInputChange}
-                className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                className="w-full rounded-2xl border border-white/10 bg-white/[0.04] py-3 pl-11 pr-3 text-sm text-white outline-none transition focus:border-[#FF5F00]/50 focus:bg-white/[0.08] focus:ring-2 focus:ring-[#FF5F00]/60 disabled:cursor-not-allowed disabled:opacity-60"
                 placeholder="admin ou seu@email.com"
                 disabled={isSubmitting || loading}
               />
@@ -133,13 +135,13 @@ export function LoginForm({ onSuccess, onForgotPassword, className = '' }: Login
           </div>
 
           {/* Password Field */}
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="space-y-2">
+            <label htmlFor="password" className="text-sm font-medium text-white/80">
               Senha
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400" />
+            <div className="group relative">
+              <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
+                <Lock className="h-5 w-5 text-white/40 transition-colors group-focus-within:text-white" />
               </div>
               <input
                 id="password"
@@ -149,21 +151,17 @@ export function LoginForm({ onSuccess, onForgotPassword, className = '' }: Login
                 required
                 value={formData.password}
                 onChange={handleInputChange}
-                className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                className="w-full rounded-2xl border border-white/10 bg-white/[0.04] py-3 pl-11 pr-12 text-sm text-white outline-none transition focus:border-[#FF5F00]/50 focus:bg-white/[0.08] focus:ring-2 focus:ring-[#FF5F00]/60 disabled:cursor-not-allowed disabled:opacity-60"
                 placeholder="Sua senha"
                 disabled={isSubmitting || loading}
               />
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                className="absolute inset-y-0 right-3 flex items-center text-white/50 transition hover:text-white"
                 disabled={isSubmitting || loading}
               >
-                {showPassword ? (
-                  <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                ) : (
-                  <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                )}
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
           </div>
@@ -174,7 +172,7 @@ export function LoginForm({ onSuccess, onForgotPassword, className = '' }: Login
               <button
                 type="button"
                 onClick={onForgotPassword}
-                className="text-sm text-blue-600 hover:text-blue-500 transition-colors"
+                className="text-sm font-medium text-[#7FB2FF] transition hover:text-white"
                 disabled={isSubmitting || loading}
               >
                 Esqueceu sua senha?
@@ -186,27 +184,27 @@ export function LoginForm({ onSuccess, onForgotPassword, className = '' }: Login
           <button
             type="submit"
             disabled={isSubmitting || loading}
-            className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full rounded-2xl bg-gradient-to-r from-[#FF5F00] via-[#FF6F1A] to-[#FF8B40] py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white shadow-lg shadow-[#FF5F00]/30 transition hover:shadow-xl hover:shadow-[#FF5F00]/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF5F00] focus:ring-offset-[#031431] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isSubmitting || loading ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                Entrando...
-              </>
-            ) : (
-              <>
-                <LogIn className="w-4 h-4" />
-                Entrar
-              </>
-            )}
+            <span className="flex items-center justify-center gap-2">
+              {isSubmitting || loading ? (
+                <>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  Entrando...
+                </>
+              ) : (
+                <>
+                  <LogIn className="h-4 w-4" />
+                  Entrar
+                </>
+              )}
+            </span>
           </button>
         </form>
 
         {/* Footer */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-gray-600">
-            Sistema de Gestão de Transporte
-          </p>
+        <div className="mt-10 rounded-2xl border border-white/5 bg-white/[0.03] px-5 py-4 text-center text-xs text-white/50">
+          Sistema de Gestão de Transporte Premium GolfFox
         </div>
       </div>
     </div>
