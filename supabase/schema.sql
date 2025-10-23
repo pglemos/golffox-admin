@@ -189,6 +189,19 @@ CREATE TABLE support_tickets (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Tabela de chamados de suporte
+CREATE TABLE support_tickets (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    subject VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    priority VARCHAR(50) NOT NULL,
+    channel VARCHAR(50) NOT NULL,
+    contact VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'Aberto',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Tabela de histórico de rotas
 CREATE TABLE route_history (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -234,6 +247,16 @@ CREATE TABLE cost_control (
     cost_per_km DECIMAL(8, 2) NOT NULL,
     cost_per_passenger DECIMAL(8, 2) NOT NULL,
     variation_note TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabela de agendamento de relatórios
+CREATE TABLE report_schedules (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    frequency VARCHAR(50) NOT NULL,
+    delivery VARCHAR(100) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
