@@ -8,7 +8,7 @@ interface AdminLoginProps {
 function AdminLogin({ onLogin }: AdminLoginProps) {
   return (
     <div className="h-screen w-screen bg-gray-100 flex items-center justify-center">
-      <LoginForm onSuccess={() => onLogin?.(true)} />
+      <LoginForm onSuccess={(_user) => onLogin?.(true)} />
     </div>
   );
 }

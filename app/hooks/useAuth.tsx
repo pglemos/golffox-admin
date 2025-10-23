@@ -2,16 +2,16 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '../../services/supabase';
-import { User } from '@supabase/supabase-js';
-import { useRouter } from 'next/navigation';
-import { Session } from '@supabase/supabase-js';
+import { User, Session } from '@supabase/supabase-js';
 
-type UserProfile = {
+export type UserRole = 'admin' | 'driver' | 'passenger' | 'operator' | 'carrier';
+
+export type UserProfile = {
   id: string;
   email: string;
   name: string;
   company_id?: string;
-  role: 'admin' | 'driver' | 'passenger' | 'operator';
+  role: UserRole;
   avatar_url?: string;
 };
 
@@ -21,8 +21,13 @@ type AuthContextType = {
   isLoading: boolean;
   loading: boolean; // alias para compatibilidade com componentes existentes
   error: string | null;
-  signIn: (email: string, password: string) => Promise<{ user: UserProfile | null; error: any }>;
-  signUp: (email: string, password: string, name: string, role: 'driver' | 'passenger') => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ user: UserProfile | null; error: string | null }>;
+  signUp: (
+    email: string,
+    password: string,
+    name: string,
+    role: Extract<UserRole, 'driver' | 'passenger'>
+  ) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   setError: (error: string | null) => void;
 };
@@ -83,7 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         id: data.id,
         name: data.name,
         email: data.email,
-        role: data.role,
+        role: data.role as UserRole,
         company_id: data.company_id,
         avatar_url: data.avatar_url,
       });
@@ -105,12 +110,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           company_id: 'local',
         };
         setUser(userProfile);
+        setError(null);
         setIsLoading(false);
         return { user: userProfile, error: null };
       }
       
       if (!email || !password) {
         const errorMsg = 'Email e senha são obrigatórios';
+        setError(errorMsg);
         return { user: null, error: errorMsg };
       }
       
@@ -121,6 +128,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error) {
         const errorMsg = error.message || 'Falha na autenticação';
+        setError(errorMsg);
         return { user: null, error: errorMsg };
       }
       
@@ -137,11 +145,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             id: profile.id,
             name: profile.name,
             email: profile.email,
-            role: profile.role,
+            role: profile.role as UserRole,
             company_id: profile.company_id,
             avatar_url: profile.avatar_url,
           } as UserProfile;
           setUser(userProfile);
+          setError(null);
           return { user: userProfile, error: null };
         }
 
@@ -150,35 +159,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           id: data.user.id,
           email: data.user.email || email,
           name: (data.user.user_metadata as any)?.name || '',
-          role: (data.user.user_metadata as any)?.role || 'passenger',
+          role: ((data.user.user_metadata as any)?.role || 'passenger') as UserRole,
         };
         setUser(basicUser);
+        setError(null);
         return { user: basicUser, error: null };
       }
 
-      return { user: null, error: 'Falha ao obter dados do usuário' };
+      const errorMsg = 'Falha ao obter dados do usuário';
+      setError(errorMsg);
+      return { user: null, error: errorMsg };
     } catch (error: any) {
       const errorMsg = error?.message || 'Erro ao fazer login';
       console.error(errorMsg, error);
+      setError(errorMsg);
       return { user: null, error: errorMsg };
     } finally {
       setIsLoading(false);
     }
   };
 
-  const signUp = async (email: string, password: string, name: string, role: 'driver' | 'passenger') => {
+  const signUp = async (
+    email: string,
+    password: string,
+    name: string,
+    role: Extract<UserRole, 'driver' | 'passenger'>
+  ) => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       // Validação de campos
       if (!email || !password || !name) {
         const errorMsg = 'Todos os campos são obrigatórios';
+        setError(errorMsg);
         return { error: errorMsg };
       }
-      
+
       if (password.length < 6) {
         const errorMsg = 'A senha deve ter pelo menos 6 caracteres';
+        setError(errorMsg);
         return { error: errorMsg };
       }
       
@@ -195,11 +215,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error) {
         const errorMsg = error.message || 'Falha ao criar conta';
+        setError(errorMsg);
         return { error: errorMsg };
       }
 
       if (!data.user) {
         const errorMsg = 'Falha ao criar conta de usuário';
+        setError(errorMsg);
         return { error: errorMsg };
       }
 
@@ -214,13 +236,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (userError) {
         const errorMsg = 'Erro ao criar perfil de usuário';
         console.error(errorMsg, userError);
+        setError(errorMsg);
         return { error: errorMsg };
       }
 
+      setError(null);
       return { error: null };
     } catch (error: any) {
       const errorMsg = error?.message || 'Erro ao criar conta';
       console.error(errorMsg, error);
+      setError(errorMsg);
       return { error: errorMsg };
     } finally {
       setIsLoading(false);
