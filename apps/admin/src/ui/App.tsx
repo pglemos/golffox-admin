@@ -142,7 +142,7 @@ const quickActions: QuickAction[] = [
     icon: Map,
     tone: {
       light:
-        'from-[#f5f7ff] via-indigo-100/75 to-indigo-200/70 text-indigo-900 hover:shadow-[0_18px_40px_rgba(99,102,241,0.18)]',
+        'from-[#f5f7ff] via-indigo-100/75 to-indigo-200/70 text-slate-950 hover:shadow-[0_18px_40px_rgba(99,102,241,0.18)]',
       dark: 'from-indigo-500/25 via-indigo-500/10 to-transparent text-indigo-100 hover:shadow-[0_25px_45px_rgba(79,70,229,0.35)]',
     },
   },
@@ -152,7 +152,7 @@ const quickActions: QuickAction[] = [
     icon: FileBarChart,
     tone: {
       light:
-        'from-[#f0fbff] via-sky-100/75 to-sky-200/70 text-sky-900 hover:shadow-[0_18px_40px_rgba(14,165,233,0.18)]',
+        'from-[#f0fbff] via-sky-100/75 to-sky-200/70 text-slate-950 hover:shadow-[0_18px_40px_rgba(14,165,233,0.18)]',
       dark: 'from-sky-500/25 via-sky-500/10 to-transparent text-sky-100 hover:shadow-[0_25px_45px_rgba(56,189,248,0.35)]',
     },
   },
@@ -321,7 +321,7 @@ export default function AdminDashboard() {
         description: `Ocupação média de ${averageOccupancy}%`,
         tone: {
           light:
-            'border-emerald-200/70 bg-emerald-100/80 text-emerald-700 shadow-[0_18px_35px_rgba(16,185,129,0.18)] hover:shadow-[0_22px_45px_rgba(16,185,129,0.28)]',
+            'border-emerald-200/70 bg-emerald-100/80 text-slate-950 shadow-[0_18px_35px_rgba(16,185,129,0.18)] hover:shadow-[0_22px_45px_rgba(16,185,129,0.28)]',
           dark: 'border-emerald-400/40 bg-emerald-500/15 text-emerald-100 hover:border-emerald-300/60 hover:shadow-[0_22px_45px_rgba(16,185,129,0.32)]',
         },
       },
@@ -330,7 +330,7 @@ export default function AdminDashboard() {
         description: 'Mantenha o desvio das rotas abaixo de 10%',
         tone: {
           light:
-            'border-amber-200/70 bg-amber-100/80 text-amber-700 shadow-[0_18px_35px_rgba(245,158,11,0.18)] hover:shadow-[0_22px_45px_rgba(245,158,11,0.28)]',
+            'border-amber-200/70 bg-amber-100/80 text-slate-950 shadow-[0_18px_35px_rgba(245,158,11,0.18)] hover:shadow-[0_22px_45px_rgba(245,158,11,0.28)]',
           dark: 'border-amber-400/40 bg-amber-500/15 text-amber-100 hover:border-amber-300/60 hover:shadow-[0_22px_45px_rgba(245,158,11,0.32)]',
         },
       },
@@ -339,7 +339,7 @@ export default function AdminDashboard() {
         description: '1 tarefa urgente',
         tone: {
           light:
-            'border-rose-200/70 bg-rose-100/80 text-rose-700 shadow-[0_18px_35px_rgba(244,63,94,0.18)] hover:shadow-[0_22px_45px_rgba(244,63,94,0.28)]',
+            'border-rose-200/70 bg-rose-100/80 text-slate-950 shadow-[0_18px_35px_rgba(244,63,94,0.18)] hover:shadow-[0_22px_45px_rgba(244,63,94,0.28)]',
           dark: 'border-rose-400/40 bg-rose-500/15 text-rose-100 hover:border-rose-300/60 hover:shadow-[0_22px_45px_rgba(244,63,94,0.32)]',
         },
       },
@@ -398,7 +398,7 @@ export default function AdminDashboard() {
                 🦊
               </div>
               <div className="space-y-1">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-indigo-500/80">Golf Fox Admin</p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-slate-950 dark:text-indigo-300">Golf Fox Admin</p>
                 <span className="text-sm font-semibold text-slate-950 dark:text-slate-100">Premium 9.0</span>
               </div>
             </div>
@@ -445,7 +445,7 @@ export default function AdminDashboard() {
               className={`${cardBase} flex items-center justify-between gap-4 border-slate-200/60 bg-white/85 px-6 py-6 dark:border-white/10 dark:bg-white/[0.06]`}
             >
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-500/70">Golf Fox Admin</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-950 dark:text-indigo-300">Golf Fox Admin</p>
                 <div className="mt-3 flex flex-wrap items-center gap-3 text-2xl font-semibold">
                   Painel
                   <span className="rounded-full border border-slate-200/70 bg-white/80 px-3 py-1 text-xs font-medium text-slate-950 backdrop-blur-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
@@ -543,7 +543,7 @@ export default function AdminDashboard() {
                   className={`${pillBase} ${chip.tone[theme]} shadow-sm`}
                 >
                   {chip.label}
-                  <span className="text-xs font-normal text-slate-900/90 dark:text-slate-200/90">{chip.description}</span>
+                  <span className="text-xs font-normal text-slate-950 dark:text-slate-200/90">{chip.description}</span>
                 </motion.span>
               ))}
             </div>
@@ -557,7 +557,7 @@ export default function AdminDashboard() {
             <section className="grid gap-5 xl:grid-cols-2">
               <motion.div
                 whileHover={{ y: -4 }}
-                className={`${cardBase} flex items-center justify-between gap-4 border-rose-200/70 bg-gradient-to-br from-rose-50/80 via-white/60 to-transparent text-rose-700 dark:border-rose-500/30 dark:bg-gradient-to-br dark:from-rose-500/15 dark:via-rose-500/5 dark:to-transparent dark:text-rose-100`}
+                className={`${cardBase} flex items-center justify-between gap-4 border-rose-200/70 bg-gradient-to-br from-rose-50/80 via-white/60 to-transparent text-slate-950 dark:border-rose-500/30 dark:bg-gradient-to-br dark:from-rose-500/15 dark:via-rose-500/5 dark:to-transparent dark:text-rose-100`}
               >
                 <div className="relative flex items-start gap-4">
                   <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/80 text-rose-500 shadow-inner shadow-rose-200/50 dark:bg-white/10 dark:text-rose-100">
@@ -565,7 +565,7 @@ export default function AdminDashboard() {
                   </span>
                   <div className="space-y-1">
                     <p className="text-sm font-semibold">Alerta crítico: veículo parado há 2 minutos.</p>
-                    <p className="text-xs text-rose-700/90 dark:text-rose-100/90">
+                    <p className="text-xs text-slate-950 dark:text-rose-100/90">
                       Rota 4 · Ônibus GHI-7890 — assistência avançada já foi acionada e está a caminho.
                     </p>
                   </div>
@@ -592,7 +592,7 @@ export default function AdminDashboard() {
                 <div className="mt-3 space-y-3 text-sm leading-relaxed text-slate-950 dark:text-slate-200">
                   <p>
                     Ocupação média semanal avançou para{' '}
-                    <span className="font-semibold text-indigo-600 dark:text-indigo-200">+8%</span> e mantém tendência ascendente nos picos das 07h.
+                  <span className="font-semibold text-slate-950 dark:text-indigo-200">+8%</span> e mantém tendência ascendente nos picos das 07h.
                   </p>
                   <div className="grid gap-2 text-xs font-medium">
                     <div className="flex items-start gap-2">
