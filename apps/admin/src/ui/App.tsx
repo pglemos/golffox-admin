@@ -49,46 +49,46 @@ type QuickAction = {
 }
 
 const navItems: NavItem[] = [
-  { label: 'Dashboard', icon: LayoutDashboard },
-  { label: 'Map', icon: Map },
-  { label: 'Routes', icon: Route },
-  { label: 'Vehicles', icon: Bus },
-  { label: 'Drivers', icon: Users },
-  { label: 'Companies', icon: Building2 },
-  { label: 'Permissions', icon: ShieldCheck },
-  { label: 'Support', icon: LifeBuoy },
-  { label: 'Alerts', icon: Bell },
-  { label: 'Reports', icon: FileBarChart },
-  { label: 'History', icon: History },
-  { label: 'Costs', icon: Wallet2 },
+  { label: 'Painel', icon: LayoutDashboard },
+  { label: 'Mapa', icon: Map },
+  { label: 'Rotas', icon: Route },
+  { label: 'Veículos', icon: Bus },
+  { label: 'Motoristas', icon: Users },
+  { label: 'Empresas', icon: Building2 },
+  { label: 'Permissões', icon: ShieldCheck },
+  { label: 'Suporte', icon: LifeBuoy },
+  { label: 'Alertas', icon: Bell },
+  { label: 'Relatórios', icon: FileBarChart },
+  { label: 'Histórico', icon: History },
+  { label: 'Custos', icon: Wallet2 },
 ]
 
 const metrics: Metric[] = [
   {
-    title: 'Passengers in transit',
+    title: 'Passageiros em trânsito',
     value: '65',
-    description: '+12% versus yesterday',
+    description: '+12% em relação a ontem',
     icon: Users,
     accentClass: 'from-indigo-500/10 to-indigo-500/0 text-indigo-600 dark:text-indigo-200',
   },
   {
-    title: 'Active vehicles',
+    title: 'Veículos ativos',
     value: '4',
-    description: '4/5 operating now',
+    description: '4/5 operando agora',
     icon: Bus,
     accentClass: 'from-sky-500/10 to-sky-500/0 text-sky-600 dark:text-sky-200',
   },
   {
-    title: 'Routes today',
+    title: 'Rotas hoje',
     value: '4',
-    description: '+3 versus plan',
+    description: '+3 em relação ao planejado',
     icon: Route,
     accentClass: 'from-purple-500/10 to-purple-500/0 text-purple-600 dark:text-purple-200',
   },
   {
-    title: 'Critical alerts',
+    title: 'Alertas críticos',
     value: '1',
-    description: 'Immediate action required',
+    description: 'Ação imediata necessária',
     icon: AlertTriangle,
     accentClass: 'from-rose-500/10 to-rose-500/0 text-rose-600 dark:text-rose-200',
   },
@@ -96,20 +96,20 @@ const metrics: Metric[] = [
 
 const quickActions: QuickAction[] = [
   {
-    title: 'Track vehicles',
-    description: 'Live map with second-by-second geolocation',
+    title: 'Monitorar veículos',
+    description: 'Mapa em tempo real com geolocalização por segundo',
     icon: Map,
     tone: 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-100 dark:hover:bg-indigo-500/20',
   },
   {
-    title: 'View analytics',
-    description: 'Dashboards by route, fleet and occupancy',
+    title: 'Ver análises',
+    description: 'Dashboards por rota, frota e ocupação',
     icon: FileBarChart,
     tone: 'bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-100 dark:hover:bg-blue-500/20',
   },
   {
-    title: 'Setup & branding',
-    description: 'Notification, theming and integration preferences',
+    title: 'Configuração e identidade',
+    description: 'Preferências de notificações, temas e integrações',
     icon: Settings,
     tone: 'bg-slate-50 text-slate-700 hover:bg-slate-100 dark:bg-white/10 dark:text-slate-100 dark:hover:bg-white/15',
   },
@@ -173,7 +173,7 @@ const QuickActionCard = ({ title, description, icon: Icon, tone }: QuickAction) 
     </div>
     <p className="text-xs leading-relaxed opacity-80">{description}</p>
     <span className="mt-auto inline-flex items-center gap-1 text-xs font-medium">
-      Open <ArrowUpRight className="h-3 w-3" />
+      Abrir <ArrowUpRight className="h-3 w-3" />
     </span>
   </motion.button>
 )
@@ -202,18 +202,18 @@ export default function AdminDashboard() {
   const statusChips: StatusChip[] = useMemo(
     () => [
       {
-        label: 'Stable operation',
-        description: `Average occupancy ${averageOccupancy}%`,
+        label: 'Operação estável',
+        description: `Ocupação média de ${averageOccupancy}%`,
         tone: 'border-emerald-200 bg-emerald-100 text-emerald-700 shadow-[0_8px_20px_rgba(16,185,129,0.25)] dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-100',
       },
       {
-        label: 'Monitor routes',
-        description: 'Keep route deviation below 10%',
+        label: 'Monitorar rotas',
+        description: 'Mantenha o desvio das rotas abaixo de 10%',
         tone: 'border-amber-200 bg-amber-100 text-amber-700 shadow-[0_8px_20px_rgba(245,158,11,0.25)] dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-100',
       },
       {
-        label: 'Pending alerts',
-        description: '1 urgent task',
+        label: 'Alertas pendentes',
+        description: '1 tarefa urgente',
         tone: 'border-rose-200 bg-rose-100 text-rose-700 shadow-[0_8px_20px_rgba(244,63,94,0.25)] dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-100',
       },
     ],
@@ -226,22 +226,22 @@ export default function AdminDashboard() {
 
   return (
     <div className={theme === 'dark' ? 'min-h-screen bg-slate-950 text-slate-100' : 'min-h-screen bg-slate-100 text-slate-900'}>
-      <div className="mx-auto flex min-h-screen max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:px-8">
-        <aside
-          className={`${cardBase} hidden w-64 flex-shrink-0 flex-col gap-5 border-slate-200/80 bg-white/80 p-6 shadow-lg dark:border-white/5 dark:bg-white/5 lg:flex`}
-        >
-          <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-indigo-600 text-white shadow-lg">
-              🦊
-            </div>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-indigo-500/80">Golf Fox Admin</p>
-              <span className="text-sm font-semibold text-slate-700 dark:text-slate-100">Premium 9.0</span>
-            </div>
-          </div>
+          <div className="mx-auto flex min-h-screen max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:px-8">
+            <aside
+              className={`${cardBase} hidden w-64 flex-shrink-0 flex-col gap-5 border-slate-200/80 bg-white/80 p-6 shadow-lg dark:border-white/5 dark:bg-white/5 lg:flex`}
+            >
+              <div className="flex items-center gap-3">
+                <div className="grid h-10 w-10 place-items-center rounded-xl bg-indigo-600 text-white shadow-lg">
+                  🦊
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-indigo-500/80">Golf Fox Admin</p>
+                  <span className="text-sm font-semibold text-slate-700 dark:text-slate-100">Premium 9.0</span>
+                </div>
+              </div>
 
-          <nav className="space-y-1">
-            {navItems.map((item) => {
+              <nav className="space-y-1">
+                {navItems.map((item) => {
               const isActive = item.label === activeNav
               return (
                 <button
@@ -267,9 +267,9 @@ export default function AdminDashboard() {
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-500/70">Golf Fox Admin</p>
               <div className="mt-2 flex items-center gap-2 text-2xl font-semibold">
-                Dashboard
+                Painel
                 <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 dark:bg-white/10 dark:text-slate-300">
-                  Rendering overview
+                  Visão geral em processamento
                 </span>
               </div>
             </div>
@@ -281,7 +281,7 @@ export default function AdminDashboard() {
               className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-100 dark:border-white/10 dark:bg-white/10 dark:text-slate-100 dark:hover:bg-white/20"
             >
               {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-              Dark mode
+              Modo escuro
             </motion.button>
           </header>
 
@@ -294,11 +294,11 @@ export default function AdminDashboard() {
           <section className={`${cardBase} flex flex-col gap-6 border-slate-200/80 bg-white/90 p-6 shadow-md dark:border-white/10 dark:bg-white/5`}>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Occupancy by hour</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-300">Monitor route load peaks and troughs to optimise fleet usage.</p>
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Ocupação por hora</h2>
+                <p className="text-sm text-slate-500 dark:text-slate-300">Monitore picos e vales de carregamento das rotas para otimizar a frota.</p>
               </div>
               <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500 dark:bg-white/10 dark:text-slate-200">
-                Today · Live sync
+                Hoje · Sincronização ao vivo
               </span>
             </div>
             <div className="h-72 w-full">
@@ -316,7 +316,7 @@ export default function AdminDashboard() {
                   <Tooltip
                     contentStyle={tooltipStyles}
                     labelStyle={{ color: '#94a3b8', fontWeight: 600 }}
-                    formatter={(value: number) => [`${value}% occupancy`, '']}
+                    formatter={(value: number) => [`${value}% de ocupação`, '']}
                   />
                   <Line
                     type="monotone"
@@ -351,27 +351,27 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-3">
                 <AlertTriangle className="h-5 w-5" />
                 <div>
-                  <p className="text-sm font-semibold">1 critical alert requires immediate action.</p>
-                  <p className="text-xs opacity-80">Vehicle GHI-7890 stopped — assistance dispatched 2 minutes ago.</p>
+                  <p className="text-sm font-semibold">1 alerta crítico requer ação imediata.</p>
+                  <p className="text-xs opacity-80">Veículo GHI-7890 parado — assistência enviada há 2 minutos.</p>
                 </div>
               </div>
               <button
                 type="button"
                 className="rounded-full border border-current px-3 py-1 text-xs font-semibold transition hover:bg-white/20"
               >
-                Open alert
+                Abrir alerta
               </button>
             </div>
             <div className={`${cardBase} border-slate-200/80 bg-white/80 px-6 py-5 shadow-md dark:border-white/10 dark:bg-white/10`}>
-              <p className="text-sm font-semibold text-slate-500 dark:text-slate-200">AI insights</p>
+              <p className="text-sm font-semibold text-slate-500 dark:text-slate-200">Insights da IA</p>
               <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-200">
-                Weekly occupancy trend up by <span className="font-semibold text-indigo-600 dark:text-indigo-200">+8%</span>. Consider migrating one standby vehicle from Route 3 to Route 1 between 06h and 08h to absorb peak demand.
+                Tendência semanal de ocupação em <span className="font-semibold text-indigo-600 dark:text-indigo-200">+8%</span>. Considere mover um veículo de reserva da Rota 3 para a Rota 1 entre 06h e 08h para absorver a demanda de pico.
               </p>
             </div>
           </section>
 
           <footer className="pb-6 text-xs text-slate-400 dark:text-slate-500">
-            Last synced {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} • Data powered by Golf Fox telemetry network.
+            Última sincronização às {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} • Dados fornecidos pela rede de telemetria Golf Fox.
           </footer>
         </main>
       </div>
