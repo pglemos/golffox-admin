@@ -12,8 +12,8 @@ const MapApiKeyWarning: React.FC<MapApiKeyWarningProps> = ({ message }) => {
       <div className="mt-3 text-left space-y-2">
         <p className="font-semibold">Para configurar:</p>
         <ol className="list-decimal list-inside space-y-1 text-sm">
-          <li>Crie (ou edite) <code className="bg-gray-100 px-1 rounded">.env.local</code> na raiz do projeto</li>
-          <li>Adicione: <code className="bg-gray-100 px-1 rounded">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=sua_chave_aqui</code></li>
+          <li>Crie (ou edite) <code className="bg-white/5 px-1 rounded">.env.local</code> na raiz do projeto</li>
+          <li>Adicione: <code className="bg-white/5 px-1 rounded">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=sua_chave_aqui</code></li>
           <li>Reinicie o servidor de desenvolvimento</li>
         </ol>
         <p className="text-xs mt-2">
@@ -25,7 +25,7 @@ const MapApiKeyWarning: React.FC<MapApiKeyWarningProps> = ({ message }) => {
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center bg-golffox-gray-light p-4 text-center">
-      <div className="max-w-lg bg-white p-6 rounded-lg shadow-lg border border-golffox-yellow/50">
+      <div className="max-w-lg bg-white/5 p-6 rounded-lg shadow-lg border border-golffox-yellow/50">
         <ExclamationTriangleIcon className="h-12 w-12 text-golffox-yellow mx-auto mb-4" />
         <h3 className="text-xl font-bold text-golffox-gray-dark mb-2">Falha ao Carregar o Mapa</h3>
         <div className="text-golffox-gray-medium text-left space-y-2">

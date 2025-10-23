@@ -13,8 +13,8 @@ function Stat({ label, value }: { label: string; value: string }) {
 
 function App() {
   return (
-    <div className="min-h-screen bg-white text-gray-900 dark:bg-[#0B0B0F] dark:text-gray-100">
-      <header className="sticky top-0 z-10 backdrop-blur bg-white/60 dark:bg-black/40 border-b border-gray-200/40 dark:border-white/10 p-4">
+    <div className="min-h-screen bg-white/5 text-white dark:bg-[#0B0B0F] dark:text-gray-100">
+      <header className="sticky top-0 z-10 backdrop-blur bg-white/60 dark:bg-black/40 border-b border-white/12/40 dark:border-white/10 p-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <h1 className="text-xl font-semibold">Golffox — Painel do Operador</h1>
         </div>

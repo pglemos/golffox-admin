@@ -13,7 +13,7 @@ export default function AdminPage() {
       <ProtectedRoute
         requiredRole="admin"
         fallback={
-          <div className="min-h-screen w-screen bg-gray-100 flex items-center justify-center p-4">
+          <div className="flex min-h-screen w-screen items-center justify-center bg-golffox-base p-4 text-white">
             <AdminLogin onLogin={() => router.push('/golffox')} />
           </div>
         }

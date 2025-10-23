@@ -7,7 +7,7 @@ interface AdminLoginProps {
 
 function AdminLogin({ onLogin }: AdminLoginProps) {
   return (
-    <div className="h-screen w-screen bg-gray-100 flex items-center justify-center">
+    <div className="flex min-h-screen w-screen items-center justify-center bg-golffox-base text-white">
       <LoginForm onSuccess={(_user) => onLogin?.(true)} />
     </div>
   );

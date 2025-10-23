@@ -103,7 +103,7 @@ export function LoginForm({ onSuccess, onForgotPassword, className = '' }: Login
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 flex items-center gap-3 rounded-2xl border border-red-400/40 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+          <div className="mb-6 flex items-center gap-3 rounded-2xl border border-red-400/40 bg-rose-500/150/10 px-4 py-3 text-sm text-red-100">
             <AlertCircle className="h-5 w-5 text-red-300" />
             <p>{error}</p>
           </div>

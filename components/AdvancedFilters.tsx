@@ -134,18 +134,18 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
   const activeFiltersCount = getActiveFiltersCount();
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+    <div className="bg-white/5 rounded-lg shadow-md p-4 mb-6">
       {/* Header com busca e toggle */}
       <div className="flex items-center space-x-4 mb-4">
         {/* Campo de busca */}
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/70" />
           <input
             type="text"
             placeholder="Buscar por nome, ID, descrição..."
             value={filters.searchTerm}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full pl-10 pr-4 py-2 border border-white/15 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
@@ -154,8 +154,8 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
           onClick={() => setIsExpanded(!isExpanded)}
           className={`flex items-center space-x-2 px-4 py-2 border rounded-lg transition-colors ${
             isExpanded || activeFiltersCount > 0
-              ? 'border-blue-500 bg-blue-50 text-blue-700'
-              : 'border-gray-300 hover:border-gray-400'
+              ? 'border-blue-500 bg-sky-500/15 text-sky-200'
+              : 'border-white/15 hover:border-gray-400'
           }`}
         >
           <SlidersHorizontal className="h-4 w-4" />
@@ -172,7 +172,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
         {activeFiltersCount > 0 && (
           <button
             onClick={clearFilters}
-            className="flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+            className="flex items-center space-x-2 px-3 py-2 text-golffox-muted hover:text-white transition-colors"
           >
             <X className="h-4 w-4" />
             <span>Limpar</span>
@@ -182,11 +182,11 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
 
       {/* Filtros expandidos */}
       {isExpanded && (
-        <div className="border-t border-gray-200 pt-4">
+        <div className="border-t border-white/12 pt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Período */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 <Calendar className="inline h-4 w-4 mr-1" />
                 Período
               </label>
@@ -195,14 +195,14 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                   type="date"
                   value={filters.dateRange.start}
                   onChange={(e) => handleDateRangeChange('start', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-white/15 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Data inicial"
                 />
                 <input
                   type="date"
                   value={filters.dateRange.end}
                   onChange={(e) => handleDateRangeChange('end', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-white/15 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Data final"
                 />
               </div>
@@ -210,7 +210,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
 
             {/* Tipos de Veículo */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 <Truck className="inline h-4 w-4 mr-1" />
                 Tipos de Veículo
               </label>
@@ -221,9 +221,9 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                       type="checkbox"
                       checked={filters.vehicleTypes.includes(type)}
                       onChange={() => handleMultiSelectChange('vehicleTypes', type)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-white/15 text-sky-200 focus:ring-blue-500"
                     />
-                    <span className="text-sm text-gray-700">{type}</span>
+                    <span className="text-sm text-white">{type}</span>
                   </label>
                 ))}
               </div>
@@ -231,7 +231,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
 
             {/* Regiões */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 <MapPin className="inline h-4 w-4 mr-1" />
                 Regiões
               </label>
@@ -242,9 +242,9 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                       type="checkbox"
                       checked={filters.regions.includes(region)}
                       onChange={() => handleMultiSelectChange('regions', region)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-white/15 text-sky-200 focus:ring-blue-500"
                     />
-                    <span className="text-sm text-gray-700">{region}</span>
+                    <span className="text-sm text-white">{region}</span>
                   </label>
                 ))}
               </div>
@@ -252,7 +252,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
 
             {/* Status */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 <Filter className="inline h-4 w-4 mr-1" />
                 Status
               </label>
@@ -263,9 +263,9 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                       type="checkbox"
                       checked={filters.status.includes(status)}
                       onChange={() => handleMultiSelectChange('status', status)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-white/15 text-sky-200 focus:ring-blue-500"
                     />
-                    <span className="text-sm text-gray-700">{status}</span>
+                    <span className="text-sm text-white">{status}</span>
                   </label>
                 ))}
               </div>
@@ -273,7 +273,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
 
             {/* Motoristas */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 <User className="inline h-4 w-4 mr-1" />
                 Motoristas
               </label>
@@ -284,9 +284,9 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                       type="checkbox"
                       checked={filters.drivers.includes(driver)}
                       onChange={() => handleMultiSelectChange('drivers', driver)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-white/15 text-sky-200 focus:ring-blue-500"
                     />
-                    <span className="text-sm text-gray-700">{driver}</span>
+                    <span className="text-sm text-white">{driver}</span>
                   </label>
                 ))}
               </div>
@@ -294,7 +294,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
 
             {/* Prioridade */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 Prioridade
               </label>
               <div className="space-y-1 max-h-32 overflow-y-auto">
@@ -304,9 +304,9 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                       type="checkbox"
                       checked={filters.priority.includes(priority)}
                       onChange={() => handleMultiSelectChange('priority', priority)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-white/15 text-sky-200 focus:ring-blue-500"
                     />
-                    <span className="text-sm text-gray-700">{priority}</span>
+                    <span className="text-sm text-white">{priority}</span>
                   </label>
                 ))}
               </div>
@@ -314,16 +314,16 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
           </div>
 
           {/* Ordenação */}
-          <div className="mt-4 pt-4 border-t border-gray-200">
+          <div className="mt-4 pt-4 border-t border-white/12">
             <div className="flex items-center space-x-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-white mb-1">
                   Ordenar por
                 </label>
                 <select
                   value={filters.sortBy}
                   onChange={(e) => handleSortChange('sortBy', e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="px-3 py-2 border border-white/15 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   {defaultOptions.sortOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -334,13 +334,13 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-white mb-1">
                   Ordem
                 </label>
                 <select
                   value={filters.sortOrder}
                   onChange={(e) => handleSortChange('sortOrder', e.target.value as 'asc' | 'desc')}
-                  className="px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="px-3 py-2 border border-white/15 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="desc">Decrescente</option>
                   <option value="asc">Crescente</option>
@@ -353,15 +353,15 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
 
       {/* Resumo dos filtros ativos */}
       {activeFiltersCount > 0 && !isExpanded && (
-        <div className="mt-3 pt-3 border-t border-gray-200">
+        <div className="mt-3 pt-3 border-t border-white/12">
           <div className="flex flex-wrap gap-2">
             {filters.searchTerm && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-sky-500/20 text-blue-800">
                 Busca: &quot;{filters.searchTerm}&quot;
               </span>
             )}
             {(filters.dateRange.start || filters.dateRange.end) && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-emerald-500/20 text-emerald-200">
                 Período selecionado
               </span>
             )}
@@ -376,7 +376,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
               </span>
             )}
             {filters.status.length > 0 && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-red-100 text-red-800">
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-rose-500/20 text-red-800">
                 {filters.status.length} status
               </span>
             )}

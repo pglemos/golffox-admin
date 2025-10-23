@@ -84,7 +84,7 @@ const PassengerApp: React.FC<PassengerAppProps> = ({ employees }) => {
 
     return (
         <div className="h-full w-full flex items-center justify-center bg-golffox-gray-light p-4">
-            <div className="w-full max-w-sm h-full max-h-[800px] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+            <div className="w-full max-w-sm h-full max-h-[800px] bg-white/5 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
                 {renderContent()}
             </div>
         </div>

@@ -69,7 +69,7 @@ const Checklist: React.FC<ChecklistProps> = ({ onComplete }) => {
                                     <div 
                                         key={item.id} 
                                         className={`p-2 sm:p-3 rounded-md flex justify-between items-center transition-colors min-h-[60px] ${
-                                            checkedItems[item.id] === 'nok' && item.isCritical ? 'bg-golffox-red/20' : 'bg-white'
+                                            checkedItems[item.id] === 'nok' && item.isCritical ? 'bg-golffox-red/20' : 'bg-white/5'
                                         }`}
                                     >
                                         <span className={`text-xs sm:text-sm ${item.isCritical ? 'font-bold' : ''} text-golffox-gray-medium flex-1 pr-2`}>
@@ -103,7 +103,7 @@ const Checklist: React.FC<ChecklistProps> = ({ onComplete }) => {
                 </div>
             </div>
 
-            <footer className="flex-shrink-0 p-3 sm:p-4 border-t border-golffox-gray-light bg-white">
+            <footer className="flex-shrink-0 p-3 sm:p-4 border-t border-golffox-gray-light bg-white/5">
                 <button
                     onClick={onComplete}
                     disabled={!isChecklistComplete}

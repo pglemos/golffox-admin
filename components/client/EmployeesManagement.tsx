@@ -7,7 +7,7 @@ type PermissionProfile = any;
 import { PlusCircleIcon, PencilIcon, TrashIcon, XMarkIcon, KeyIcon } from '../icons/Icons';
 
 const getStatusClass = (status: 'Ativo' | 'Inativo') => {
-  return status === 'Ativo' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-800';
+  return status === 'Ativo' ? 'bg-emerald-500/20 text-emerald-200' : 'bg-white/10 text-white';
 };
 
 interface EmployeesManagementProps {
@@ -109,7 +109,7 @@ const EmployeesManagement: React.FC<EmployeesManagementProps> = ({ employees, se
           </thead>
           <tbody className="text-golffox-gray-medium">
             {employees.map((employee, index) => (
-              <tr key={employee.id} className={index % 2 === 0 ? 'bg-white' : 'bg-golffox-gray-light'}>
+              <tr key={employee.id} className={index % 2 === 0 ? 'bg-white/5' : 'bg-golffox-gray-light'}>
                 <td className="py-4 px-6 font-medium text-golffox-gray-dark">{employee.name}</td>
                 <td className="py-4 px-6">{employee.cpf}</td>
                 <td className="py-4 px-6">{employee.email}</td>
@@ -123,7 +123,7 @@ const EmployeesManagement: React.FC<EmployeesManagementProps> = ({ employees, se
                     <button onClick={() => openEditModal(employee)} className="text-golffox-blue-light hover:text-golffox-blue-dark p-1" title="Editar Funcionário">
                       <PencilIcon className="h-5 w-5" />
                     </button>
-                    <button onClick={() => openConfirmModal(employee.id)} className="text-golffox-red hover:text-red-700 p-1" title="Excluir Funcionário">
+                    <button onClick={() => openConfirmModal(employee.id)} className="text-golffox-red hover:text-rose-200 p-1" title="Excluir Funcionário">
                       <TrashIcon className="h-5 w-5" />
                     </button>
                   </div>
@@ -137,7 +137,7 @@ const EmployeesManagement: React.FC<EmployeesManagementProps> = ({ employees, se
       {/* Modal de Criar/Editar Funcionário */}
       {isModalOpen && currentEmployee && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in-down">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg">
+          <div className="bg-white/5 rounded-lg shadow-xl p-6 w-full max-w-lg">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-golffox-gray-dark">{modalMode === 'create' ? 'Cadastrar Novo Funcionário' : 'Editar Funcionário'}</h3>
               <button onClick={handleClose}><XMarkIcon className="h-6 w-6 text-golffox-gray-medium" /></button>
@@ -152,7 +152,7 @@ const EmployeesManagement: React.FC<EmployeesManagementProps> = ({ employees, se
                   <select 
                       value={currentEmployee.permissionProfileId || ''} 
                       onChange={e => setCurrentEmployee({...currentEmployee, permissionProfileId: e.target.value})} 
-                      className="w-full p-2 border rounded bg-white"
+                      className="w-full p-2 border rounded bg-white/5"
                   >
                       {permissionProfiles
                         .filter(p => p.name === 'Passageiro' || p.name === 'Operador')
@@ -171,7 +171,7 @@ const EmployeesManagement: React.FC<EmployeesManagementProps> = ({ employees, se
               </select>
             </div>
             <div className="mt-6 flex justify-end space-x-2">
-              <button onClick={handleClose} className="px-4 py-2 bg-golffox-gray-light text-golffox-gray-dark font-semibold rounded-lg hover:bg-gray-300">Cancelar</button>
+              <button onClick={handleClose} className="px-4 py-2 bg-golffox-gray-light text-golffox-gray-dark font-semibold rounded-lg hover:bg-white/12">Cancelar</button>
               <button onClick={handleSave} className="px-4 py-2 bg-golffox-orange-primary text-white font-semibold rounded-lg hover:bg-orange-600">Salvar</button>
             </div>
           </div>
@@ -181,11 +181,11 @@ const EmployeesManagement: React.FC<EmployeesManagementProps> = ({ employees, se
       {/* Modal de Confirmação de Exclusão */}
       {isConfirmOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm">
+          <div className="bg-white/5 rounded-lg shadow-xl p-6 w-full max-w-sm">
             <h3 className="text-xl font-bold">Confirmar Exclusão</h3>
             <p className="my-4">Tem certeza que deseja excluir este funcionário?</p>
             <div className="mt-6 flex justify-end space-x-2">
-              <button onClick={handleClose} className="px-4 py-2 bg-gray-200 rounded">Cancelar</button>
+              <button onClick={handleClose} className="px-4 py-2 bg-white/10 rounded">Cancelar</button>
               <button onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded">Excluir</button>
             </div>
           </div>

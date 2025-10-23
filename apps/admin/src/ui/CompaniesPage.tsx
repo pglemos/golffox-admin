@@ -83,7 +83,7 @@ const CompaniesPage = ({ companies, glassClass, tokens, isLight }: CompaniesPage
           <div className="flex items-center gap-4">
             <div
               className={`grid h-12 w-12 place-items-center rounded-xl ${
-                isLight ? 'bg-blue-500/10 text-blue-600' : 'bg-blue-500/15 text-blue-300'
+                isLight ? 'bg-sky-500/150/10 text-sky-200' : 'bg-sky-500/150/15 text-blue-300'
               }`}
             >
               <Building2 size={24} />

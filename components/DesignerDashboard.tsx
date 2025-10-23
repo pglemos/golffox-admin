@@ -207,12 +207,12 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
 const StatusBadge = ({ status, type = "badge" }: { status: string, type?: "badge" | "dot" }) => {
   const statusConfig = {
-    onTime: { icon: <Clock className="h-3 w-3" />, text: 'No Horário', color: 'text-blue-700 bg-blue-100 dark:text-blue-200 dark:bg-blue-500/20' },
-    delayed: { icon: <AlertTriangle className="h-3 w-3" />, text: 'Atrasado', color: 'text-yellow-700 bg-yellow-100 dark:text-yellow-200 dark:bg-yellow-500/20' },
-    problem: { icon: <XCircle className="h-3 w-3" />, text: 'Com Problema', color: 'text-red-700 bg-red-100 dark:text-red-200 dark:bg-red-500/20' },
-    completed: { icon: <CheckCircle2 className="h-3 w-3" />, text: 'Concluída', color: 'text-green-700 bg-green-100 dark:text-green-200 dark:bg-green-500/20' },
-    active: { icon: <CheckCircle2 className="h-3 w-3" />, text: 'Ativo', color: 'text-green-700 bg-green-100 dark:text-green-200 dark:bg-green-500/20' },
-    maintenance: { icon: <Settings className="h-3 w-3" />, text: 'Manutenção', color: 'text-yellow-700 bg-yellow-100 dark:text-yellow-200 dark:bg-yellow-500/20' },
+    onTime: { icon: <Clock className="h-3 w-3" />, text: 'No Horário', color: 'text-sky-200 bg-sky-500/20 dark:text-blue-200 dark:bg-sky-500/150/20' },
+    delayed: { icon: <AlertTriangle className="h-3 w-3" />, text: 'Atrasado', color: 'text-yellow-700 bg-amber-500/20 dark:text-yellow-200 dark:bg-amber-500/150/20' },
+    problem: { icon: <XCircle className="h-3 w-3" />, text: 'Com Problema', color: 'text-rose-200 bg-rose-500/20 dark:text-red-200 dark:bg-rose-500/150/20' },
+    completed: { icon: <CheckCircle2 className="h-3 w-3" />, text: 'Concluída', color: 'text-emerald-200 bg-emerald-500/20 dark:text-green-200 dark:bg-emerald-500/150/20' },
+    active: { icon: <CheckCircle2 className="h-3 w-3" />, text: 'Ativo', color: 'text-emerald-200 bg-emerald-500/20 dark:text-green-200 dark:bg-emerald-500/150/20' },
+    maintenance: { icon: <Settings className="h-3 w-3" />, text: 'Manutenção', color: 'text-yellow-700 bg-amber-500/20 dark:text-yellow-200 dark:bg-amber-500/150/20' },
     inactive: { icon: <XCircle className="h-3 w-3" />, text: 'Inativo', color: 'text-slate-700 bg-slate-100 dark:text-slate-200 dark:bg-slate-500/20' },
   };
   const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.onTime;
@@ -380,7 +380,7 @@ const Header = ({ onMenuClick, title }: { onMenuClick: () => void, title: string
                 </button>
                  <div className="relative">
                     <img src={`https://i.pravatar.cc/150?u=admin`} alt="Admin User" className="h-10 w-10 rounded-full cursor-pointer"/>
-                    <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-500 border-2 border-white dark:border-slate-900"></span>
+                    <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-emerald-500/150 border-2 border-white dark:border-slate-900"></span>
                 </div>
             </div>
         </header>
@@ -449,8 +449,8 @@ export const DashboardView = () => {
   return (
     <motion.div key="dashboard" variants={containerVariants} initial="hidden" animate="visible" exit={{ opacity: 0 }}>
       <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-        <KpiCard title="Rotas Ativas" value={kpiData.activeRoutes} icon={<Route className="h-6 w-6 text-white" />} color="bg-blue-500" />
-        <KpiCard title="Pontualidade" value={kpiData.onTimePercentage} unit="%" icon={<CheckCircle2 className="h-6 w-6 text-white" />} color="bg-green-500" />
+        <KpiCard title="Rotas Ativas" value={kpiData.activeRoutes} icon={<Route className="h-6 w-6 text-white" />} color="bg-sky-500/150" />
+        <KpiCard title="Pontualidade" value={kpiData.onTimePercentage} unit="%" icon={<CheckCircle2 className="h-6 w-6 text-white" />} color="bg-emerald-500/150" />
         <KpiCard title="Veículos em Rota" value={kpiData.activeVehicles} icon={<Car className="h-6 w-6 text-white" />} color="bg-amber-500" />
         <KpiCard title="Passageiros (Hoje)" value={kpiData.passengersToday} icon={<Users className="h-6 w-6 text-white" />} color="bg-indigo-500" />
       </motion.div>
@@ -492,7 +492,7 @@ const ActionMenu = ({ onAction, onClose }: { onAction: (action: string) => void;
     const actions = [
         { label: 'Ver Detalhes', icon: <Eye className="h-4 w-4 mr-2"/>, action: 'view'},
         { label: 'Editar', icon: <Edit className="h-4 w-4 mr-2"/>, action: 'edit'},
-        { label: 'Excluir', icon: <Trash2 className="h-4 w-4 mr-2 text-red-500"/>, action: 'delete'},
+        { label: 'Excluir', icon: <Trash2 className="h-4 w-4 mr-2 text-rose-300"/>, action: 'delete'},
     ];
 
     return (
@@ -502,12 +502,12 @@ const ActionMenu = ({ onAction, onClose }: { onAction: (action: string) => void;
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-4 top-12 z-10 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden"
+            className="absolute right-4 top-12 z-10 w-48 bg-white/5 dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden"
         >
             <ul className="py-1">
                 {actions.map(action => (
                     <li key={action.action}>
-                        <button onClick={() => onAction(action.action)} className={`w-full text-left flex items-center px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 ${action.action === 'delete' ? 'hover:text-red-500' : ''}`}>
+                        <button onClick={() => onAction(action.action)} className={`w-full text-left flex items-center px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 ${action.action === 'delete' ? 'hover:text-rose-300' : ''}`}>
                            {action.icon} {action.label}
                         </button>
                     </li>
@@ -551,7 +551,7 @@ const RoutesView = () => {
                               <td className="p-4 text-slate-600 dark:text-slate-300">{route.vehicle}</td>
                               <td className="p-4"><StatusBadge status={route.status} /></td>
                               <td className="p-4 text-slate-600 dark:text-slate-300">{route.passengers}</td>
-                              <td className={`p-4 font-medium ${route.punctuality.startsWith('+') ? 'text-red-500' : 'text-green-500'}`}>{route.punctuality}</td>
+                              <td className={`p-4 font-medium ${route.punctuality.startsWith('+') ? 'text-rose-300' : 'text-green-500'}`}>{route.punctuality}</td>
                               <td className="p-4 relative">
                                   <button onClick={() => setOpenMenuId(openMenuId === route.id ? null : route.id)} className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-md hover:bg-slate-200/50 dark:hover:bg-slate-700">
                                       <MoreVertical className="h-5 w-5"/>
@@ -763,7 +763,7 @@ const PermissionsView = () => (
                 <div key={p.role} className="bg-white/50 dark:bg-slate-800/50 rounded-2xl shadow-sm border border-slate-200/50 dark:border-slate-700/50 p-6 backdrop-blur-sm">
                     <h3 className="font-bold text-lg text-slate-800 dark:text-white">{p.role}</h3>
                     <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">{p.description}</p>
-                    <button className="mt-4 text-sm font-semibold text-blue-600 hover:text-blue-700">Editar Permissões</button>
+                    <button className="mt-4 text-sm font-semibold text-sky-200 hover:text-sky-200">Editar Permissões</button>
                 </div>
             ))}
         </div>
@@ -806,9 +806,9 @@ const RescueDispatchView = () => (
 
 const AlertsView = () => {
     const alertIcons = {
-        problem: <XCircle className="text-red-500"/>,
-        delayed: <AlertTriangle className="text-yellow-500"/>,
-        maintenance: <Settings className="text-blue-500"/>,
+        problem: <XCircle className="text-rose-300"/>,
+        delayed: <AlertTriangle className="text-amber-200"/>,
+        maintenance: <Settings className="text-sky-200"/>,
     }
     return (
      <motion.div
@@ -857,14 +857,14 @@ const ReportsView = () => (
                         <FileText />
                         <p className="font-semibold mt-2">Relatório de Pontualidade</p>
                     </div>
-                    <button className="text-sm font-semibold text-blue-600">Exportar CSV</button>
+                    <button className="text-sm font-semibold text-sky-200">Exportar CSV</button>
                 </div>
                  <div className="p-4 rounded-lg bg-slate-100 dark:bg-slate-800 flex justify-between items-center">
                     <div>
                         <FileText />
                         <p className="font-semibold mt-2">Relatório de Passageiros</p>
                     </div>
-                    <button className="text-sm font-semibold text-blue-600">Exportar CSV</button>
+                    <button className="text-sm font-semibold text-sky-200">Exportar CSV</button>
                 </div>
             </div>
         </div>
@@ -881,9 +881,9 @@ const FinancialView = () => (
         className="space-y-8"
     >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <KpiCard title="Faturamento (Mês)" value={financialData.kpis.revenue} icon={<ArrowUpRight className="text-white"/>} color="bg-green-500"/>
-            <KpiCard title="Custos (Mês)" value={financialData.kpis.expenses} icon={<ArrowUpRight className="text-white -scale-y-100"/>} color="bg-red-500"/>
-            <KpiCard title="Lucro (Mês)" value={financialData.kpis.profit} icon={<CheckCircle2 className="text-white"/>} color="bg-blue-500"/>
+            <KpiCard title="Faturamento (Mês)" value={financialData.kpis.revenue} icon={<ArrowUpRight className="text-white"/>} color="bg-emerald-500/150"/>
+            <KpiCard title="Custos (Mês)" value={financialData.kpis.expenses} icon={<ArrowUpRight className="text-white -scale-y-100"/>} color="bg-rose-500/150"/>
+            <KpiCard title="Lucro (Mês)" value={financialData.kpis.profit} icon={<CheckCircle2 className="text-white"/>} color="bg-sky-500/150"/>
         </div>
         <div className="bg-white/50 dark:bg-slate-800/50 rounded-2xl shadow-sm border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm">
              <div className="p-6">
@@ -902,7 +902,7 @@ const FinancialView = () => (
                           <tr key={t.id} className="border-b border-slate-200/50 dark:border-slate-700/50 last:border-b-0">
                               <td className="p-4 text-slate-600 dark:text-slate-300">{t.date}</td>
                               <td className="p-4 font-medium text-slate-800 dark:text-white">{t.description}</td>
-                              <td className={`p-4 font-medium ${t.type === 'income' ? 'text-green-500' : 'text-red-500'}`}>
+                              <td className={`p-4 font-medium ${t.type === 'income' ? 'text-green-500' : 'text-rose-300'}`}>
                                 {t.amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                               </td>
                           </tr>
@@ -948,13 +948,13 @@ const SettingsView = () => {
                     <div className="flex justify-between items-center">
                         <p>Alertas críticos em tempo real</p>
                         <button onClick={() => setNotifications(n => ({...n, alerts: !n.alerts}))} className={`w-12 h-6 rounded-full p-1 transition-colors ${notifications.alerts ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-600'}`}>
-                            <motion.div layout className={`w-4 h-4 rounded-full bg-white transition-transform`} style={{translateX: notifications.alerts ? '100%' : '0%'}} />
+                            <motion.div layout className={`w-4 h-4 rounded-full bg-white/5 transition-transform`} style={{translateX: notifications.alerts ? '100%' : '0%'}} />
                         </button>
                     </div>
                      <div className="flex justify-between items-center">
                         <p>Resumo diário por email</p>
                          <button onClick={() => setNotifications(n => ({...n, summary: !n.summary}))} className={`w-12 h-6 rounded-full p-1 transition-colors ${notifications.summary ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-600'}`}>
-                            <motion.div layout className={`w-4 h-4 rounded-full bg-white transition-transform`} style={{translateX: notifications.summary ? '100%' : '0%'}} />
+                            <motion.div layout className={`w-4 h-4 rounded-full bg-white/5 transition-transform`} style={{translateX: notifications.summary ? '100%' : '0%'}} />
                         </button>
                     </div>
                 </div>
@@ -972,7 +972,7 @@ const Modal = ({title, onClose, children}: {title: string, onClose: () => void, 
                 initial={{ opacity: 0, y: 30, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 30, scale: 0.98 }}
-                className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-lg"
+                className="bg-white/5 dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-lg"
                 onClick={e => e.stopPropagation()}
             >
                 <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
@@ -1042,8 +1042,8 @@ const DashboardContent = () => {
   return (
     <div className="relative bg-slate-100 dark:bg-slate-900 min-h-screen flex text-slate-800 dark:text-slate-200 font-sans overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-full">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] h-[80vh] bg-blue-500/20 dark:bg-blue-500/10 rounded-full blur-3xl animate-pulse-slow"/>
-            <div className="absolute bottom-0 left-0 w-[50vw] h-[50vh] bg-green-500/20 dark:bg-green-500/10 rounded-full blur-3xl animate-pulse-slow animation-delay-2000"/>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] h-[80vh] bg-sky-500/150/20 dark:bg-sky-500/150/10 rounded-full blur-3xl animate-pulse-slow"/>
+            <div className="absolute bottom-0 left-0 w-[50vw] h-[50vh] bg-emerald-500/150/20 dark:bg-emerald-500/150/10 rounded-full blur-3xl animate-pulse-slow animation-delay-2000"/>
             <div className="absolute top-1/4 right-0 w-[60vw] h-[60vh] bg-indigo-500/20 dark:bg-indigo-500/10 rounded-full blur-3xl animate-pulse-slow animation-delay-4000"/>
       </div>
       <Sidebar isSidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen} isMobile={isMobile} activeView={activeView} setActiveView={setActiveView} />

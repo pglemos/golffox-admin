@@ -16,7 +16,7 @@ export const ThemeToggle: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center space-x-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+    <div className="flex items-center space-x-1 bg-white/5 dark:bg-gray-800 rounded-lg p-1">
       {themes.map(({ value, icon: Icon, label }) => (
         <button
           key={value}
@@ -24,8 +24,8 @@ export const ThemeToggle: React.FC = () => {
           className={`
             flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200
             ${preferences.theme === value
-              ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-gray-700/50'
+              ? 'bg-white/5 dark:bg-gray-700 text-white dark:text-white shadow-sm'
+              : 'text-golffox-muted dark:text-white/70 hover:text-white dark:hover:text-white hover:bg-white/50 dark:hover:bg-gray-700/50'
             }
           `}
           title={`Tema ${label}`}
@@ -80,11 +80,11 @@ export const ThemeToggleCompact: React.FC = () => {
       onClick={handleToggle}
       className="
         flex items-center space-x-2 px-3 py-2 rounded-lg
-        bg-gray-100 dark:bg-gray-800 
-        text-gray-700 dark:text-gray-300
-        hover:bg-gray-200 dark:hover:bg-gray-700
+        bg-white/5 dark:bg-gray-800 
+        text-white dark:text-white/60
+        hover:bg-white/10 dark:hover:bg-gray-700
         transition-all duration-200
-        border border-gray-200 dark:border-gray-700
+        border border-white/12 dark:border-gray-700
       "
       title={`Tema atual: ${getCurrentLabel()}. Clique para alternar.`}
     >
@@ -136,11 +136,11 @@ export const ThemeToggleIcon: React.FC = () => {
       onClick={handleToggle}
       className="
         p-2 rounded-lg
-        bg-gray-100 dark:bg-gray-800 
-        text-gray-700 dark:text-gray-300
-        hover:bg-gray-200 dark:hover:bg-gray-700
+        bg-white/5 dark:bg-gray-800 
+        text-white dark:text-white/60
+        hover:bg-white/10 dark:hover:bg-gray-700
         transition-all duration-200
-        border border-gray-200 dark:border-gray-700
+        border border-white/12 dark:border-gray-700
       "
       title={`Tema atual: ${getCurrentLabel()}. Clique para alternar.`}
     >

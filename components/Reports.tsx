@@ -83,9 +83,9 @@ const Reports: React.FC = () => {
           <h3 className="text-xl font-semibold text-golffox-gray-dark mb-4">Resultado da Análise</h3>
           {isLoading && !report && (
             <div className="space-y-3">
-              <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-full animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+              <div className="h-4 bg-white/10 rounded w-3/4 animate-pulse"></div>
+              <div className="h-4 bg-white/10 rounded w-full animate-pulse"></div>
+              <div className="h-4 bg-white/10 rounded w-1/2 animate-pulse"></div>
             </div>
           )}
           {report && <pre className="whitespace-pre-wrap font-sans text-golffox-gray-medium bg-golffox-gray-light/50 p-4 rounded-md">{report}</pre>}

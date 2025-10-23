@@ -57,11 +57,11 @@ const ApiStatusChecker: React.FC = () => {
       case 'success':
         return <CheckCircleIcon className="h-5 w-5 text-green-500" />;
       case 'error':
-        return <ExclamationTriangleIcon className="h-5 w-5 text-red-500" />;
+        return <ExclamationTriangleIcon className="h-5 w-5 text-rose-300" />;
       case 'loading':
         return <div className="h-5 w-5 border-2 border-golffox-blue-light border-t-transparent rounded-full animate-spin" />;
       default:
-        return <InformationCircleIcon className="h-5 w-5 text-gray-500" />;
+        return <InformationCircleIcon className="h-5 w-5 text-golffox-muted/90" />;
     }
   };
 
@@ -86,7 +86,7 @@ const ApiStatusChecker: React.FC = () => {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-4 max-w-sm z-50">
+    <div className="fixed bottom-4 right-4 bg-white/5 border border-white/12 rounded-lg shadow-lg p-4 max-w-sm z-50">
       <div className="flex items-center gap-2 mb-3">
         <InformationCircleIcon className="h-5 w-5 text-golffox-blue-light" />
         <h3 className="font-semibold text-golffox-gray-dark">Status das APIs</h3>
@@ -97,7 +97,7 @@ const ApiStatusChecker: React.FC = () => {
           <span>Google Maps:</span>
           <div className="flex items-center gap-2">
             {getStatusIcon(apiStatus.googleMaps)}
-            <span className={`${apiStatus.googleMaps === 'error' ? 'text-red-600' : 'text-gray-600'}`}>
+            <span className={`${apiStatus.googleMaps === 'error' ? 'text-rose-200' : 'text-golffox-muted'}`}>
               {getStatusText(apiStatus.googleMaps)}
             </span>
           </div>
@@ -107,7 +107,7 @@ const ApiStatusChecker: React.FC = () => {
           <span>Gemini AI:</span>
           <div className="flex items-center gap-2">
             {getStatusIcon(apiStatus.gemini)}
-            <span className={`${apiStatus.gemini === 'error' ? 'text-red-600' : 'text-gray-600'}`}>
+            <span className={`${apiStatus.gemini === 'error' ? 'text-rose-200' : 'text-golffox-muted'}`}>
               {getStatusText(apiStatus.gemini)}
             </span>
           </div>
@@ -115,14 +115,14 @@ const ApiStatusChecker: React.FC = () => {
       </div>
       
       {apiStatus.issues.length > 0 && (
-        <div className="mt-3 pt-3 border-t border-gray-200">
-          <p className="text-xs text-gray-600 mb-2">Problemas encontrados:</p>
-          <ul className="text-xs text-red-600 space-y-1">
+        <div className="mt-3 pt-3 border-t border-white/12">
+          <p className="text-xs text-golffox-muted mb-2">Problemas encontrados:</p>
+          <ul className="text-xs text-rose-200 space-y-1">
             {apiStatus.issues.map((issue, index) => (
               <li key={index}>• {issue}</li>
             ))}
           </ul>
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-xs text-golffox-muted/90 mt-2">
             Verifique o arquivo .env.local e index.html
           </p>
         </div>

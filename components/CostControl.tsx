@@ -109,26 +109,26 @@ const CostControl: React.FC = () => {
   }, [filteredCosts]);
 
   const getProfitMarginColor = (margin: number) => {
-    if (margin >= 30) return 'text-green-600';
-    if (margin >= 15) return 'text-yellow-600';
-    return 'text-red-600';
+    if (margin >= 30) return 'text-emerald-200';
+    if (margin >= 15) return 'text-amber-200';
+    return 'text-rose-200';
   };
 
   const getCostEfficiencyColor = (costPerKm: number) => {
-    if (costPerKm <= 5.0) return 'text-green-600';
-    if (costPerKm <= 7.0) return 'text-yellow-600';
-    return 'text-red-600';
+    if (costPerKm <= 5.0) return 'text-emerald-200';
+    if (costPerKm <= 7.0) return 'text-amber-200';
+    return 'text-rose-200';
   };
 
   return (
-    <div className="p-6 bg-white min-h-screen">
+    <div className="p-6 bg-white/5 min-h-screen">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-golffox-blue-dark mb-2">Controle de Custos</h1>
         <p className="text-golffox-gray-medium">Análise detalhada dos custos operacionais e rentabilidade das rotas</p>
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-lg shadow-sm border border-golffox-gray-light/20 p-6 mb-6">
+      <div className="bg-white/5 rounded-lg shadow-sm border border-golffox-gray-light/20 p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-golffox-blue-dark mb-2">Período</label>
@@ -179,22 +179,22 @@ const CostControl: React.FC = () => {
           <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-6 border border-green-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-green-600">Receita Total</p>
-                <p className="text-2xl font-bold text-green-800">R$ {totalMetrics.totalRevenue}</p>
-                <p className="text-xs text-green-600 mt-1">Lucro: R$ {totalMetrics.totalProfit}</p>
+                <p className="text-sm font-medium text-emerald-200">Receita Total</p>
+                <p className="text-2xl font-bold text-emerald-200">R$ {totalMetrics.totalRevenue}</p>
+                <p className="text-xs text-emerald-200 mt-1">Lucro: R$ {totalMetrics.totalProfit}</p>
               </div>
-              <CurrencyDollarIcon className="h-8 w-8 text-green-600" />
+              <CurrencyDollarIcon className="h-8 w-8 text-emerald-200" />
             </div>
           </div>
 
           <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 border border-blue-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-blue-600">Custo Operacional</p>
+                <p className="text-sm font-medium text-sky-200">Custo Operacional</p>
                 <p className="text-2xl font-bold text-blue-800">R$ {totalMetrics.totalOperationalCost}</p>
-                <p className="text-xs text-blue-600 mt-1">R$ {totalMetrics.avgCostPerKm}/km</p>
+                <p className="text-xs text-sky-200 mt-1">R$ {totalMetrics.avgCostPerKm}/km</p>
               </div>
-              <TruckIcon className="h-8 w-8 text-blue-600" />
+              <TruckIcon className="h-8 w-8 text-sky-200" />
             </div>
           </div>
 
@@ -226,12 +226,12 @@ const CostControl: React.FC = () => {
 
       {/* Distribuição de Custos */}
       {totalMetrics && (
-        <div className="bg-white rounded-lg shadow-sm border border-golffox-gray-light/20 p-6 mb-6">
+        <div className="bg-white/5 rounded-lg shadow-sm border border-golffox-gray-light/20 p-6 mb-6">
           <h2 className="text-lg font-semibold text-golffox-blue-dark mb-4">Distribuição de Custos</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className="relative w-24 h-24 mx-auto mb-3">
-                <div className="w-24 h-24 rounded-full bg-blue-200 flex items-center justify-center">
+                <div className="w-24 h-24 rounded-full bg-sky-500/30 flex items-center justify-center">
                   <span className="text-lg font-bold text-blue-800">{totalMetrics.fuelCostPercentage}%</span>
                 </div>
               </div>
@@ -241,8 +241,8 @@ const CostControl: React.FC = () => {
 
             <div className="text-center">
               <div className="relative w-24 h-24 mx-auto mb-3">
-                <div className="w-24 h-24 rounded-full bg-green-200 flex items-center justify-center">
-                  <span className="text-lg font-bold text-green-800">{totalMetrics.driverCostPercentage}%</span>
+                <div className="w-24 h-24 rounded-full bg-emerald-500/30 flex items-center justify-center">
+                  <span className="text-lg font-bold text-emerald-200">{totalMetrics.driverCostPercentage}%</span>
                 </div>
               </div>
               <p className="text-sm font-medium text-golffox-blue-dark">Motoristas</p>
@@ -263,7 +263,7 @@ const CostControl: React.FC = () => {
       )}
 
       {/* Tabela Detalhada */}
-      <div className="bg-white rounded-lg shadow-sm border border-golffox-gray-light/20 overflow-hidden">
+      <div className="bg-white/5 rounded-lg shadow-sm border border-golffox-gray-light/20 overflow-hidden">
         <div className="px-6 py-4 border-b border-golffox-gray-light/20">
           <h2 className="text-lg font-semibold text-golffox-blue-dark">Análise Detalhada por Rota</h2>
         </div>
@@ -282,7 +282,7 @@ const CostControl: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-golffox-blue-dark uppercase tracking-wider">Custo/km</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-golffox-gray-light/20">
+            <tbody className="bg-white/5 divide-y divide-golffox-gray-light/20">
               {filteredCosts.map((cost) => (
                 <tr key={cost.id} className="hover:bg-golffox-gray-light/5">
                   <td className="px-6 py-4">
@@ -349,7 +349,7 @@ const CostControl: React.FC = () => {
         <div className="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
           <h3 className="text-lg font-semibold text-golffox-blue-dark mb-4">💡 Insights e Recomendações</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white rounded-lg p-4 border border-blue-100">
+            <div className="bg-white/5 rounded-lg p-4 border border-blue-100">
               <h4 className="font-medium text-golffox-blue-dark mb-2">Eficiência de Combustível</h4>
               <p className="text-sm text-golffox-gray-medium">
                 Consumo médio: {totalMetrics.avgFuelConsumption} km/l. 
@@ -359,7 +359,7 @@ const CostControl: React.FC = () => {
                 }
               </p>
             </div>
-            <div className="bg-white rounded-lg p-4 border border-blue-100">
+            <div className="bg-white/5 rounded-lg p-4 border border-blue-100">
               <h4 className="font-medium text-golffox-blue-dark mb-2">Rentabilidade</h4>
               <p className="text-sm text-golffox-gray-medium">
                 Margem média: {totalMetrics.avgProfitMargin}%. 

@@ -213,7 +213,7 @@ const NavigationScreen: React.FC<NavigationScreenProps> = ({ onEndRoute }) => {
             <div className="flex-grow relative bg-gray-400 min-h-0">
                 {mapStatus === 'error' && <MapApiKeyWarning />}
                 {mapStatus === 'loading' && (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                    <div className="w-full h-full flex items-center justify-center bg-white/10">
                         <p className="text-golffox-gray-medium text-sm sm:text-base">Carregando Mapa...</p>
                     </div>
                 )}

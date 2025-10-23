@@ -288,16 +288,16 @@ export default function MapPage() {
   }, [isFullscreen])
 
   return (
-    <div className={`${isFullscreen ? 'fixed inset-0 z-50 bg-white' : 'min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100'} p-6`}>
+    <div className={`${isFullscreen ? 'fixed inset-0 z-50 bg-white/5' : 'min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100'} p-6`}>
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Mapa Interativo</h1>
-            <p className="text-gray-600">Visualização em tempo real de veículos e rotas</p>
+            <h1 className="text-3xl font-bold text-white">Mapa Interativo</h1>
+            <p className="text-golffox-muted">Visualização em tempo real de veículos e rotas</p>
           </div>
           <div className="flex items-center space-x-2">
-            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+            <Badge variant="outline" className="bg-emerald-500/15 text-emerald-200 border-green-200">
               {vehicles.filter(v => v.status === 'active').length} Veículos Ativos
             </Badge>
             <Button
@@ -406,16 +406,16 @@ export default function MapPage() {
                 <CardContent className="space-y-2">
                   <div>
                     <p className="font-semibold">{selectedVehicle.plate}</p>
-                    <p className="text-sm text-gray-600">{selectedVehicle.driver}</p>
+                    <p className="text-sm text-golffox-muted">{selectedVehicle.driver}</p>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Status:</span>
                     <Badge 
                       variant={selectedVehicle.status === 'active' ? 'default' : 'secondary'}
                       className={
-                        selectedVehicle.status === 'active' ? 'bg-green-100 text-green-800' :
-                        selectedVehicle.status === 'inactive' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
+                        selectedVehicle.status === 'active' ? 'bg-emerald-500/20 text-emerald-200' :
+                        selectedVehicle.status === 'inactive' ? 'bg-amber-500/20 text-yellow-800' :
+                        'bg-rose-500/20 text-red-800'
                       }
                     >
                       {selectedVehicle.status === 'active' ? 'Ativo' :
@@ -447,10 +447,10 @@ export default function MapPage() {
                   style={{ minHeight: '400px' }}
                 />
                 {!isMapLoaded && (
-                  <div className="absolute inset-0 bg-gray-100 flex items-center justify-center rounded-lg">
+                  <div className="absolute inset-0 bg-white/5/5 flex items-center justify-center rounded-lg">
                     <div className="text-center">
-                      <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-2 text-blue-600" />
-                      <p className="text-gray-600">Carregando mapa...</p>
+                      <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-2 text-sky-200" />
+                      <p className="text-golffox-muted">Carregando mapa...</p>
                     </div>
                   </div>
                 )}
@@ -465,9 +465,9 @@ export default function MapPage() {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center space-x-2">
-                  <Car className="h-5 w-5 text-green-600" />
+                  <Car className="h-5 w-5 text-emerald-200" />
                   <div>
-                    <p className="text-sm text-gray-600">Veículos Ativos</p>
+                    <p className="text-sm text-golffox-muted">Veículos Ativos</p>
                     <p className="text-xl font-bold">{vehicles.filter(v => v.status === 'active').length}</p>
                   </div>
                 </div>
@@ -476,9 +476,9 @@ export default function MapPage() {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center space-x-2">
-                  <Users className="h-5 w-5 text-blue-600" />
+                  <Users className="h-5 w-5 text-sky-200" />
                   <div>
-                    <p className="text-sm text-gray-600">Passageiros</p>
+                    <p className="text-sm text-golffox-muted">Passageiros</p>
                     <p className="text-xl font-bold">{vehicles.reduce((acc, v) => acc + v.passengers, 0)}</p>
                   </div>
                 </div>
@@ -489,7 +489,7 @@ export default function MapPage() {
                 <div className="flex items-center space-x-2">
                   <Route className="h-5 w-5 text-purple-600" />
                   <div>
-                    <p className="text-sm text-gray-600">Pontos de Rota</p>
+                    <p className="text-sm text-golffox-muted">Pontos de Rota</p>
                     <p className="text-xl font-bold">{routePoints.length}</p>
                   </div>
                 </div>
@@ -498,9 +498,9 @@ export default function MapPage() {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center space-x-2">
-                  <MapPin className="h-5 w-5 text-red-600" />
+                  <MapPin className="h-5 w-5 text-rose-200" />
                   <div>
-                    <p className="text-sm text-gray-600">Área Coberta</p>
+                    <p className="text-sm text-golffox-muted">Área Coberta</p>
                     <p className="text-xl font-bold">São Paulo</p>
                   </div>
                 </div>

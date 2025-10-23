@@ -32,8 +32,8 @@ export default function LoadingSpinner({
 
   // Definir cores
   const colorClasses = {
-    primary: 'text-blue-600',
-    secondary: 'text-gray-600',
+    primary: 'text-sky-200',
+    secondary: 'text-golffox-muted',
     white: 'text-white',
   };
 
