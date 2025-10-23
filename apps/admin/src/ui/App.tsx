@@ -142,7 +142,7 @@ const quickActions: QuickAction[] = [
     icon: Map,
     tone: {
       light:
-        'from-[#f5f7ff] via-indigo-100/75 to-indigo-200/70 text-slate-950 hover:shadow-[0_18px_40px_rgba(99,102,241,0.18)]',
+        'from-[#f5f7ff] via-indigo-100/75 to-indigo-200/70 text-black hover:shadow-[0_18px_40px_rgba(99,102,241,0.18)]',
       dark: 'from-indigo-500/25 via-indigo-500/10 to-transparent text-indigo-100 hover:shadow-[0_25px_45px_rgba(79,70,229,0.35)]',
     },
   },
@@ -152,7 +152,7 @@ const quickActions: QuickAction[] = [
     icon: FileBarChart,
     tone: {
       light:
-        'from-[#f0fbff] via-sky-100/75 to-sky-200/70 text-slate-950 hover:shadow-[0_18px_40px_rgba(14,165,233,0.18)]',
+        'from-[#f0fbff] via-sky-100/75 to-sky-200/70 text-black hover:shadow-[0_18px_40px_rgba(14,165,233,0.18)]',
       dark: 'from-sky-500/25 via-sky-500/10 to-transparent text-sky-100 hover:shadow-[0_25px_45px_rgba(56,189,248,0.35)]',
     },
   },
@@ -162,7 +162,7 @@ const quickActions: QuickAction[] = [
     icon: Settings,
     tone: {
       light:
-        'from-[#f7f9fc] via-slate-100/75 to-slate-200/70 text-slate-950 hover:shadow-[0_18px_40px_rgba(71,85,105,0.18)]',
+        'from-[#f7f9fc] via-slate-100/75 to-slate-200/70 text-black hover:shadow-[0_18px_40px_rgba(71,85,105,0.18)]',
       dark: 'from-white/10 via-white/5 to-transparent text-slate-100 hover:shadow-[0_25px_45px_rgba(148,163,184,0.25)]',
     },
   },
@@ -179,7 +179,7 @@ const occupancyData = [
 ]
 
 const cardBase =
-  'group relative overflow-hidden rounded-3xl border border-slate-200/60 bg-white/95 p-6 text-slate-950 shadow-[0_18px_45px_rgba(15,23,42,0.08)] transition-all duration-500 ease-out backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-100 dark:shadow-[0_24px_65px_rgba(2,6,23,0.55)]'
+  'group relative overflow-hidden rounded-3xl border border-slate-200/60 bg-white/95 p-6 text-black shadow-[0_18px_45px_rgba(15,23,42,0.08)] transition-all duration-500 ease-out backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-100 dark:shadow-[0_24px_65px_rgba(2,6,23,0.55)]'
 
 const pillBase =
   'inline-flex items-center gap-3 rounded-full border px-5 py-2 text-sm font-semibold transition-all duration-400 ease-out backdrop-blur-sm'
@@ -212,14 +212,14 @@ const MetricCard = ({ title, value, description, icon: Icon, accent, glow, theme
       />
       <div className="relative z-10 flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-950 dark:text-slate-300">{title}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-black dark:text-slate-300">{title}</p>
           <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-4xl font-semibold text-slate-950 dark:text-white">{value}</span>
+            <span className="text-4xl font-semibold text-black dark:text-white">{value}</span>
           </div>
-          <p className="mt-3 text-sm text-slate-950 dark:text-slate-300">{description}</p>
+          <p className="mt-3 text-sm text-black dark:text-slate-300">{description}</p>
         </div>
         <motion.div
-          className="grid h-12 w-12 place-items-center rounded-2xl bg-white/80 text-slate-950 shadow-inner dark:bg-white/10 dark:text-white/90"
+          className="grid h-12 w-12 place-items-center rounded-2xl bg-white/80 text-black shadow-inner dark:bg-white/10 dark:text-white/90"
           whileHover={{ rotate: 6 }}
         >
           <Icon className="h-5 w-5" />
@@ -235,7 +235,7 @@ const QuickActionCard = ({ title, description, icon: Icon, tone, theme }: QuickA
     whileTap={{ scale: 0.995 }}
     transition={{ type: 'spring', stiffness: 260, damping: 24 }}
     className={`group relative flex w-full flex-col items-start gap-3 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br p-5 text-left text-sm font-semibold transition-all duration-500 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/70 ${tone[theme]} ${
-      theme === 'light' ? 'text-slate-950' : 'text-slate-100'
+      theme === 'light' ? 'text-black' : 'text-slate-100'
     }`}
     type="button"
     style={{
@@ -252,20 +252,20 @@ const QuickActionCard = ({ title, description, icon: Icon, tone, theme }: QuickA
             : 'linear-gradient(135deg, rgba(129,140,248,0.25) 0%, rgba(59,130,246,0.18) 45%, transparent 100%)',
       }}
     />
-    <div className="relative z-10 flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-slate-950 dark:text-slate-200">
+    <div className="relative z-10 flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-black dark:text-slate-200">
       <Icon className="h-4 w-4" />
       {title}
     </div>
     <p
       className={`relative z-10 text-xs leading-relaxed font-medium ${
-        theme === 'dark' ? 'text-slate-200' : 'text-slate-950'
+        theme === 'dark' ? 'text-slate-200' : 'text-black'
       }`}
     >
       {description}
     </p>
     <span
       className={`relative z-10 mt-auto inline-flex items-center gap-1 text-xs font-semibold ${
-        theme === 'dark' ? 'text-white' : 'text-slate-950'
+        theme === 'dark' ? 'text-white' : 'text-black'
       }`}
     >
       Abrir <ArrowUpRight className="h-3 w-3" />
@@ -321,7 +321,7 @@ export default function AdminDashboard() {
         description: `Ocupação média de ${averageOccupancy}%`,
         tone: {
           light:
-            'border-emerald-200/70 bg-emerald-100/80 text-slate-950 shadow-[0_18px_35px_rgba(16,185,129,0.18)] hover:shadow-[0_22px_45px_rgba(16,185,129,0.28)]',
+            'border-emerald-200/70 bg-emerald-100/80 text-black shadow-[0_18px_35px_rgba(16,185,129,0.18)] hover:shadow-[0_22px_45px_rgba(16,185,129,0.28)]',
           dark: 'border-emerald-400/40 bg-emerald-500/15 text-emerald-100 hover:border-emerald-300/60 hover:shadow-[0_22px_45px_rgba(16,185,129,0.32)]',
         },
       },
@@ -330,7 +330,7 @@ export default function AdminDashboard() {
         description: 'Mantenha o desvio das rotas abaixo de 10%',
         tone: {
           light:
-            'border-amber-200/70 bg-amber-100/80 text-slate-950 shadow-[0_18px_35px_rgba(245,158,11,0.18)] hover:shadow-[0_22px_45px_rgba(245,158,11,0.28)]',
+            'border-amber-200/70 bg-amber-100/80 text-black shadow-[0_18px_35px_rgba(245,158,11,0.18)] hover:shadow-[0_22px_45px_rgba(245,158,11,0.28)]',
           dark: 'border-amber-400/40 bg-amber-500/15 text-amber-100 hover:border-amber-300/60 hover:shadow-[0_22px_45px_rgba(245,158,11,0.32)]',
         },
       },
@@ -339,7 +339,7 @@ export default function AdminDashboard() {
         description: '1 tarefa urgente',
         tone: {
           light:
-            'border-rose-200/70 bg-rose-100/80 text-slate-950 shadow-[0_18px_35px_rgba(244,63,94,0.18)] hover:shadow-[0_22px_45px_rgba(244,63,94,0.28)]',
+            'border-rose-200/70 bg-rose-100/80 text-black shadow-[0_18px_35px_rgba(244,63,94,0.18)] hover:shadow-[0_22px_45px_rgba(244,63,94,0.28)]',
           dark: 'border-rose-400/40 bg-rose-500/15 text-rose-100 hover:border-rose-300/60 hover:shadow-[0_22px_45px_rgba(244,63,94,0.32)]',
         },
       },
@@ -352,7 +352,7 @@ export default function AdminDashboard() {
   }
 
   const backgroundClass =
-    theme === 'dark' ? 'bg-[#040712] text-slate-100' : 'bg-[#f4f6ff] text-slate-950'
+    theme === 'dark' ? 'bg-[#040712] text-slate-100' : 'bg-[#f4f6ff] text-black'
 
   const orbTransition = { duration: 18, repeat: Infinity, repeatType: 'reverse' as const, ease: 'easeInOut' }
 
@@ -404,8 +404,8 @@ export default function AdminDashboard() {
                 🦊
               </div>
               <div className="space-y-1">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-slate-950 dark:text-indigo-300">Golf Fox Admin</p>
-                <span className="text-sm font-semibold text-slate-950 dark:text-slate-100">Premium 9.0</span>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-black dark:text-indigo-300">Golf Fox Admin</p>
+                <span className="text-sm font-semibold text-black dark:text-slate-100">Premium 9.0</span>
               </div>
             </div>
 
@@ -424,7 +424,7 @@ export default function AdminDashboard() {
                       className={`relative flex w-full items-center gap-3 overflow-hidden rounded-xl px-4 py-2 text-sm font-semibold transition-colors duration-300 ${
                         isActive
                           ? 'text-white drop-shadow-[0_6px_16px_rgba(15,23,42,0.28)]'
-                          : 'text-slate-950 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'
+                          : 'text-black hover:text-black dark:text-slate-300 dark:hover:text-white'
                       }`}
                       style={{ backdropFilter: 'blur(18px)' }}
                     >
@@ -451,10 +451,10 @@ export default function AdminDashboard() {
               className={`${cardBase} flex items-center justify-between gap-4 border-slate-200/60 bg-white/85 px-6 py-6 dark:border-white/10 dark:bg-white/[0.06]`}
             >
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-950 dark:text-indigo-300">Golf Fox Admin</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.4em] text-black dark:text-indigo-300">Golf Fox Admin</p>
                 <div className="mt-3 flex flex-wrap items-center gap-3 text-2xl font-semibold">
                   Painel
-                  <span className="rounded-full border border-slate-200/70 bg-white/80 px-3 py-1 text-xs font-medium text-slate-950 backdrop-blur-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
+                  <span className="rounded-full border border-slate-200/70 bg-white/80 px-3 py-1 text-xs font-medium text-black backdrop-blur-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
                     Visão geral em processamento
                   </span>
                 </div>
@@ -464,7 +464,7 @@ export default function AdminDashboard() {
                 whileTap={{ scale: 0.97 }}
                 onClick={toggleTheme}
                 type="button"
-                className="relative inline-flex items-center gap-3 overflow-hidden rounded-full border border-slate-200/70 bg-white/80 px-2 py-2 text-sm font-semibold text-slate-950 shadow-[0_16px_35px_rgba(15,23,42,0.12)] transition-all duration-500 hover:shadow-[0_20px_45px_rgba(99,102,241,0.18)] dark:border-white/10 dark:bg-white/10 dark:text-slate-100 dark:shadow-[0_26px_60px_rgba(2,6,23,0.55)] dark:hover:shadow-[0_32px_70px_rgba(8,12,24,0.6)]"
+                className="relative inline-flex items-center gap-3 overflow-hidden rounded-full border border-slate-200/70 bg-white/80 px-2 py-2 text-sm font-semibold text-black shadow-[0_16px_35px_rgba(15,23,42,0.12)] transition-all duration-500 hover:shadow-[0_20px_45px_rgba(99,102,241,0.18)] dark:border-white/10 dark:bg-white/10 dark:text-slate-100 dark:shadow-[0_26px_60px_rgba(2,6,23,0.55)] dark:hover:shadow-[0_32px_70px_rgba(8,12,24,0.6)]"
                 style={{ backdropFilter: 'blur(18px)' }}
               >
                 <motion.span
@@ -477,13 +477,13 @@ export default function AdminDashboard() {
                   <motion.span
                     layout
                     transition={{ type: 'spring', stiffness: 320, damping: 26 }}
-                    className="grid h-9 w-9 place-items-center rounded-full bg-white/90 text-slate-950 shadow-inner shadow-white/40 dark:bg-white/10 dark:text-white/90"
+                    className="grid h-9 w-9 place-items-center rounded-full bg-white/90 text-black shadow-inner shadow-white/40 dark:bg-white/10 dark:text-white/90"
                   >
                     {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
                   </motion.span>
                   <span className="flex flex-col text-left">
                     <span>{theme === 'light' ? 'Modo escuro' : 'Modo claro'}</span>
-                    <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-slate-950 dark:text-slate-300">
+                    <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-black dark:text-slate-300">
                       {theme === 'light' ? 'Inspiração noir' : 'Experiência luminosa'}
                     </span>
                   </span>
@@ -502,12 +502,12 @@ export default function AdminDashboard() {
             >
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-lg font-semibold text-slate-950 dark:text-white">Ocupação por hora</h2>
-                  <p className="text-sm text-slate-950 dark:text-slate-300">
+                  <h2 className="text-lg font-semibold text-black dark:text-white">Ocupação por hora</h2>
+                  <p className="text-sm text-black dark:text-slate-300">
                     Monitore picos e vales de carregamento das rotas para otimizar a frota.
                   </p>
                 </div>
-                <span className="rounded-full border border-slate-200/60 bg-white/80 px-3 py-1 text-xs font-semibold text-slate-950 backdrop-blur-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
+                <span className="rounded-full border border-slate-200/60 bg-white/80 px-3 py-1 text-xs font-semibold text-black backdrop-blur-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
                   Hoje · Sincronização ao vivo
                 </span>
               </div>
@@ -549,7 +549,7 @@ export default function AdminDashboard() {
                   className={`${pillBase} ${chip.tone[theme]} shadow-sm`}
                 >
                   {chip.label}
-                  <span className="text-xs font-normal text-slate-950 dark:text-slate-200/90">{chip.description}</span>
+                  <span className="text-xs font-normal text-black dark:text-slate-200/90">{chip.description}</span>
                 </motion.span>
               ))}
             </div>
@@ -563,7 +563,7 @@ export default function AdminDashboard() {
             <section className="grid gap-5 xl:grid-cols-2">
               <motion.div
                 whileHover={{ y: -4 }}
-                className={`${cardBase} flex items-center justify-between gap-4 border-rose-200/70 bg-gradient-to-br from-rose-50/80 via-white/60 to-transparent text-slate-950 dark:border-rose-500/30 dark:bg-gradient-to-br dark:from-rose-500/15 dark:via-rose-500/5 dark:to-transparent dark:text-rose-100`}
+                className={`${cardBase} flex items-center justify-between gap-4 border-rose-200/70 bg-gradient-to-br from-rose-50/80 via-white/60 to-transparent text-black dark:border-rose-500/30 dark:bg-gradient-to-br dark:from-rose-500/15 dark:via-rose-500/5 dark:to-transparent dark:text-rose-100`}
               >
                 <div className="relative flex items-start gap-4">
                   <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/80 text-rose-500 shadow-inner shadow-rose-200/50 dark:bg-white/10 dark:text-rose-100">
@@ -571,7 +571,7 @@ export default function AdminDashboard() {
                   </span>
                   <div className="space-y-1">
                     <p className="text-sm font-semibold">Alerta crítico: veículo parado há 2 minutos.</p>
-                    <p className="text-xs text-slate-950 dark:text-rose-100/90">
+                    <p className="text-xs text-black dark:text-rose-100/90">
                       Rota 4 · Ônibus GHI-7890 — assistência avançada já foi acionada e está a caminho.
                     </p>
                   </div>
@@ -590,15 +590,15 @@ export default function AdminDashboard() {
                 className={`${cardBase} border-slate-200/60 bg-white/90 dark:border-white/10 dark:bg-white/[0.05]`}
               >
                 <div className="flex items-center justify-between gap-4">
-                  <p className="text-sm font-semibold text-slate-950 dark:text-slate-200">Insights da IA</p>
-                  <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-slate-950 dark:border-white/10 dark:bg-white/10 dark:text-slate-300">
+                  <p className="text-sm font-semibold text-black dark:text-slate-200">Insights da IA</p>
+                  <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-300">
                     Atualizado agora
                   </span>
                 </div>
-                <div className="mt-3 space-y-3 text-sm leading-relaxed text-slate-950 dark:text-slate-200">
+                <div className="mt-3 space-y-3 text-sm leading-relaxed text-black dark:text-slate-200">
                   <p>
                     Ocupação média semanal avançou para{' '}
-                  <span className="font-semibold text-slate-950 dark:text-indigo-200">+8%</span> e mantém tendência ascendente nos picos das 07h.
+                  <span className="font-semibold text-black dark:text-indigo-200">+8%</span> e mantém tendência ascendente nos picos das 07h.
                   </p>
                   <div className="grid gap-2 text-xs font-medium">
                     <div className="flex items-start gap-2">
@@ -614,7 +614,7 @@ export default function AdminDashboard() {
               </motion.div>
             </section>
 
-            <footer className="relative mt-10 border-t border-slate-200/60 pt-6 text-xs text-slate-950 dark:border-white/10 dark:text-slate-500">
+            <footer className="relative mt-10 border-t border-slate-200/60 pt-6 text-xs text-black dark:border-white/10 dark:text-slate-500">
               <div className="absolute -top-px left-0 h-px w-24 bg-gradient-to-r from-indigo-500/60 via-sky-400/60 to-transparent dark:from-indigo-400/80 dark:via-sky-400/60" />
               Última sincronização às {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} • Telemetria proprietária Golf Fox conectada.
             </footer>
