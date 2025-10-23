@@ -8,55 +8,100 @@ import type { EntityConfig, EntityKey, FieldConfig, Option } from './entityConfi
 type CreateEntityModalProps = {
   config: EntityConfig
   onClose: () => void
-  onCreated: (payload: {
+  onSubmit: ({
+    entity,
+    values,
+    record,
+    optionLabels,
+    mode,
+    contextId,
+  }: {
     entity: EntityKey
     values: Record<string, any>
     record?: Record<string, any>
     optionLabels: Record<string, string>
+    mode: 'create' | 'edit'
+    contextId?: string
   }) => void
+  mode?: 'create' | 'edit'
+  initialValues?: Record<string, any>
+  initialOptionLabels?: Record<string, string>
+  initialRecord?: Record<string, any>
+  contextId?: string
 }
 
 type FieldErrors = Record<string, string>
 
-const buildInitialValues = (fields: FieldConfig[]) => {
+const buildInitialValues = (fields: FieldConfig[], overrides?: Record<string, any>) => {
   return fields.reduce<Record<string, any>>((acc, field) => {
-    if (field.type === 'checkbox') {
-      acc[field.name] = false
-    } else {
-      acc[field.name] = ''
+    const overrideValue = overrides ? overrides[field.name] : undefined
+
+    if (overrideValue !== undefined) {
+      acc[field.name] = field.type === 'checkbox' ? Boolean(overrideValue) : overrideValue
+      return acc
     }
+
+    acc[field.name] = field.type === 'checkbox' ? false : ''
     return acc
   }, {})
 }
 
-const CreateEntityModal = ({ config, onClose, onCreated }: CreateEntityModalProps) => {
-  const [formValues, setFormValues] = useState<Record<string, any>>(() => buildInitialValues(config.fields))
+const ensureOptionPresence = (options: Option[] | undefined, value: any, label?: string): Option[] => {
+  if (value === undefined || value === null || value === '' || !label) {
+    return options ?? []
+  }
+
+  const baseOptions = options ?? []
+  if (baseOptions.some((option) => option.value === value)) {
+    return baseOptions
+  }
+
+  return [...baseOptions, { value, label }]
+}
+
+const CreateEntityModal = ({
+  config,
+  onClose,
+  onSubmit,
+  mode = 'create',
+  initialValues,
+  initialOptionLabels,
+  initialRecord,
+  contextId,
+}: CreateEntityModalProps) => {
+  const normalizedInitialOptionLabels = useMemo(() => initialOptionLabels ?? {}, [initialOptionLabels])
+
+  const computeInitialOptions = () => {
+    const base: Record<string, Option[]> = {}
+    config.fields.forEach((field) => {
+      const mergedOptions = ensureOptionPresence(
+        field.options,
+        initialValues?.[field.name],
+        normalizedInitialOptionLabels[field.name],
+      )
+
+      if (mergedOptions.length > 0) {
+        base[field.name] = mergedOptions
+      }
+    })
+    return base
+  }
+
+  const [formValues, setFormValues] = useState<Record<string, any>>(() => buildInitialValues(config.fields, initialValues))
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [optionErrors, setOptionErrors] = useState<Record<string, string>>({})
-  const [optionsMap, setOptionsMap] = useState<Record<string, Option[]>>(() => {
-    const base: Record<string, Option[]> = {}
-    config.fields.forEach((field) => {
-      if (field.options) {
-        base[field.name] = field.options
-      }
-    })
-    return base
-  })
+  const [optionsMap, setOptionsMap] = useState<Record<string, Option[]>>(computeInitialOptions)
 
   useEffect(() => {
-    setFormValues(buildInitialValues(config.fields))
+    setFormValues(buildInitialValues(config.fields, initialValues))
     setFieldErrors({})
     setSubmitError(null)
-    const base: Record<string, Option[]> = {}
-    config.fields.forEach((field) => {
-      if (field.options) {
-        base[field.name] = field.options
-      }
-    })
-    setOptionsMap(base)
-  }, [config])
+    setOptionErrors({})
+    setOptionsMap(computeInitialOptions())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [config, initialValues, normalizedInitialOptionLabels])
 
   useEffect(() => {
     let isMounted = true
@@ -76,7 +121,14 @@ const CreateEntityModal = ({ config, onClose, onCreated }: CreateEntityModalProp
           try {
             const fetchedOptions = await field.fetchOptions!(supabaseClient)
             if (!isMounted) return
-            setOptionsMap((prev) => ({ ...prev, [field.name]: fetchedOptions }))
+
+            const merged = ensureOptionPresence(
+              fetchedOptions,
+              initialValues?.[field.name],
+              normalizedInitialOptionLabels[field.name],
+            )
+
+            setOptionsMap((prev) => ({ ...prev, [field.name]: merged }))
           } catch (error) {
             if (!isMounted) return
             setOptionErrors((prev) => ({
@@ -87,7 +139,7 @@ const CreateEntityModal = ({ config, onClose, onCreated }: CreateEntityModalProp
                   : 'Não foi possível carregar as opções deste campo.',
             }))
           }
-        })
+        }),
       )
     }
 
@@ -96,15 +148,16 @@ const CreateEntityModal = ({ config, onClose, onCreated }: CreateEntityModalProp
     return () => {
       isMounted = false
     }
-  }, [config])
+  }, [config, initialValues, normalizedInitialOptionLabels])
 
   useEffect(() => {
     config.fields.forEach((field) => {
       if (field.type !== 'select') return
       const options = optionsMap[field.name]
       if (!options || options.length === 0) return
+
       setFormValues((prev) => {
-        if (prev[field.name]) {
+        if (prev[field.name] !== undefined && prev[field.name] !== '') {
           return prev
         }
         return { ...prev, [field.name]: options[0].value }
@@ -115,6 +168,7 @@ const CreateEntityModal = ({ config, onClose, onCreated }: CreateEntityModalProp
   const canPersist = Boolean(config.supabaseTable && supabaseClient)
 
   const optionLabels = useMemo(() => {
+    const base = { ...normalizedInitialOptionLabels }
     return Object.keys(formValues).reduce<Record<string, string>>((acc, fieldName) => {
       const options = optionsMap[fieldName]
       if (!options) return acc
@@ -123,8 +177,8 @@ const CreateEntityModal = ({ config, onClose, onCreated }: CreateEntityModalProp
         acc[fieldName] = selected.label
       }
       return acc
-    }, {})
-  }, [formValues, optionsMap])
+    }, base)
+  }, [formValues, optionsMap, normalizedInitialOptionLabels])
 
   const handleChange = (field: FieldConfig, value: any) => {
     setFormValues((prev) => ({ ...prev, [field.name]: value }))
@@ -158,34 +212,55 @@ const CreateEntityModal = ({ config, onClose, onCreated }: CreateEntityModalProp
 
     try {
       const payload = config.transform(formValues)
-      let record: Record<string, any> | undefined
+      let record: Record<string, any> | undefined = initialRecord
 
       if (canPersist) {
-        const { data, error } = await supabaseClient!
-          .from(config.supabaseTable!)
-          .insert(payload)
-          .select()
-          .maybeSingle()
+        if (mode === 'edit' && (initialRecord?.id || contextId)) {
+          const identifier = initialRecord?.id ?? contextId!
+          const { data, error } = await supabaseClient!
+            .from(config.supabaseTable!)
+            .update(payload)
+            .eq('id', identifier)
+            .select()
+            .maybeSingle()
 
-        if (error) {
-          throw error
+          if (error) {
+            throw error
+          }
+
+          record = data ?? initialRecord ?? { id: identifier }
+        } else {
+          const { data, error } = await supabaseClient!
+            .from(config.supabaseTable!)
+            .insert(payload)
+            .select()
+            .maybeSingle()
+
+          if (error) {
+            throw error
+          }
+
+          record = data ?? undefined
         }
-
-        record = data ?? undefined
+      } else if (mode === 'edit' && (initialRecord?.id || contextId)) {
+        const identifier = initialRecord?.id ?? contextId
+        record = initialRecord ?? (identifier ? { id: identifier } : undefined)
       }
 
-      onCreated({
+      onSubmit({
         entity: config.entity,
         values: formValues,
         record,
         optionLabels,
+        mode,
+        contextId,
       })
       onClose()
     } catch (error) {
       setSubmitError(
         error instanceof Error
           ? error.message
-          : 'Não foi possível concluir o cadastro. Tente novamente.'
+          : 'Não foi possível concluir o cadastro. Tente novamente.',
       )
     } finally {
       setIsSubmitting(false)
@@ -282,10 +357,13 @@ const CreateEntityModal = ({ config, onClose, onCreated }: CreateEntityModalProp
     }
   }
 
+  const title = mode === 'edit' ? `Editar ${config.createLabel.toLowerCase()}` : config.title
+  const submitLabel = mode === 'edit' ? 'Salvar alterações' : 'Salvar'
+
   return (
     <AnimatePresence>
       <motion.div
-        key={config.entity}
+        key={`${config.entity}-${mode}`}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -300,7 +378,7 @@ const CreateEntityModal = ({ config, onClose, onCreated }: CreateEntityModalProp
         >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
             <div className="space-y-1">
-              <h2 className="text-xl font-semibold text-slate-900 dark:text-white">{config.title}</h2>
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white">{title}</h2>
               <p className="text-sm text-slate-500 dark:text-slate-300">{config.description}</p>
             </div>
             <button
@@ -353,7 +431,8 @@ const CreateEntityModal = ({ config, onClose, onCreated }: CreateEntityModalProp
                 className="inline-flex items-center rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:cursor-not-allowed disabled:opacity-70"
                 disabled={isSubmitting}
               >
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Salvar
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {submitLabel}
               </button>
             </div>
           </form>

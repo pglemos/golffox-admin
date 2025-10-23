@@ -12,6 +12,7 @@ import {
   LifeBuoy,
   Map,
   Moon,
+  PencilLine,
   Plus,
   Route,
   Settings,
@@ -23,8 +24,9 @@ import {
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
+import { supabaseClient } from '../lib/supabaseClient'
 import CreateEntityModal from './CreateEntityModal'
-import { entityConfigs, type EntityKey } from './entityConfigs'
+import { entityConfigs, type EntityKey, type FieldConfig } from './entityConfigs'
 
 type NavItem = {
   label: string
@@ -65,6 +67,162 @@ type QuickAction = {
   }
 }
 
+type EntityDetail = {
+  values: Record<string, any>
+  optionLabels: Record<string, string>
+  record?: Record<string, any>
+}
+
+const ensureStringId = (value: any): string | null => {
+  if (value === null || value === undefined) {
+    return null
+  }
+
+  if (typeof value === 'string') {
+    return value
+  }
+
+  if (typeof value === 'number' || typeof value === 'bigint') {
+    return String(value)
+  }
+
+  if (value instanceof Date) {
+    return value.toISOString()
+  }
+
+  try {
+    const stringified = String(value)
+    return stringified === '[object Object]' ? null : stringified
+  } catch (error) {
+    console.error('Falha ao converter identificador em string', error)
+    return null
+  }
+}
+
+const toDateInputValue = (value: any): string => {
+  if (!value) {
+    return ''
+  }
+
+  if (typeof value === 'string') {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      return value
+    }
+
+    const parsed = new Date(value)
+    return Number.isNaN(parsed.getTime()) ? '' : parsed.toISOString().slice(0, 10)
+  }
+
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString().slice(0, 10)
+  }
+
+  return ''
+}
+
+const toTimeInputValue = (value: any): string => {
+  if (!value) {
+    return ''
+  }
+
+  if (typeof value === 'string') {
+    const match = value.match(/^(\d{2}:\d{2})/)
+    if (match) {
+      return match[1]
+    }
+
+    const parsed = new Date(`1970-01-01T${value}`)
+    return Number.isNaN(parsed.getTime()) ? '' : parsed.toISOString().slice(11, 16)
+  }
+
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString().slice(11, 16)
+  }
+
+  return ''
+}
+
+const toDateTimeInputValue = (value: any): string => {
+  if (!value) {
+    return ''
+  }
+
+  if (typeof value === 'string') {
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) {
+      return value
+    }
+
+    const parsed = new Date(value)
+    if (Number.isNaN(parsed.getTime())) {
+      return ''
+    }
+
+    const local = new Date(parsed.getTime() - parsed.getTimezoneOffset() * 60000)
+    return local.toISOString().slice(0, 16)
+  }
+
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    const local = new Date(value.getTime() - value.getTimezoneOffset() * 60000)
+    return local.toISOString().slice(0, 16)
+  }
+
+  return ''
+}
+
+const normalizeFieldValue = (field: FieldConfig, raw: any): any => {
+  if (field.type === 'checkbox') {
+    return Boolean(raw)
+  }
+
+  if (field.type === 'number') {
+    if (raw === null || raw === undefined || raw === '') {
+      return ''
+    }
+
+    const numeric = typeof raw === 'number' ? raw : Number(raw)
+    return Number.isNaN(numeric) ? '' : numeric
+  }
+
+  if (raw === null || raw === undefined || raw === '') {
+    return ''
+  }
+
+  if (Array.isArray(raw)) {
+    return raw.join(', ')
+  }
+
+  switch (field.type) {
+    case 'date':
+      return toDateInputValue(raw)
+    case 'time':
+      return toTimeInputValue(raw)
+    case 'datetime':
+      return toDateTimeInputValue(raw)
+    case 'select':
+      return typeof raw === 'string' ? raw : String(raw)
+    case 'textarea':
+    case 'text':
+    default:
+      return typeof raw === 'string' ? raw : String(raw)
+  }
+}
+
+const buildLabelMap = <T extends Record<string, any>>(
+  rows: T[],
+  getLabel: (row: T) => string | null | undefined,
+): Record<string, string> => {
+  return rows.reduce<Record<string, string>>((acc, row) => {
+    const id = ensureStringId(row.id)
+    const label = getLabel(row)
+
+    if (id && label) {
+      acc[id] = label
+    }
+
+    return acc
+  }, {})
+}
+
 const navItems: NavItem[] = [
   { label: 'Painel', icon: LayoutDashboard },
   { label: 'Mapa', icon: Map },
@@ -79,6 +237,69 @@ const navItems: NavItem[] = [
   { label: 'Histórico', icon: History },
   { label: 'Custos', icon: Wallet2 },
 ]
+
+const buildDisplayFromDetail = <K extends EntityKey>(entity: K, detail: EntityDetail) =>
+  entityConfigs[entity].toDisplay({
+    values: detail.values,
+    record: detail.record,
+    optionLabels: detail.optionLabels,
+  })
+
+type LabelLookups = Record<string, Record<string, string>>
+
+const buildEntityDetailsFromRows = <K extends EntityKey>(
+  entity: K,
+  rows: Record<string, any>[],
+  labelLookups: LabelLookups,
+) => {
+  const config = entityConfigs[entity]
+
+  const detailEntries = rows
+    .map((row) => {
+      const id = ensureStringId(row.id)
+      if (!id) {
+        return null
+      }
+
+      const values: Record<string, any> = {}
+      const optionLabels: Record<string, string> = {}
+
+      config.fields.forEach((field) => {
+        const normalized = normalizeFieldValue(field, row[field.name])
+        values[field.name] = normalized
+
+        if (field.type === 'select') {
+          const lookup = labelLookups[field.name]
+          const key = typeof normalized === 'string' ? normalized : ensureStringId(normalized)
+
+          if (lookup && key && lookup[key]) {
+            optionLabels[field.name] = lookup[key]
+          } else if (typeof normalized === 'string' && normalized.trim()) {
+            optionLabels[field.name] = normalized
+          }
+        }
+      })
+
+      return [
+        id,
+        {
+          record: { ...row, id },
+          values,
+          optionLabels,
+        },
+      ] as [string, EntityDetail]
+    })
+    .filter((entry): entry is [string, EntityDetail] => Boolean(entry))
+
+  const map = detailEntries.reduce<Record<string, EntityDetail>>((acc, [id, detail]) => {
+    acc[id] = detail
+    return acc
+  }, {})
+
+  const list = detailEntries.map(([, detail]) => buildDisplayFromDetail(entity, detail))
+
+  return { map, list }
+}
 
 const headerBadges: Record<string, string> = {
   Painel: 'Visão geral em processamento',
@@ -217,12 +438,87 @@ const mapLayers: SimpleCard[] = [
   },
 ]
 
-const routesToday = [
-  { id: 'route-1', name: 'Rota 1 · Linha Azul', departure: '06:00', occupancy: '82%', status: 'Operando' },
-  { id: 'route-2', name: 'Rota 2 · Linha Verde', departure: '06:15', occupancy: '77%', status: 'Operando' },
-  { id: 'route-3', name: 'Rota 3 · Linha Leste', departure: '06:40', occupancy: '63%', status: 'Monitorar' },
-  { id: 'route-4', name: 'Rota 4 · Linha Expressa', departure: '07:00', occupancy: '91%', status: 'Alerta' },
-]
+const initialRouteDetails: Record<string, EntityDetail> = {
+  'route-1': {
+    record: { id: 'route-1' },
+    values: {
+      name: 'Rota 1 · Linha Azul',
+      company_id: 'company-tech',
+      driver_id: 'driver-ana',
+      vehicle_id: 'vehicle-gfx-001',
+      scheduled_start: '06:00',
+      start_location: 'Campus Central',
+      destination: 'Terminal Norte',
+      status: 'Operando',
+      occupancy: '82%',
+    },
+    optionLabels: {
+      company_id: 'Tech Mobility',
+      driver_id: 'Ana Souza',
+      vehicle_id: 'GFX-001 · Marcopolo G8',
+    },
+  },
+  'route-2': {
+    record: { id: 'route-2' },
+    values: {
+      name: 'Rota 2 · Linha Verde',
+      company_id: 'company-city',
+      driver_id: 'driver-marcos',
+      vehicle_id: 'vehicle-gfx-014',
+      scheduled_start: '06:15',
+      start_location: 'Pátio Sul',
+      destination: 'Distrito Industrial',
+      status: 'Operando',
+      occupancy: '77%',
+    },
+    optionLabels: {
+      company_id: 'City Logistics',
+      driver_id: 'Marcos Lima',
+      vehicle_id: 'GFX-014 · Volvo Híbrido 9800',
+    },
+  },
+  'route-3': {
+    record: { id: 'route-3' },
+    values: {
+      name: 'Rota 3 · Linha Leste',
+      company_id: 'company-edu',
+      driver_id: 'driver-joana',
+      vehicle_id: 'vehicle-gfx-031',
+      scheduled_start: '06:40',
+      start_location: 'Campus Norte',
+      destination: 'Estação Aurora',
+      status: 'Monitorar',
+      occupancy: '63%',
+    },
+    optionLabels: {
+      company_id: 'Edu Trans',
+      driver_id: 'Joana Martins',
+      vehicle_id: 'GFX-031 · NeoCity Elétrico',
+    },
+  },
+  'route-4': {
+    record: { id: 'route-4' },
+    values: {
+      name: 'Rota 4 · Linha Expressa',
+      company_id: 'company-tech',
+      driver_id: 'driver-carlos',
+      vehicle_id: 'vehicle-gfx-022',
+      scheduled_start: '07:00',
+      start_location: 'Hub Oeste',
+      destination: 'Terminal Central',
+      status: 'Alerta',
+      occupancy: '91%',
+    },
+    optionLabels: {
+      company_id: 'Tech Mobility',
+      driver_id: 'Carlos Alberto',
+      vehicle_id: 'GFX-022 · Mercedes-Benz O500',
+    },
+  },
+}
+
+const routeOrder = ['route-1', 'route-2', 'route-3', 'route-4']
+const routesToday = routeOrder.map((id) => buildDisplayFromDetail('Rotas', initialRouteDetails[id]))
 
 const routeHighlights: SimpleCard[] = [
   {
@@ -239,12 +535,91 @@ const routeHighlights: SimpleCard[] = [
   },
 ]
 
-const vehicleFleet = [
-  { id: 'vehicle-gfx-001', code: 'GFX-001', model: 'Marcopolo G8', lastUpdate: 'Há 2 min', status: 'Em rota', driver: 'Ana Souza' },
-  { id: 'vehicle-gfx-014', code: 'GFX-014', model: 'Volvo Híbrido 9800', lastUpdate: 'Há 5 min', status: 'Stand-by', driver: 'Marcos Lima' },
-  { id: 'vehicle-gfx-022', code: 'GFX-022', model: 'Mercedes-Benz O500', lastUpdate: 'Há 1 min', status: 'Manutenção', driver: 'Equipe de apoio' },
-  { id: 'vehicle-gfx-031', code: 'GFX-031', model: 'NeoCity Elétrico', lastUpdate: 'Há 3 min', status: 'Em rota', driver: 'Joana Martins' },
-]
+const initialVehicleDetails: Record<string, EntityDetail> = {
+  'vehicle-gfx-001': {
+    record: { id: 'vehicle-gfx-001' },
+    values: {
+      plate: 'GFX-001',
+      model: 'Marcopolo G8',
+      driver_id: 'driver-ana',
+      status: 'Em rota',
+      position_lat: -23.5503,
+      position_lng: -46.6331,
+      route_id: 'route-1',
+      last_maintenance: '2024-04-15',
+      next_maintenance: '2024-06-15',
+      is_registered: true,
+      last_update_display: 'Há 2 min',
+    },
+    optionLabels: {
+      driver_id: 'Ana Souza',
+      route_id: 'Rota 1 · Linha Azul',
+    },
+  },
+  'vehicle-gfx-014': {
+    record: { id: 'vehicle-gfx-014' },
+    values: {
+      plate: 'GFX-014',
+      model: 'Volvo Híbrido 9800',
+      driver_id: 'driver-marcos',
+      status: 'Stand-by',
+      position_lat: -23.6121,
+      position_lng: -46.7004,
+      route_id: 'route-2',
+      last_maintenance: '2024-04-10',
+      next_maintenance: '2024-06-05',
+      is_registered: true,
+      last_update_display: 'Há 5 min',
+    },
+    optionLabels: {
+      driver_id: 'Marcos Lima',
+      route_id: 'Rota 2 · Linha Verde',
+    },
+  },
+  'vehicle-gfx-022': {
+    record: { id: 'vehicle-gfx-022' },
+    values: {
+      plate: 'GFX-022',
+      model: 'Mercedes-Benz O500',
+      driver_id: 'support-team',
+      status: 'Manutenção',
+      position_lat: -23.5402,
+      position_lng: -46.6109,
+      route_id: 'route-4',
+      last_maintenance: '2024-05-01',
+      next_maintenance: '2024-07-01',
+      is_registered: true,
+      last_update_display: 'Há 1 min',
+    },
+    optionLabels: {
+      driver_id: 'Equipe de apoio',
+      route_id: 'Rota 4 · Linha Expressa',
+    },
+  },
+  'vehicle-gfx-031': {
+    record: { id: 'vehicle-gfx-031' },
+    values: {
+      plate: 'GFX-031',
+      model: 'NeoCity Elétrico',
+      driver_id: 'driver-joana',
+      status: 'Em rota',
+      position_lat: -23.5987,
+      position_lng: -46.6502,
+      route_id: 'route-3',
+      last_maintenance: '2024-04-22',
+      next_maintenance: '2024-06-20',
+      is_registered: true,
+      last_update_display: 'Há 3 min',
+    },
+    optionLabels: {
+      driver_id: 'Joana Martins',
+      route_id: 'Rota 3 · Linha Leste',
+    },
+  },
+}
+
+const vehicleOrder = ['vehicle-gfx-001', 'vehicle-gfx-014', 'vehicle-gfx-022', 'vehicle-gfx-031']
+const vehicleFleet = vehicleOrder.map((id) => buildDisplayFromDetail('Veículos', initialVehicleDetails[id]))
 
 const maintenanceHighlights: SimpleCard[] = [
   {
@@ -261,12 +636,131 @@ const maintenanceHighlights: SimpleCard[] = [
   },
 ]
 
-const driverRoster = [
-  { id: 'driver-ana', name: 'Ana Souza', route: 'Rota 1', shift: 'Manhã', status: 'Em operação' },
-  { id: 'driver-marcos', name: 'Marcos Lima', route: 'Rota 2', shift: 'Manhã', status: 'Em operação' },
-  { id: 'driver-joana', name: 'Joana Martins', route: 'Rota 3', shift: 'Manhã', status: 'Revisar' },
-  { id: 'driver-carlos', name: 'Carlos Alberto', route: 'Reserva', shift: 'Flex', status: 'Stand-by' },
-]
+const initialDriverDetails: Record<string, EntityDetail> = {
+  'driver-ana': {
+    record: { id: 'driver-ana' },
+    values: {
+      name: 'Ana Souza',
+      cpf: '123.456.789-00',
+      rg: '12.345.678-9',
+      birth_date: '1986-02-17',
+      phone: '(11) 98888-0001',
+      email: 'ana.souza@golffox.com',
+      address: 'Rua das Flores, 120 - Centro',
+      cep: '01000-000',
+      cnh: '12345678901',
+      cnh_validity: '2026-02-17',
+      cnh_category: 'D',
+      has_ear: true,
+      transport_course_validity: '2025-12-31',
+      last_toxicological_exam: '2024-02-01',
+      photo_url: 'https://images.golffox.com/drivers/ana.jpg',
+      contract_type: 'CLT',
+      credentialing_date: '2020-05-10',
+      status: 'Em operação',
+      linked_company: 'Tech Mobility',
+      assigned_routes: 'Rota 1 · Linha Azul',
+      availability: 'Segunda a sexta · 05h às 13h',
+      last_update: '2024-05-02',
+      route_badge: 'Linha Azul',
+      shift_label: 'Manhã',
+    },
+    optionLabels: {},
+  },
+  'driver-marcos': {
+    record: { id: 'driver-marcos' },
+    values: {
+      name: 'Marcos Lima',
+      cpf: '987.654.321-00',
+      rg: '98.765.432-1',
+      birth_date: '1984-09-03',
+      phone: '(11) 97777-0002',
+      email: 'marcos.lima@golffox.com',
+      address: 'Av. Horizonte, 45 - Vila Nova',
+      cep: '04500-000',
+      cnh: '98765432100',
+      cnh_validity: '2025-09-03',
+      cnh_category: 'D',
+      has_ear: true,
+      transport_course_validity: '2025-06-30',
+      last_toxicological_exam: '2024-01-15',
+      photo_url: 'https://images.golffox.com/drivers/marcos.jpg',
+      contract_type: 'CLT',
+      credentialing_date: '2019-08-20',
+      status: 'Em operação',
+      linked_company: 'City Logistics',
+      assigned_routes: 'Rota 2 · Linha Verde',
+      availability: 'Segunda a sábado · 06h às 15h',
+      last_update: '2024-04-28',
+      route_badge: 'Linha Verde',
+      shift_label: 'Manhã',
+    },
+    optionLabels: {},
+  },
+  'driver-joana': {
+    record: { id: 'driver-joana' },
+    values: {
+      name: 'Joana Martins',
+      cpf: '456.789.123-00',
+      rg: '45.678.912-3',
+      birth_date: '1990-11-22',
+      phone: '(11) 96666-0003',
+      email: 'joana.martins@golffox.com',
+      address: 'Rua do Sol, 88 - Jardim Leste',
+      cep: '03300-000',
+      cnh: '45678912300',
+      cnh_validity: '2027-11-22',
+      cnh_category: 'D',
+      has_ear: false,
+      transport_course_validity: '2026-05-15',
+      last_toxicological_exam: '2024-03-05',
+      photo_url: 'https://images.golffox.com/drivers/joana.jpg',
+      contract_type: 'terceirizado',
+      credentialing_date: '2021-03-12',
+      status: 'Revisar',
+      linked_company: 'Edu Trans',
+      assigned_routes: 'Rota 3 · Linha Leste',
+      availability: 'Escala flexível · 06h às 14h',
+      last_update: '2024-05-04',
+      route_badge: 'Linha Leste',
+      shift_label: 'Manhã',
+    },
+    optionLabels: {},
+  },
+  'driver-carlos': {
+    record: { id: 'driver-carlos' },
+    values: {
+      name: 'Carlos Alberto',
+      cpf: '741.852.963-00',
+      rg: '74.185.296-3',
+      birth_date: '1979-07-09',
+      phone: '(11) 95555-0004',
+      email: 'carlos.alberto@golffox.com',
+      address: 'Rua Nova Esperança, 215 - Parque Oeste',
+      cep: '02900-000',
+      cnh: '74185296300',
+      cnh_validity: '2025-07-09',
+      cnh_category: 'E',
+      has_ear: true,
+      transport_course_validity: '2025-10-10',
+      last_toxicological_exam: '2024-02-18',
+      photo_url: 'https://images.golffox.com/drivers/carlos.jpg',
+      contract_type: 'CLT',
+      credentialing_date: '2018-01-25',
+      status: 'Stand-by',
+      linked_company: 'Tech Mobility',
+      assigned_routes: 'Reserva Estratégica',
+      availability: 'Plantões alternados · 14h às 22h',
+      last_update: '2024-04-30',
+      route_badge: 'Reserva',
+      shift_label: 'Flex',
+    },
+    optionLabels: {},
+  },
+}
+
+const driverOrder = ['driver-ana', 'driver-marcos', 'driver-joana', 'driver-carlos']
+const driverRoster = driverOrder.map((id) => buildDisplayFromDetail('Motoristas', initialDriverDetails[id]))
 
 const driverHighlights: SimpleCard[] = [
   {
@@ -283,11 +777,53 @@ const driverHighlights: SimpleCard[] = [
   },
 ]
 
-const companyPartners = [
-  { id: 'company-tech', name: 'Tech Mobility', contact: 'operacoes@techmobility.com', status: 'Contrato ativo' },
-  { id: 'company-city', name: 'City Logistics', contact: 'contato@citylog.com', status: 'Negociação' },
-  { id: 'company-edu', name: 'Edu Trans', contact: 'suporte@edutrans.com', status: 'Atendimento prioritário' },
-]
+const initialCompanyDetails: Record<string, EntityDetail> = {
+  'company-tech': {
+    record: { id: 'company-tech' },
+    values: {
+      name: 'Tech Mobility',
+      cnpj: '12.345.678/0001-90',
+      contact: 'operacoes@techmobility.com',
+      status: 'Ativo',
+      address_text: 'Av. Inovação, 1000 - Centro, São Paulo - SP',
+      address_lat: -23.55052,
+      address_lng: -46.633308,
+      contracted_passengers: 480,
+    },
+    optionLabels: {},
+  },
+  'company-city': {
+    record: { id: 'company-city' },
+    values: {
+      name: 'City Logistics',
+      cnpj: '98.765.432/0001-10',
+      contact: 'contato@citylog.com',
+      status: 'Negociação',
+      address_text: 'Rua das Rotas, 210 - Campinas - SP',
+      address_lat: -22.909938,
+      address_lng: -47.062633,
+      contracted_passengers: 260,
+    },
+    optionLabels: {},
+  },
+  'company-edu': {
+    record: { id: 'company-edu' },
+    values: {
+      name: 'Edu Trans',
+      cnpj: '54.321.987/0001-45',
+      contact: 'suporte@edutrans.com',
+      status: 'Atendimento prioritário',
+      address_text: 'Alameda das Universidades, 45 - Sorocaba - SP',
+      address_lat: -23.5015,
+      address_lng: -47.4526,
+      contracted_passengers: 320,
+    },
+    optionLabels: {},
+  },
+}
+
+const companyOrder = ['company-tech', 'company-city', 'company-edu']
+const companyPartners = companyOrder.map((id) => buildDisplayFromDetail('Empresas', initialCompanyDetails[id]))
 
 const partnershipHighlights: SimpleCard[] = [
   {
@@ -304,12 +840,55 @@ const partnershipHighlights: SimpleCard[] = [
   },
 ]
 
-const permissionMatrix = [
-  { id: 'perm-admin', role: 'Administrador', scope: 'Acesso total', users: 3 },
-  { id: 'perm-operador', role: 'Operador', scope: 'Gestão de rotas e alertas', users: 8 },
-  { id: 'perm-analista', role: 'Analista', scope: 'Relatórios e custos', users: 5 },
-  { id: 'perm-motorista', role: 'Motorista', scope: 'Aplicativo embarcado', users: 24 },
-]
+const initialPermissionDetails: Record<string, EntityDetail> = {
+  'perm-admin': {
+    record: { id: 'perm-admin' },
+    values: {
+      name: 'Administrador',
+      description: 'Acesso total',
+      access: 'Rotas, Veículos, Motoristas, Custos, Relatórios',
+      is_admin_feature: true,
+      users_display: 3,
+    },
+    optionLabels: {},
+  },
+  'perm-operador': {
+    record: { id: 'perm-operador' },
+    values: {
+      name: 'Operador',
+      description: 'Gestão de rotas e alertas',
+      access: 'Rotas, Alertas, Suporte',
+      is_admin_feature: false,
+      users_display: 8,
+    },
+    optionLabels: {},
+  },
+  'perm-analista': {
+    record: { id: 'perm-analista' },
+    values: {
+      name: 'Analista',
+      description: 'Relatórios e custos',
+      access: 'Relatórios, Custos, Histórico',
+      is_admin_feature: false,
+      users_display: 5,
+    },
+    optionLabels: {},
+  },
+  'perm-motorista': {
+    record: { id: 'perm-motorista' },
+    values: {
+      name: 'Motorista',
+      description: 'Aplicativo embarcado',
+      access: 'Rotas atribuídas, Checklist diário',
+      is_admin_feature: false,
+      users_display: 24,
+    },
+    optionLabels: {},
+  },
+}
+
+const permissionOrder = ['perm-admin', 'perm-operador', 'perm-analista', 'perm-motorista']
+const permissionMatrix = permissionOrder.map((id) => buildDisplayFromDetail('Permissões', initialPermissionDetails[id]))
 
 const permissionHighlights: SimpleCard[] = [
   {
@@ -326,11 +905,44 @@ const permissionHighlights: SimpleCard[] = [
   },
 ]
 
-const supportChannels = [
-  { id: 'support-chat', channel: 'Chat em tempo real', availability: '24/7', detail: 'Fila atual: 2 atendimentos' },
-  { id: 'support-phone', channel: 'Telefone prioritário', availability: '05h às 23h', detail: 'Tempo médio de resposta: 1m45s' },
-  { id: 'support-portal', channel: 'Portal de tickets', availability: 'Sempre disponível', detail: '8 solicitações abertas' },
-]
+const initialSupportDetails: Record<string, EntityDetail> = {
+  'support-chat': {
+    record: { id: 'support-chat' },
+    values: {
+      subject: 'Fila de atendimento com 2 chamados',
+      message: 'Monitorar SLA do chat em tempo real durante pico matinal.',
+      priority: 'Média',
+      channel: 'Chat',
+      contact: 'chat@golffox.com',
+    },
+    optionLabels: {},
+  },
+  'support-phone': {
+    record: { id: 'support-phone' },
+    values: {
+      subject: 'Tempo médio 1m45s',
+      message: 'Equipe pronta para escalonar incidentes críticos.',
+      priority: 'Alta',
+      channel: 'Telefone',
+      contact: '+55 11 4000-1234',
+    },
+    optionLabels: {},
+  },
+  'support-portal': {
+    record: { id: 'support-portal' },
+    values: {
+      subject: '8 solicitações abertas',
+      message: 'Atualizar artigos da base de conhecimento mais acessados.',
+      priority: 'Baixa',
+      channel: 'E-mail',
+      contact: 'portal@golffox.com',
+    },
+    optionLabels: {},
+  },
+}
+
+const supportOrder = ['support-chat', 'support-phone', 'support-portal']
+const supportChannels = supportOrder.map((id) => buildDisplayFromDetail('Suporte', initialSupportDetails[id]))
 
 const supportHighlights: SimpleCard[] = [
   {
@@ -347,11 +959,65 @@ const supportHighlights: SimpleCard[] = [
   },
 ]
 
-const alertFeed = [
-  { id: 'alert-critical', level: 'Crítico', message: 'Veículo parado na Rota 4 há 3 minutos', time: '07:12', action: 'Acionar suporte avançado' },
-  { id: 'alert-attention', level: 'Atenção', message: 'Trânsito denso próximo ao Campus Norte', time: '07:05', action: 'Sugestão de rota alternativa' },
-  { id: 'alert-info', level: 'Informativo', message: 'Atualização de firmware concluída no GFX-031', time: '06:55', action: 'Nenhuma ação necessária' },
-]
+const initialAlertDetails: Record<string, EntityDetail> = {
+  'alert-critical': {
+    record: { id: 'alert-critical' },
+    values: {
+      type: 'Crítico',
+      title: 'Veículo parado na Rota 4',
+      message: 'Veículo parado na Rota 4 há 3 minutos',
+      timestamp: '2024-05-10T07:12',
+      route_id: 'route-4',
+      vehicle_id: 'vehicle-gfx-022',
+      user_id: 'user-marina',
+      action_label: 'Acionar suporte avançado',
+    },
+    optionLabels: {
+      route_id: 'Rota 4 · Linha Expressa',
+      vehicle_id: 'GFX-022 · Mercedes-Benz O500',
+      user_id: 'Marina Ribeiro',
+    },
+  },
+  'alert-attention': {
+    record: { id: 'alert-attention' },
+    values: {
+      type: 'Atenção',
+      title: 'Trânsito denso na zona leste',
+      message: 'Trânsito denso próximo ao Campus Norte',
+      timestamp: '2024-05-10T07:05',
+      route_id: 'route-3',
+      vehicle_id: 'vehicle-gfx-031',
+      user_id: 'user-joao',
+      action_label: 'Sugestão de rota alternativa',
+    },
+    optionLabels: {
+      route_id: 'Rota 3 · Linha Leste',
+      vehicle_id: 'GFX-031 · NeoCity Elétrico',
+      user_id: 'João Batista',
+    },
+  },
+  'alert-info': {
+    record: { id: 'alert-info' },
+    values: {
+      type: 'Informativo',
+      title: 'Firmware atualizado',
+      message: 'Atualização de firmware concluída no GFX-031',
+      timestamp: '2024-05-10T06:55',
+      route_id: 'route-1',
+      vehicle_id: 'vehicle-gfx-001',
+      user_id: 'user-marina',
+      action_label: 'Nenhuma ação necessária',
+    },
+    optionLabels: {
+      route_id: 'Rota 1 · Linha Azul',
+      vehicle_id: 'GFX-001 · Marcopolo G8',
+      user_id: 'Marina Ribeiro',
+    },
+  },
+}
+
+const alertOrder = ['alert-critical', 'alert-attention', 'alert-info']
+const alertFeed = alertOrder.map((id) => buildDisplayFromDetail('Alertas', initialAlertDetails[id]))
 
 const alertHighlights: SimpleCard[] = [
   {
@@ -368,12 +1034,47 @@ const alertHighlights: SimpleCard[] = [
   },
 ]
 
-const reportCatalog = [
-  { id: 'report-occupancy', name: 'Ocupação diária', frequency: 'Diário', delivery: '08:00' },
-  { id: 'report-routes', name: 'Análise de rotas', frequency: 'Semanal', delivery: 'Segunda-feira' },
-  { id: 'report-drivers', name: 'Performance dos motoristas', frequency: 'Mensal', delivery: 'Dia 02' },
-  { id: 'report-finance', name: 'Resumo financeiro', frequency: 'Mensal', delivery: 'Dia 05' },
-]
+const initialReportDetails: Record<string, EntityDetail> = {
+  'report-occupancy': {
+    record: { id: 'report-occupancy' },
+    values: {
+      name: 'Ocupação diária',
+      frequency: 'Diário',
+      delivery: '08:00',
+    },
+    optionLabels: {},
+  },
+  'report-routes': {
+    record: { id: 'report-routes' },
+    values: {
+      name: 'Análise de rotas',
+      frequency: 'Semanal',
+      delivery: 'Segunda-feira',
+    },
+    optionLabels: {},
+  },
+  'report-drivers': {
+    record: { id: 'report-drivers' },
+    values: {
+      name: 'Performance dos motoristas',
+      frequency: 'Mensal',
+      delivery: 'Dia 02',
+    },
+    optionLabels: {},
+  },
+  'report-finance': {
+    record: { id: 'report-finance' },
+    values: {
+      name: 'Resumo financeiro',
+      frequency: 'Mensal',
+      delivery: 'Dia 05',
+    },
+    optionLabels: {},
+  },
+}
+
+const reportOrder = ['report-occupancy', 'report-routes', 'report-drivers', 'report-finance']
+const reportCatalog = reportOrder.map((id) => buildDisplayFromDetail('Relatórios', initialReportDetails[id]))
 
 const reportHighlights: SimpleCard[] = [
   {
@@ -390,12 +1091,127 @@ const reportHighlights: SimpleCard[] = [
   },
 ]
 
-const historyTimeline = [
-  { id: 'history-start', time: '05:50', title: 'Início das operações', detail: 'Checklist concluído para as rotas da manhã' },
-  { id: 'history-board', time: '06:30', title: 'Primeiro embarque', detail: 'Rota 1 registrou 28 passageiros' },
-  { id: 'history-adjust', time: '06:45', title: 'Ajuste de rota', detail: 'Desvio de 4 minutos contornado na Rota 3' },
-  { id: 'history-alert', time: '07:10', title: 'Alerta crítico tratado', detail: 'Equipe acionada para suporte ao veículo GFX-022' },
-]
+const initialHistoryDetails: Record<string, EntityDetail> = {
+  'history-start': {
+    record: { id: 'history-start' },
+    values: {
+      route_id: 'route-1',
+      route_name: 'Início das operações',
+      driver_id: 'driver-ana',
+      driver_name: 'Ana Souza',
+      vehicle_id: 'vehicle-gfx-001',
+      vehicle_plate: 'GFX-001',
+      execution_date: '2024-05-10',
+      start_time: '05:50',
+      end_time: '06:40',
+      total_time: 50,
+      total_distance: 24.5,
+      passengers_boarded: 28,
+      passengers_not_boarded: 2,
+      total_passengers: 30,
+      fuel_consumption: 12.4,
+      operational_cost: 1450,
+      punctuality: 0,
+      route_optimization: 8.5,
+      detail: 'Checklist concluído para as rotas da manhã',
+    },
+    optionLabels: {
+      route_id: 'Rota 1 · Linha Azul',
+      driver_id: 'Ana Souza',
+      vehicle_id: 'GFX-001 · Marcopolo G8',
+    },
+  },
+  'history-board': {
+    record: { id: 'history-board' },
+    values: {
+      route_id: 'route-2',
+      route_name: 'Primeiro embarque',
+      driver_id: 'driver-marcos',
+      driver_name: 'Marcos Lima',
+      vehicle_id: 'vehicle-gfx-014',
+      vehicle_plate: 'GFX-014',
+      execution_date: '2024-05-10',
+      start_time: '06:30',
+      end_time: '07:15',
+      total_time: 45,
+      total_distance: 18.7,
+      passengers_boarded: 28,
+      passengers_not_boarded: 0,
+      total_passengers: 28,
+      fuel_consumption: 10.1,
+      operational_cost: 980,
+      punctuality: 1,
+      route_optimization: 5.2,
+      detail: 'Rota 1 registrou 28 passageiros',
+    },
+    optionLabels: {
+      route_id: 'Rota 2 · Linha Verde',
+      driver_id: 'Marcos Lima',
+      vehicle_id: 'GFX-014 · Volvo Híbrido 9800',
+    },
+  },
+  'history-adjust': {
+    record: { id: 'history-adjust' },
+    values: {
+      route_id: 'route-3',
+      route_name: 'Ajuste de rota',
+      driver_id: 'driver-joana',
+      driver_name: 'Joana Martins',
+      vehicle_id: 'vehicle-gfx-031',
+      vehicle_plate: 'GFX-031',
+      execution_date: '2024-05-10',
+      start_time: '06:45',
+      end_time: '07:40',
+      total_time: 55,
+      total_distance: 21.4,
+      passengers_boarded: 25,
+      passengers_not_boarded: 3,
+      total_passengers: 28,
+      fuel_consumption: 11.3,
+      operational_cost: 1120,
+      punctuality: -4,
+      route_optimization: 6.1,
+      detail: 'Desvio de 4 minutos contornado na Rota 3',
+    },
+    optionLabels: {
+      route_id: 'Rota 3 · Linha Leste',
+      driver_id: 'Joana Martins',
+      vehicle_id: 'GFX-031 · NeoCity Elétrico',
+    },
+  },
+  'history-alert': {
+    record: { id: 'history-alert' },
+    values: {
+      route_id: 'route-4',
+      route_name: 'Alerta crítico tratado',
+      driver_id: 'driver-carlos',
+      driver_name: 'Carlos Alberto',
+      vehicle_id: 'vehicle-gfx-022',
+      vehicle_plate: 'GFX-022',
+      execution_date: '2024-05-10',
+      start_time: '07:10',
+      end_time: '08:05',
+      total_time: 55,
+      total_distance: 19.2,
+      passengers_boarded: 26,
+      passengers_not_boarded: 1,
+      total_passengers: 27,
+      fuel_consumption: 9.8,
+      operational_cost: 1310,
+      punctuality: 3,
+      route_optimization: 4.8,
+      detail: 'Equipe acionada para suporte ao veículo GFX-022',
+    },
+    optionLabels: {
+      route_id: 'Rota 4 · Linha Expressa',
+      driver_id: 'Carlos Alberto',
+      vehicle_id: 'GFX-022 · Mercedes-Benz O500',
+    },
+  },
+}
+
+const historyOrder = ['history-start', 'history-board', 'history-adjust', 'history-alert']
+const historyTimeline = historyOrder.map((id) => buildDisplayFromDetail('Histórico', initialHistoryDetails[id]))
 
 const historyHighlights: SimpleCard[] = [
   {
@@ -412,11 +1228,83 @@ const historyHighlights: SimpleCard[] = [
   },
 ]
 
-const costSummary = [
-  { id: 'cost-operational', label: 'Custo operacional diário', value: 'R$ 12.450', variation: '+4,2%' },
-  { id: 'cost-revenue', label: 'Receita projetada', value: 'R$ 18.600', variation: '+6,1%' },
-  { id: 'cost-margin', label: 'Margem estimada', value: '33%', variation: '+1,8%' },
-]
+const initialCostDetails: Record<string, EntityDetail> = {
+  'cost-operational': {
+    record: { id: 'cost-operational' },
+    values: {
+      route_id: 'route-1',
+      route_name: 'Custo operacional diário',
+      period: 'Maio/2024',
+      total_kilometers: 420,
+      average_fuel_consumption: 3.4,
+      fuel_cost: 5.89,
+      total_fuel_cost: 2450,
+      driver_cost: 3800,
+      vehicle_maintenance_cost: 1750,
+      operational_cost: 12450,
+      revenue_per_passenger: 8.4,
+      total_revenue: 18600,
+      profit_margin: 33,
+      cost_per_km: 29.6,
+      cost_per_passenger: 5.1,
+      variation_note: '+4,2%',
+    },
+    optionLabels: {
+      route_id: 'Rota 1 · Linha Azul',
+    },
+  },
+  'cost-revenue': {
+    record: { id: 'cost-revenue' },
+    values: {
+      route_id: 'route-2',
+      route_name: 'Receita projetada',
+      period: 'Maio/2024',
+      total_kilometers: 380,
+      average_fuel_consumption: 3.7,
+      fuel_cost: 5.75,
+      total_fuel_cost: 2180,
+      driver_cost: 3540,
+      vehicle_maintenance_cost: 1650,
+      operational_cost: 11280,
+      revenue_per_passenger: 8.9,
+      total_revenue: 19820,
+      profit_margin: 36,
+      cost_per_km: 29.7,
+      cost_per_passenger: 4.9,
+      variation_note: '+6,1%',
+    },
+    optionLabels: {
+      route_id: 'Rota 2 · Linha Verde',
+    },
+  },
+  'cost-margin': {
+    record: { id: 'cost-margin' },
+    values: {
+      route_id: 'route-3',
+      route_name: 'Margem estimada',
+      period: 'Maio/2024',
+      total_kilometers: 360,
+      average_fuel_consumption: 3.2,
+      fuel_cost: 5.6,
+      total_fuel_cost: 2010,
+      driver_cost: 3320,
+      vehicle_maintenance_cost: 1490,
+      operational_cost: 10260,
+      revenue_per_passenger: 8.1,
+      total_revenue: 15300,
+      profit_margin: 33,
+      cost_per_km: 28.5,
+      cost_per_passenger: 4.7,
+      variation_note: '+1,8%',
+    },
+    optionLabels: {
+      route_id: 'Rota 3 · Linha Leste',
+    },
+  },
+}
+
+const costOrder = ['cost-operational', 'cost-revenue', 'cost-margin']
+const costSummary = costOrder.map((id) => buildDisplayFromDetail('Custos', initialCostDetails[id]))
 
 const expenseBreakdown = [
   { id: 'expense-fuel', item: 'Combustível e energia', percentage: '38%', note: 'Contratos indexados ao reajuste trimestral' },
@@ -543,6 +1431,18 @@ const CreateButton = ({ label, onClick }: { label: string; onClick: () => void }
   </motion.button>
 )
 
+const EditButton = ({ label, onClick }: { label: string; onClick: () => void }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    aria-label={`Editar ${label}`}
+    className="inline-flex items-center gap-1 rounded-full border border-slate-200/70 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:border-white/10 dark:text-slate-200 dark:hover:border-white/30 dark:hover:bg-white/10"
+  >
+    <PencilLine className="h-4 w-4" />
+    <span className="hidden sm:inline">Editar</span>
+  </button>
+)
+
 const getInitialTheme = (): 'light' | 'dark' => {
   if (typeof window === 'undefined') return 'light'
 
@@ -568,7 +1468,142 @@ export default function AdminDashboard() {
   const [historyEntries, setHistoryEntries] = useState(historyTimeline)
   const [costCards, setCostCards] = useState(costSummary)
   const [expenseCards, setExpenseCards] = useState(expenseBreakdown)
+  const [routeDetails, setRouteDetails] = useState<Record<string, EntityDetail>>(initialRouteDetails)
+  const [vehicleDetails, setVehicleDetails] = useState<Record<string, EntityDetail>>(initialVehicleDetails)
+  const [driverDetails, setDriverDetails] = useState<Record<string, EntityDetail>>(initialDriverDetails)
+  const [companyDetails, setCompanyDetails] = useState<Record<string, EntityDetail>>(initialCompanyDetails)
+  const [permissionDetails, setPermissionDetails] = useState<Record<string, EntityDetail>>(initialPermissionDetails)
+  const [supportDetails, setSupportDetails] = useState<Record<string, EntityDetail>>(initialSupportDetails)
+  const [alertDetails, setAlertDetails] = useState<Record<string, EntityDetail>>(initialAlertDetails)
+  const [reportDetails, setReportDetails] = useState<Record<string, EntityDetail>>(initialReportDetails)
+  const [historyDetails, setHistoryDetails] = useState<Record<string, EntityDetail>>(initialHistoryDetails)
+  const [costDetails, setCostDetails] = useState<Record<string, EntityDetail>>(initialCostDetails)
   const [createEntity, setCreateEntity] = useState<EntityKey | null>(null)
+  const [editRequest, setEditRequest] = useState<{ entity: EntityKey; id: string } | null>(null)
+
+  useEffect(() => {
+    if (!supabaseClient) {
+      return
+    }
+
+    let isMounted = true
+
+    const fetchTable = async (table: string, columns = '*') => {
+      const { data, error } = await supabaseClient.from(table).select(columns)
+      if (error) {
+        throw error
+      }
+      return (data ?? []) as Record<string, any>[]
+    }
+
+    const syncWithSupabase = async () => {
+      try {
+        const [
+          routesRows,
+          vehiclesRows,
+          driversRows,
+          companiesRows,
+          permissionRows,
+          supportRows,
+          alertsRows,
+          reportsRows,
+          historyRows,
+          costRows,
+          usersRows,
+        ] = await Promise.all([
+          fetchTable('routes'),
+          fetchTable('vehicles'),
+          fetchTable('drivers'),
+          fetchTable('companies'),
+          fetchTable('permission_profiles'),
+          fetchTable('support_tickets'),
+          fetchTable('alerts'),
+          fetchTable('report_schedules'),
+          fetchTable('route_history'),
+          fetchTable('cost_control'),
+          fetchTable('users', 'id, name, email'),
+        ])
+
+        if (!isMounted) {
+          return
+        }
+
+        const routeLabels = buildLabelMap(routesRows, (row) => (row.name ? String(row.name) : null))
+        const vehicleLabels = buildLabelMap(vehiclesRows, (row) => {
+          const plate = row.plate ? String(row.plate).toUpperCase() : ''
+          const model = row.model ? String(row.model) : ''
+          if (plate && model) {
+            return `${plate} · ${model}`
+          }
+          return plate || model || null
+        })
+        const driverLabels = buildLabelMap(driversRows, (row) => (row.name ? String(row.name) : null))
+        const companyLabels = buildLabelMap(companiesRows, (row) => (row.name ? String(row.name) : null))
+        const userLabels = buildLabelMap(usersRows, (row) => {
+          if (row.name) {
+            return row.email ? `${row.name} (${row.email})` : String(row.name)
+          }
+          return row.email ? String(row.email) : null
+        })
+
+        const labelLookups: LabelLookups = {
+          route_id: routeLabels,
+          vehicle_id: vehicleLabels,
+          driver_id: driverLabels,
+          company_id: companyLabels,
+          user_id: userLabels,
+        }
+
+        const routeResult = buildEntityDetailsFromRows('Rotas', routesRows, labelLookups)
+        setRouteDetails(routeResult.map)
+        setRoutes(routeResult.list as typeof routesToday)
+
+        const vehicleResult = buildEntityDetailsFromRows('Veículos', vehiclesRows, labelLookups)
+        setVehicleDetails(vehicleResult.map)
+        setVehicles(vehicleResult.list as typeof vehicleFleet)
+
+        const driverResult = buildEntityDetailsFromRows('Motoristas', driversRows, labelLookups)
+        setDriverDetails(driverResult.map)
+        setDrivers(driverResult.list as typeof driverRoster)
+
+        const companyResult = buildEntityDetailsFromRows('Empresas', companiesRows, labelLookups)
+        setCompanyDetails(companyResult.map)
+        setCompanies(companyResult.list as typeof companyPartners)
+
+        const permissionResult = buildEntityDetailsFromRows('Permissões', permissionRows, labelLookups)
+        setPermissionDetails(permissionResult.map)
+        setPermissions(permissionResult.list as typeof permissionMatrix)
+
+        const supportResult = buildEntityDetailsFromRows('Suporte', supportRows, labelLookups)
+        setSupportDetails(supportResult.map)
+        setSupportEntries(supportResult.list as typeof supportChannels)
+
+        const alertResult = buildEntityDetailsFromRows('Alertas', alertsRows, labelLookups)
+        setAlertDetails(alertResult.map)
+        setAlerts(alertResult.list as typeof alertFeed)
+
+        const reportResult = buildEntityDetailsFromRows('Relatórios', reportsRows, labelLookups)
+        setReportDetails(reportResult.map)
+        setReports(reportResult.list as typeof reportCatalog)
+
+        const historyResult = buildEntityDetailsFromRows('Histórico', historyRows, labelLookups)
+        setHistoryDetails(historyResult.map)
+        setHistoryEntries(historyResult.list as typeof historyTimeline)
+
+        const costResult = buildEntityDetailsFromRows('Custos', costRows, labelLookups)
+        setCostDetails(costResult.map)
+        setCostCards(costResult.list as typeof costSummary)
+      } catch (error) {
+        console.error('Não foi possível sincronizar dados com o Supabase.', error)
+      }
+    }
+
+    void syncWithSupabase()
+
+    return () => {
+      isMounted = false
+    }
+  }, [supabaseClient])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -639,56 +1674,164 @@ const backgroundClass =
   const orbTransition = { duration: 18, repeat: Infinity, repeatType: 'reverse' as const, ease: 'easeInOut' }
 
   const badgeText = headerBadges[activeNav] ?? 'Sincronização ativa'
-  const activeConfig = createEntity ? entityConfigs[createEntity] : null
+  const activeConfig = createEntity
+    ? entityConfigs[createEntity]
+    : editRequest
+    ? entityConfigs[editRequest.entity]
+    : null
 
-  const handleEntityCreated = ({
+  const handleEntitySubmitted = ({
     entity,
     values,
     record,
     optionLabels,
+    mode,
+    contextId,
   }: {
     entity: EntityKey
     values: Record<string, any>
     record?: Record<string, any>
     optionLabels: Record<string, string>
+    mode: 'create' | 'edit'
+    contextId?: string
   }) => {
-    const display = entityConfigs[entity].toDisplay({ values, record, optionLabels })
+    const config = entityConfigs[entity]
+    const display = config.toDisplay({ values, record, optionLabels }) as { id?: string }
+    const resolvedId =
+      (typeof record?.id === 'string' && record.id) ||
+      (typeof display.id === 'string' && display.id) ||
+      (contextId ?? '')
+
+    const recordWithId =
+      record && typeof record.id === 'string'
+        ? record
+        : resolvedId
+        ? { ...(record ?? {}), id: resolvedId }
+        : record
+
+    const nextDetail: EntityDetail = {
+      values,
+      optionLabels,
+      record: recordWithId,
+    }
+
+    const applyUpdate = <T extends { id?: string }>(collection: T[]): T[] => {
+      if (mode === 'edit') {
+        const exists = collection.some((item) => item.id === resolvedId)
+        if (!exists) {
+          return [...collection, display as T]
+        }
+        return collection.map((item) => (item.id === resolvedId ? (display as T) : item))
+      }
+      return [...collection, display as T]
+    }
 
     switch (entity) {
       case 'Rotas':
-        setRoutes((prev) => [...prev, display as (typeof routesToday)[number]])
+        if (resolvedId) {
+          setRouteDetails((prev) => ({ ...prev, [resolvedId]: nextDetail }))
+        }
+        setRoutes((prev) => applyUpdate(prev as (typeof routesToday)[number][]))
         break
       case 'Veículos':
-        setVehicles((prev) => [...prev, display as (typeof vehicleFleet)[number]])
+        if (resolvedId) {
+          setVehicleDetails((prev) => ({ ...prev, [resolvedId]: nextDetail }))
+        }
+        setVehicles((prev) => applyUpdate(prev as (typeof vehicleFleet)[number][]))
         break
       case 'Motoristas':
-        setDrivers((prev) => [...prev, display as (typeof driverRoster)[number]])
+        if (resolvedId) {
+          setDriverDetails((prev) => ({ ...prev, [resolvedId]: nextDetail }))
+        }
+        setDrivers((prev) => applyUpdate(prev as (typeof driverRoster)[number][]))
         break
       case 'Empresas':
-        setCompanies((prev) => [...prev, display as (typeof companyPartners)[number]])
+        if (resolvedId) {
+          setCompanyDetails((prev) => ({ ...prev, [resolvedId]: nextDetail }))
+        }
+        setCompanies((prev) => applyUpdate(prev as (typeof companyPartners)[number][]))
         break
       case 'Permissões':
-        setPermissions((prev) => [...prev, display as (typeof permissionMatrix)[number]])
+        if (resolvedId) {
+          setPermissionDetails((prev) => ({ ...prev, [resolvedId]: nextDetail }))
+        }
+        setPermissions((prev) => applyUpdate(prev as (typeof permissionMatrix)[number][]))
         break
       case 'Suporte':
-        setSupportEntries((prev) => [...prev, display as (typeof supportChannels)[number]])
+        if (resolvedId) {
+          setSupportDetails((prev) => ({ ...prev, [resolvedId]: nextDetail }))
+        }
+        setSupportEntries((prev) => applyUpdate(prev as (typeof supportChannels)[number][]))
         break
       case 'Alertas':
-        setAlerts((prev) => [...prev, display as (typeof alertFeed)[number]])
+        if (resolvedId) {
+          setAlertDetails((prev) => ({ ...prev, [resolvedId]: nextDetail }))
+        }
+        setAlerts((prev) => applyUpdate(prev as (typeof alertFeed)[number][]))
         break
       case 'Relatórios':
-        setReports((prev) => [...prev, display as (typeof reportCatalog)[number]])
+        if (resolvedId) {
+          setReportDetails((prev) => ({ ...prev, [resolvedId]: nextDetail }))
+        }
+        setReports((prev) => applyUpdate(prev as (typeof reportCatalog)[number][]))
         break
       case 'Histórico':
-        setHistoryEntries((prev) => [...prev, display as (typeof historyTimeline)[number]])
+        if (resolvedId) {
+          setHistoryDetails((prev) => ({ ...prev, [resolvedId]: nextDetail }))
+        }
+        setHistoryEntries((prev) => applyUpdate(prev as (typeof historyTimeline)[number][]))
         break
       case 'Custos':
-        setCostCards((prev) => [...prev, display as (typeof costSummary)[number]])
+        if (resolvedId) {
+          setCostDetails((prev) => ({ ...prev, [resolvedId]: nextDetail }))
+        }
+        setCostCards((prev) => applyUpdate(prev as (typeof costSummary)[number][]))
         break
       default:
         break
     }
   }
+
+  const closeModal = () => {
+    setCreateEntity(null)
+    setEditRequest(null)
+  }
+
+  const openEdit = (entity: EntityKey, id: string) => {
+    setCreateEntity(null)
+    setEditRequest({ entity, id })
+  }
+
+  const getEntityDetail = (entity: EntityKey, id: string): EntityDetail | undefined => {
+    switch (entity) {
+      case 'Rotas':
+        return routeDetails[id]
+      case 'Veículos':
+        return vehicleDetails[id]
+      case 'Motoristas':
+        return driverDetails[id]
+      case 'Empresas':
+        return companyDetails[id]
+      case 'Permissões':
+        return permissionDetails[id]
+      case 'Suporte':
+        return supportDetails[id]
+      case 'Alertas':
+        return alertDetails[id]
+      case 'Relatórios':
+        return reportDetails[id]
+      case 'Histórico':
+        return historyDetails[id]
+      case 'Custos':
+        return costDetails[id]
+      default:
+        return undefined
+    }
+  }
+
+  const modalMode: 'create' | 'edit' = editRequest ? 'edit' : 'create'
+  const modalDetail = editRequest ? getEntityDetail(editRequest.entity, editRequest.id) : undefined
+  const shouldRenderModal = Boolean(activeConfig && (modalMode === 'create' || modalDetail))
 
   const renderSectionBody = (): ReactNode => {
     switch (activeNav) {
@@ -875,13 +2018,16 @@ const backgroundClass =
                       <p className="font-semibold text-black dark:text-white">{route.name}</p>
                       <p className="text-xs text-black/70 dark:text-slate-300">Partida às {route.departure}</p>
                     </div>
-                    <div className="flex items-center gap-3 text-xs sm:text-sm">
+                    <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm">
                       <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
                         Ocupação {route.occupancy}
                       </span>
                       <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
                         {route.status}
                       </span>
+                      {route.id && (
+                        <EditButton label={route.name ?? 'rota'} onClick={() => openEdit('Rotas', route.id as string)} />
+                      )}
                     </div>
                   </div>
                 ))}
@@ -919,7 +2065,7 @@ const backgroundClass =
                 {vehicles.map((vehicle) => (
                   <div
                     key={vehicle.id ?? vehicle.code}
-                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-5"
+                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-6"
                   >
                     <span className="font-semibold text-black dark:text-white">{vehicle.code}</span>
                     <span>{vehicle.model}</span>
@@ -928,6 +2074,11 @@ const backgroundClass =
                     <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-center font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
                       {vehicle.status}
                     </span>
+                    {vehicle.id && (
+                      <div className="flex items-center justify-start sm:justify-end">
+                        <EditButton label={vehicle.code ?? 'veículo'} onClick={() => openEdit('Veículos', vehicle.id as string)} />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -964,7 +2115,7 @@ const backgroundClass =
                 {drivers.map((driver) => (
                   <div
                     key={driver.id ?? driver.name}
-                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-4"
+                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-5"
                   >
                     <span className="font-semibold text-black dark:text-white">{driver.name}</span>
                     <span>{driver.route}</span>
@@ -972,6 +2123,11 @@ const backgroundClass =
                     <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-center font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
                       {driver.status}
                     </span>
+                    {driver.id && (
+                      <div className="flex items-center justify-start sm:justify-end">
+                        <EditButton label={driver.name ?? 'motorista'} onClick={() => openEdit('Motoristas', driver.id as string)} />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -1008,13 +2164,18 @@ const backgroundClass =
                 {companies.map((company) => (
                   <div
                     key={company.id ?? company.name}
-                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-3"
+                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-4"
                   >
                     <span className="font-semibold text-black dark:text-white">{company.name}</span>
                     <span>{company.contact}</span>
                     <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-center font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
                       {company.status}
                     </span>
+                    {company.id && (
+                      <div className="flex items-center justify-start sm:justify-end">
+                        <EditButton label={company.name ?? 'empresa'} onClick={() => openEdit('Empresas', company.id as string)} />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -1051,13 +2212,18 @@ const backgroundClass =
                 {permissions.map((role) => (
                   <div
                     key={role.id ?? role.role}
-                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-3"
+                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-4"
                   >
                     <span className="font-semibold text-black dark:text-white">{role.role}</span>
                     <span>{role.scope}</span>
                     <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-center font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
                       {role.users} usuários
                     </span>
+                    {role.id && (
+                      <div className="flex items-center justify-start sm:justify-end">
+                        <EditButton label={role.role ?? 'permissão'} onClick={() => openEdit('Permissões', role.id as string)} />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -1094,13 +2260,18 @@ const backgroundClass =
                 {supportEntries.map((channel) => (
                   <div
                     key={channel.id ?? channel.channel}
-                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-3"
+                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-4"
                   >
                     <span className="font-semibold text-black dark:text-white">{channel.channel}</span>
                     <span>{channel.availability}</span>
                     <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-center font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
                       {channel.detail}
                     </span>
+                    {channel.id && (
+                      <div className="flex items-center justify-start sm:justify-end">
+                        <EditButton label={channel.channel ?? 'canal'} onClick={() => openEdit('Suporte', channel.id as string)} />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -1137,7 +2308,7 @@ const backgroundClass =
                 {alerts.map((alert) => (
                   <div
                     key={alert.id ?? alert.message}
-                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-4"
+                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-5"
                   >
                     <span className="font-semibold text-black dark:text-white">{alert.level}</span>
                     <span>{alert.message}</span>
@@ -1145,6 +2316,11 @@ const backgroundClass =
                     <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-center font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
                       {alert.action}
                     </span>
+                    {alert.id && (
+                      <div className="flex items-center justify-start sm:justify-end">
+                        <EditButton label={alert.level ?? 'alerta'} onClick={() => openEdit('Alertas', alert.id as string)} />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -1181,13 +2357,18 @@ const backgroundClass =
                 {reports.map((report) => (
                   <div
                     key={report.id ?? report.name}
-                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-3"
+                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-4"
                   >
                     <span className="font-semibold text-black dark:text-white">{report.name}</span>
                     <span>{report.frequency}</span>
                     <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-center font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
                       Entrega: {report.delivery}
                     </span>
+                    {report.id && (
+                      <div className="flex items-center justify-start sm:justify-end">
+                        <EditButton label={report.name ?? 'relatório'} onClick={() => openEdit('Relatórios', report.id as string)} />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -1224,13 +2405,18 @@ const backgroundClass =
                 {historyEntries.map((event) => (
                   <div
                     key={event.id ?? event.time + event.title}
-                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-[80px_1fr]"
+                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-[80px_1fr_auto]"
                   >
                     <span className="font-semibold text-black dark:text-white">{event.time}</span>
                     <div>
                       <p className="font-semibold text-black dark:text-white">{event.title}</p>
                       <p className="text-sm text-black/70 dark:text-slate-300">{event.detail}</p>
                     </div>
+                    {event.id && (
+                      <div className="flex items-center justify-start sm:justify-end">
+                        <EditButton label={event.title ?? 'evento'} onClick={() => openEdit('Histórico', event.id as string)} />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -1269,7 +2455,14 @@ const backgroundClass =
                     key={item.id ?? item.label}
                     className="rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200"
                   >
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-black/70 dark:text-slate-300">{item.label}</p>
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-black/70 dark:text-slate-300">
+                        {item.label}
+                      </p>
+                      {item.id && (
+                        <EditButton label={item.label ?? 'custo'} onClick={() => openEdit('Custos', item.id as string)} />
+                      )}
+                    </div>
                     <p className="mt-2 text-2xl font-bold text-black dark:text-white">{item.value}</p>
                     <p className="text-sm text-emerald-600 dark:text-emerald-300">{item.variation}</p>
                   </div>
@@ -1486,12 +2679,17 @@ const backgroundClass =
             {renderSectionBody()}
 
             <AnimatePresence>
-              {activeConfig && (
+              {shouldRenderModal && activeConfig && (
                 <CreateEntityModal
-                  key={activeConfig.entity}
+                  key={`${activeConfig.entity}-${modalMode}`}
                   config={activeConfig}
-                  onClose={() => setCreateEntity(null)}
-                  onCreated={handleEntityCreated}
+                  onClose={closeModal}
+                  onSubmit={handleEntitySubmitted}
+                  mode={modalMode}
+                  initialValues={modalMode === 'edit' ? modalDetail?.values : undefined}
+                  initialOptionLabels={modalMode === 'edit' ? modalDetail?.optionLabels : undefined}
+                  initialRecord={modalMode === 'edit' ? modalDetail?.record : undefined}
+                  contextId={modalMode === 'edit' ? editRequest?.id : undefined}
                 />
               )}
             </AnimatePresence>

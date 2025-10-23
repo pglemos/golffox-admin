@@ -143,6 +143,9 @@ export const entityConfigs: Record<EntityKey, EntityConfig> = {
         type: 'select',
         required: true,
         options: [
+          { value: 'Operando', label: 'Operando' },
+          { value: 'Monitorar', label: 'Monitorar' },
+          { value: 'Alerta', label: 'Alerta' },
           { value: 'No Horário', label: 'No Horário' },
           { value: 'Atrasado', label: 'Atrasado' },
           { value: 'Com Problema', label: 'Com Problema' },
@@ -153,7 +156,6 @@ export const entityConfigs: Record<EntityKey, EntityConfig> = {
         label: 'Ocupação estimada',
         type: 'text',
         placeholder: 'Ex: 80% ou 30 passageiros',
-        persist: false,
       },
     ],
     transform: (values) => ({
@@ -165,6 +167,7 @@ export const entityConfigs: Record<EntityKey, EntityConfig> = {
       start_location: values.start_location ? String(values.start_location).trim() : null,
       destination: values.destination ? String(values.destination).trim() : null,
       status: values.status ?? 'No Horário',
+      occupancy: values.occupancy ? String(values.occupancy).trim() : null,
     }),
     toDisplay: ({ values, record }) => ({
       id: record?.id ?? tempId(),
@@ -195,6 +198,9 @@ export const entityConfigs: Record<EntityKey, EntityConfig> = {
         type: 'select',
         required: true,
         options: [
+          { value: 'Em rota', label: 'Em rota' },
+          { value: 'Stand-by', label: 'Stand-by' },
+          { value: 'Manutenção', label: 'Manutenção' },
           { value: 'Em Movimento', label: 'Em movimento' },
           { value: 'Parado', label: 'Parado' },
           { value: 'Com Problema', label: 'Com problema' },
@@ -224,7 +230,6 @@ export const entityConfigs: Record<EntityKey, EntityConfig> = {
         label: 'Última atualização (texto)',
         type: 'text',
         placeholder: 'Ex: Há 2 min',
-        persist: false,
       },
     ],
     transform: (values) => ({
@@ -238,6 +243,9 @@ export const entityConfigs: Record<EntityKey, EntityConfig> = {
       last_maintenance: values.last_maintenance,
       next_maintenance: values.next_maintenance,
       is_registered: Boolean(values.is_registered),
+      last_update_display: values.last_update_display
+        ? String(values.last_update_display).trim()
+        : null,
     }),
     toDisplay: ({ values, record, optionLabels }) => ({
       id: record?.id ?? tempId(),
@@ -313,6 +321,9 @@ export const entityConfigs: Record<EntityKey, EntityConfig> = {
         type: 'select',
         required: true,
         options: [
+          { value: 'Em operação', label: 'Em operação' },
+          { value: 'Revisar', label: 'Revisar' },
+          { value: 'Stand-by', label: 'Stand-by' },
           { value: 'Ativo', label: 'Ativo' },
           { value: 'Em análise', label: 'Em análise' },
           { value: 'Inativo', label: 'Inativo' },
@@ -351,14 +362,12 @@ export const entityConfigs: Record<EntityKey, EntityConfig> = {
         name: 'route_badge',
         label: 'Rota destacada',
         type: 'text',
-        persist: false,
         placeholder: 'Ex: Linha Azul',
       },
       {
         name: 'shift_label',
         label: 'Turno principal',
         type: 'text',
-        persist: false,
         placeholder: 'Ex: Madrugada',
       },
     ],
@@ -388,6 +397,8 @@ export const entityConfigs: Record<EntityKey, EntityConfig> = {
           : [],
       availability: values.availability,
       last_update: values.last_update,
+      route_badge: values.route_badge ? String(values.route_badge).trim() : null,
+      shift_label: values.shift_label ? String(values.shift_label).trim() : null,
     }),
     toDisplay: ({ values, record }) => ({
       id: record?.id ?? tempId(),
@@ -481,7 +492,6 @@ export const entityConfigs: Record<EntityKey, EntityConfig> = {
         name: 'users_display',
         label: 'Qtd. de usuários (apenas exibição)',
         type: 'number',
-        persist: false,
         helperText: 'Campo opcional apenas para o resumo visual',
       },
     ],
@@ -496,6 +506,7 @@ export const entityConfigs: Record<EntityKey, EntityConfig> = {
               .filter(Boolean)
           : [],
       is_admin_feature: Boolean(values.is_admin_feature),
+      users_display: safeNumber(values.users_display, 'int'),
     }),
     toDisplay: ({ values, record }) => ({
       id: record?.id ?? tempId(),
@@ -583,7 +594,6 @@ export const entityConfigs: Record<EntityKey, EntityConfig> = {
         name: 'action_label',
         label: 'Ação sugerida (exibição)',
         type: 'text',
-        persist: false,
         placeholder: 'Ex: Abrir chamado',
       },
     ],
@@ -598,6 +608,7 @@ export const entityConfigs: Record<EntityKey, EntityConfig> = {
       vehicle_id: values.vehicle_id || null,
       user_id: values.user_id || null,
       is_read: false,
+      action_label: values.action_label ? String(values.action_label).trim() : null,
     }),
     toDisplay: ({ values, record }) => ({
       id: record?.id ?? tempId(),
@@ -675,7 +686,6 @@ export const entityConfigs: Record<EntityKey, EntityConfig> = {
         name: 'detail',
         label: 'Resumo do evento (exibição)',
         type: 'text',
-        persist: false,
         placeholder: 'Ex: Checklist concluído e rota iniciada',
       },
     ],
@@ -698,6 +708,7 @@ export const entityConfigs: Record<EntityKey, EntityConfig> = {
       operational_cost: safeNumber(values.operational_cost),
       punctuality: safeNumber(values.punctuality, 'int') ?? 0,
       route_optimization: safeNumber(values.route_optimization),
+      detail: values.detail ? String(values.detail).trim() : null,
     }),
     toDisplay: ({ values, record }) => ({
       id: record?.id ?? tempId(),
@@ -747,7 +758,6 @@ export const entityConfigs: Record<EntityKey, EntityConfig> = {
         name: 'variation_note',
         label: 'Resumo da variação (exibição)',
         type: 'text',
-        persist: false,
         placeholder: 'Ex: +4,2% vs último mês',
       },
     ],
@@ -767,6 +777,7 @@ export const entityConfigs: Record<EntityKey, EntityConfig> = {
       profit_margin: safeNumber(values.profit_margin) ?? 0,
       cost_per_km: safeNumber(values.cost_per_km) ?? 0,
       cost_per_passenger: safeNumber(values.cost_per_passenger) ?? 0,
+      variation_note: values.variation_note ? String(values.variation_note).trim() : null,
     }),
     toDisplay: ({ values, record }) => ({
       id: record?.id ?? tempId(),
