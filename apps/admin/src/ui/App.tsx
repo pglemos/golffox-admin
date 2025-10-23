@@ -436,7 +436,7 @@ const occupancyData = [
 ]
 
 const cardBase =
-  'group relative overflow-hidden rounded-3xl border border-slate-200/60 bg-white/95 p-6 text-black shadow-[0_18px_45px_rgba(15,23,42,0.08)] transition-all duration-500 ease-out backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-100 dark:shadow-[0_24px_65px_rgba(2,6,23,0.55)]'
+  'group relative overflow-hidden rounded-2xl border border-slate-200/60 bg-white/95 p-5 text-black shadow-[0_18px_45px_rgba(15,23,42,0.08)] transition-all duration-500 ease-out backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-100 dark:shadow-[0_24px_65px_rgba(2,6,23,0.55)] sm:rounded-3xl sm:p-6'
 
 const pillBase =
   'inline-flex items-center gap-3 rounded-full border px-5 py-2 text-sm font-semibold transition-all duration-400 ease-out backdrop-blur-sm'
@@ -1342,7 +1342,7 @@ const backgroundClass =
       </div>
 
       <div className="relative z-10">
-        <div className="mx-auto flex min-h-screen max-w-7xl gap-8 px-4 py-12 sm:px-6 lg:px-12">
+        <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-4 pb-20 pt-10 sm:gap-8 sm:px-6 sm:pb-16 sm:pt-12 lg:flex-row lg:gap-10 lg:px-12">
           <aside
             className={`${cardBase} hidden w-64 flex-shrink-0 flex-col gap-5 border-slate-200/60 bg-white/80 p-6 dark:border-white/10 dark:bg-white/[0.05] lg:flex`}
           >
@@ -1356,7 +1356,7 @@ const backgroundClass =
               </div>
             </div>
 
-            <LayoutGroup>
+            <LayoutGroup id="desktop-nav">
               <nav className="space-y-1">
                 {navItems.map((item) => {
                   const isActive = item.label === activeNav
@@ -1377,7 +1377,7 @@ const backgroundClass =
                     >
                       {isActive && (
                         <motion.span
-                          layoutId="navHighlight"
+                          layoutId="navHighlightDesktop"
                           className="absolute inset-0 rounded-xl bg-gradient-to-r from-indigo-500/90 to-sky-500/70 shadow-[0_12px_40px_rgba(59,130,246,0.35)]"
                           transition={{ type: 'spring', stiffness: 320, damping: 30 }}
                         />
@@ -1393,13 +1393,63 @@ const backgroundClass =
             </LayoutGroup>
           </aside>
 
-          <main className="flex flex-1 flex-col gap-8">
+          <main className="flex flex-1 flex-col gap-6 sm:gap-8">
+            <div
+              className={`${cardBase} flex flex-col gap-4 border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.06] lg:hidden`}
+            >
+              <div className="flex items-center gap-3">
+                <div className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-sky-500 text-white shadow-lg shadow-indigo-500/40">
+                  🦊
+                </div>
+                <div className="flex flex-col text-left">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.32em] text-black dark:text-indigo-300">
+                    Golf Fox Admin
+                  </span>
+                  <span className="text-sm font-semibold text-black dark:text-slate-100">Premium 9.0</span>
+                </div>
+              </div>
+
+              <LayoutGroup id="mobile-nav">
+                <nav className="-mx-1 flex gap-2 overflow-x-auto pb-1">
+                  {navItems.map((item) => {
+                    const isActive = item.label === activeNav
+                    return (
+                      <motion.button
+                        key={item.label}
+                        type="button"
+                        layout
+                        onClick={() => setActiveNav(item.label)}
+                        whileTap={{ scale: 0.97 }}
+                        className={`relative flex min-w-max items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold transition-colors duration-300 ${
+                          isActive
+                            ? 'text-white shadow-[0_12px_35px_rgba(59,130,246,0.25)]'
+                            : 'text-black hover:text-black dark:text-slate-300 dark:hover:text-white'
+                        }`}
+                      >
+                        {isActive && (
+                          <motion.span
+                            layoutId="navHighlightMobile"
+                            className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500/90 to-sky-500/70"
+                            transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+                          />
+                        )}
+                        <span className="relative z-10 flex items-center gap-2">
+                          <item.icon className="h-4 w-4" />
+                          {item.label}
+                        </span>
+                      </motion.button>
+                    )
+                  })}
+                </nav>
+              </LayoutGroup>
+            </div>
+
             <header
-              className={`${cardBase} flex items-center justify-between gap-4 border-slate-200/60 bg-white/85 px-6 py-6 dark:border-white/10 dark:bg-white/[0.06]`}
+              className={`${cardBase} flex flex-col gap-5 border-slate-200/60 bg-white/85 px-5 py-5 dark:border-white/10 dark:bg-white/[0.06] sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-6`}
             >
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.4em] text-black dark:text-indigo-300">Golf Fox Admin</p>
-                <div className="mt-3 flex flex-wrap items-center gap-3 text-2xl font-semibold">
+                <div className="mt-3 flex flex-wrap items-center gap-3 text-xl font-semibold sm:text-2xl">
                   {activeNav}
                   <span className="rounded-full border border-slate-200/70 bg-white/80 px-3 py-1 text-xs font-medium text-black backdrop-blur-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
                     {badgeText}
@@ -1411,7 +1461,7 @@ const backgroundClass =
                 whileTap={{ scale: 0.97 }}
                 onClick={toggleTheme}
                 type="button"
-                className="relative inline-flex items-center gap-3 overflow-hidden rounded-full border border-slate-200/70 bg-white/80 px-2 py-2 text-sm font-semibold text-black shadow-[0_16px_35px_rgba(15,23,42,0.12)] transition-all duration-500 hover:shadow-[0_20px_45px_rgba(99,102,241,0.18)] dark:border-white/10 dark:bg-white/10 dark:text-slate-100 dark:shadow-[0_26px_60px_rgba(2,6,23,0.55)] dark:hover:shadow-[0_32px_70px_rgba(8,12,24,0.6)]"
+                className="relative inline-flex w-full items-center gap-3 overflow-hidden rounded-full border border-slate-200/70 bg-white/80 px-2 py-2 text-sm font-semibold text-black shadow-[0_16px_35px_rgba(15,23,42,0.12)] transition-all duration-500 hover:shadow-[0_20px_45px_rgba(99,102,241,0.18)] dark:border-white/10 dark:bg-white/10 dark:text-slate-100 dark:shadow-[0_26px_60px_rgba(2,6,23,0.55)] dark:hover:shadow-[0_32px_70px_rgba(8,12,24,0.6)] sm:w-auto"
                 style={{ backdropFilter: 'blur(18px)' }}
               >
                 <motion.span
