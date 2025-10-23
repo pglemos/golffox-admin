@@ -289,24 +289,24 @@ const CreateEntityModal = ({ config, onClose, onCreated }: CreateEntityModalProp
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4 py-10 backdrop-blur"
+        className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 px-4 py-10 backdrop-blur sm:items-center"
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 16 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 16 }}
           transition={{ duration: 0.2 }}
-          className="w-full max-w-3xl rounded-3xl border border-white/10 bg-white/95 p-8 shadow-2xl backdrop-blur-lg dark:border-slate-700/60 dark:bg-slate-900/90"
+          className="w-full max-w-3xl overflow-y-auto rounded-3xl border border-white/10 bg-white/95 p-6 shadow-2xl backdrop-blur-lg dark:border-slate-700/60 dark:bg-slate-900/90 max-h-[calc(100vh-5rem)] sm:p-8"
         >
-          <div className="flex items-start justify-between gap-6">
-            <div>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+            <div className="space-y-1">
               <h2 className="text-xl font-semibold text-slate-900 dark:text-white">{config.title}</h2>
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-300">{config.description}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-300">{config.description}</p>
             </div>
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:text-slate-300 dark:hover:bg-slate-800"
+              className="self-end rounded-full p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:text-slate-300 dark:hover:bg-slate-800 sm:self-auto"
             >
               <X className="h-5 w-5" />
             </button>
