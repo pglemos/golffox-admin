@@ -7,13 +7,13 @@ import { PlusCircleIcon, WrenchScrewdriverIcon, PencilIcon, TrashIcon } from './
 const getStatusClass = (status: VehicleStatus) => {
   switch (status) {
     case VehicleStatus.Moving:
-      return 'bg-green-100 text-green-800';
+      return 'bg-emerald-500/20 text-emerald-200';
     case VehicleStatus.Stopped:
-      return 'bg-yellow-100 text-yellow-800';
+      return 'bg-amber-500/20 text-yellow-800';
     case VehicleStatus.Problem:
-      return 'bg-red-100 text-red-800';
+      return 'bg-rose-500/20 text-red-800';
     default:
-      return 'bg-gray-100 text-gray-800';
+      return 'bg-white/5 text-white';
   }
 };
 
@@ -49,7 +49,7 @@ const VehiclesManagement: React.FC = () => {
           </thead>
           <tbody className="text-golffox-gray-medium">
             {MOCK_VEHICLES.filter(vehicle => vehicle.isRegistered === true).map((vehicle: Vehicle, index: number) => (
-              <tr key={vehicle.id} className={index % 2 === 0 ? 'bg-white' : 'bg-golffox-gray-light'}>
+              <tr key={vehicle.id} className={index % 2 === 0 ? 'bg-white/5' : 'bg-golffox-gray-light'}>
                 <td className="py-4 px-6 font-bold text-golffox-gray-dark">{vehicle.plate}</td>
                 <td className="py-4 px-6">{vehicle.model}</td>
                 <td className="py-4 px-6">{vehicle.driver}</td>
@@ -65,7 +65,7 @@ const VehiclesManagement: React.FC = () => {
                     <button className="text-golffox-blue-light hover:text-golffox-blue-dark p-1" title="Editar Veículo">
                       <PencilIcon className="h-5 w-5" />
                     </button>
-                    <button className="text-golffox-red hover:text-red-700 p-1" title="Excluir Veículo">
+                    <button className="text-golffox-red hover:text-rose-200 p-1" title="Excluir Veículo">
                       <TrashIcon className="h-5 w-5" />
                     </button>
                   </div>
@@ -79,7 +79,7 @@ const VehiclesManagement: React.FC = () => {
       {/* Mobile Card View */}
       <div className="lg:hidden space-y-4">
         {MOCK_VEHICLES.filter(vehicle => vehicle.isRegistered === true).map((vehicle: Vehicle) => (
-          <div key={vehicle.id} className="bg-white rounded-lg shadow-md p-4 border border-golffox-gray-light">
+          <div key={vehicle.id} className="bg-white/5 rounded-lg shadow-md p-4 border border-golffox-gray-light">
             <div className="flex justify-between items-start mb-3">
               <div>
                 <h3 className="text-lg font-bold text-golffox-gray-dark">{vehicle.plate}</h3>
@@ -109,7 +109,7 @@ const VehiclesManagement: React.FC = () => {
               <button className="text-golffox-blue-light hover:text-golffox-blue-dark p-2 touch-manipulation no-tap-highlight" title="Editar Veículo">
                 <PencilIcon className="h-5 w-5" />
               </button>
-              <button className="text-golffox-red hover:text-red-700 p-2 touch-manipulation no-tap-highlight" title="Excluir Veículo">
+              <button className="text-golffox-red hover:text-rose-200 p-2 touch-manipulation no-tap-highlight" title="Excluir Veículo">
                 <TrashIcon className="h-5 w-5" />
               </button>
             </div>

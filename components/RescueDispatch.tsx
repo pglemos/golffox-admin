@@ -19,7 +19,7 @@ const RescueDispatch: React.FC = () => {
         <h2 className="text-3xl font-bold text-golffox-gray-dark">Despacho de Socorro</h2>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto">
+      <div className="bg-white/5 p-6 rounded-lg shadow-md max-w-2xl mx-auto">
         <p className="text-golffox-gray-medium mb-6">
           Utilize este painel para enviar um motorista e veículo de socorro para uma rota que apresentou problemas.
         </p>
@@ -31,7 +31,7 @@ const RescueDispatch: React.FC = () => {
               id="problem-route"
               value={selectedRoute}
               onChange={(e) => setSelectedRoute(e.target.value)}
-              className="w-full p-3 bg-red-50 border border-golffox-red/50 rounded-md focus:ring-2 focus:ring-golffox-red focus:outline-none"
+              className="w-full p-3 bg-rose-500/15 border border-golffox-red/50 rounded-md focus:ring-2 focus:ring-golffox-red focus:outline-none"
             >
               {routesWithProblems.length > 0 ? (
                 routesWithProblems.map(route => (

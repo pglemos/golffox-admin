@@ -108,13 +108,13 @@ const Alerts: React.FC = () => {
   const getAlertStyles = (type: AlertType) => {
     switch (type) {
       case AlertType.Critical:
-        return 'bg-red-50 border-red-200 text-red-800';
+        return 'bg-rose-500/15 border-red-200 text-red-800';
       case AlertType.Warning:
-        return 'bg-yellow-50 border-yellow-200 text-yellow-800';
+        return 'bg-amber-500/15 border-yellow-200 text-yellow-800';
       case AlertType.Info:
-        return 'bg-blue-50 border-blue-200 text-blue-800';
+        return 'bg-sky-500/15 border-blue-200 text-blue-800';
       default:
-        return 'bg-gray-50 border-gray-200 text-gray-800';
+        return 'bg-white/10 border-white/12 text-white';
     }
   };
 
@@ -128,7 +128,7 @@ const Alerts: React.FC = () => {
     <div className="space-y-6">
       {/* Header com estatísticas */}
       <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold text-gray-900">Sistema de Alertas</h2>
+        <h2 className="text-3xl font-bold text-white">Sistema de Alertas</h2>
         <div className="flex items-center space-x-4">
           <button
             onClick={refresh}
@@ -143,21 +143,21 @@ const Alerts: React.FC = () => {
 
       {/* Estatísticas */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-lg shadow border">
-          <div className="text-2xl font-bold text-gray-900">{computedStats.total}</div>
-          <div className="text-sm text-gray-600">Total de Alertas</div>
+        <div className="bg-white/5 p-4 rounded-lg shadow border">
+          <div className="text-2xl font-bold text-white">{computedStats.total}</div>
+          <div className="text-sm text-golffox-muted">Total de Alertas</div>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow border">
-          <div className="text-2xl font-bold text-red-600">{computedStats.critical}</div>
-          <div className="text-sm text-gray-600">Críticos</div>
+        <div className="bg-white/5 p-4 rounded-lg shadow border">
+          <div className="text-2xl font-bold text-rose-200">{computedStats.critical}</div>
+          <div className="text-sm text-golffox-muted">Críticos</div>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow border">
-          <div className="text-2xl font-bold text-yellow-600">{computedStats.warning}</div>
-          <div className="text-sm text-gray-600">Avisos</div>
+        <div className="bg-white/5 p-4 rounded-lg shadow border">
+          <div className="text-2xl font-bold text-amber-200">{computedStats.warning}</div>
+          <div className="text-sm text-golffox-muted">Avisos</div>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow border">
-          <div className="text-2xl font-bold text-blue-600">{computedStats.info}</div>
-          <div className="text-sm text-gray-600">Informativos</div>
+        <div className="bg-white/5 p-4 rounded-lg shadow border">
+          <div className="text-2xl font-bold text-sky-200">{computedStats.info}</div>
+          <div className="text-sm text-golffox-muted">Informativos</div>
         </div>
       </div>
 
@@ -165,11 +165,11 @@ const Alerts: React.FC = () => {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
-            <Filter className="w-4 h-4 text-gray-500" />
+            <Filter className="w-4 h-4 text-golffox-muted/90" />
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value as AlertType | 'all')}
-              className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              className="border border-white/15 rounded-lg px-3 py-2 text-sm"
             >
               <option value="all">Todos os tipos</option>
               <option value={AlertType.Critical}>{tipoParaRotulo[AlertType.Critical]}</option>
@@ -185,14 +185,14 @@ const Alerts: React.FC = () => {
               onChange={(e) => setShowMockData(e.target.checked)}
               className="rounded"
             />
-            <span className="text-sm text-gray-600">Mostrar dados de exemplo</span>
+            <span className="text-sm text-golffox-muted">Mostrar dados de exemplo</span>
           </label>
         </div>
 
         {allAlerts.length > 0 && (
           <button
             onClick={clearOldAlerts}
-            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="px-4 py-2 text-sm text-golffox-muted hover:text-white border border-white/15 rounded-lg hover:bg-white/10"
           >
             Limpar alertas antigos
           </button>
@@ -203,14 +203,14 @@ const Alerts: React.FC = () => {
       <div className="space-y-4">
         {isLoading && alerts.length === 0 ? (
           <div className="text-center py-8">
-            <RefreshCw className="w-8 h-8 animate-spin mx-auto text-gray-400 mb-2" />
-            <p className="text-gray-600">Carregando alertas...</p>
+            <RefreshCw className="w-8 h-8 animate-spin mx-auto text-white/70 mb-2" />
+            <p className="text-golffox-muted">Carregando alertas...</p>
           </div>
         ) : sortedAlerts.length === 0 ? (
           <div className="text-center py-8">
-            <Info className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum alerta encontrado</h3>
-            <p className="text-gray-600">
+            <Info className="w-12 h-12 mx-auto text-white/70 mb-4" />
+            <h3 className="text-lg font-medium text-white mb-2">Nenhum alerta encontrado</h3>
+            <p className="text-golffox-muted">
               {filterType === 'all' 
                 ? 'Não há alertas no momento.' 
                 : `Não há alertas do tipo ${filterType}.`}

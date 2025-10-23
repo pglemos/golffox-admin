@@ -270,14 +270,14 @@ export const InteractiveCharts: React.FC<InteractiveChartsProps> = ({ data, onCl
       name: 'Performance',
       description: 'Tendências de performance ao longo do tempo',
       icon: TrendingUp,
-      color: 'text-blue-600'
+      color: 'text-sky-200'
     },
     {
       id: 'vehicles',
       name: 'Veículos',
       description: 'Comparação de eficiência da frota',
       icon: BarChart3,
-      color: 'text-green-600'
+      color: 'text-emerald-200'
     },
     {
       id: 'routes',
@@ -318,12 +318,12 @@ export const InteractiveCharts: React.FC<InteractiveChartsProps> = ({ data, onCl
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
+    <div className="bg-white/5 rounded-lg shadow-lg p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
-          <Activity className="h-6 w-6 text-blue-600" />
-          <h2 className="text-xl font-semibold text-gray-900">Gráficos Interativos</h2>
+          <Activity className="h-6 w-6 text-sky-200" />
+          <h2 className="text-xl font-semibold text-white">Gráficos Interativos</h2>
         </div>
         <div className="flex items-center space-x-4">
           {/* Toggle de Animação */}
@@ -332,15 +332,15 @@ export const InteractiveCharts: React.FC<InteractiveChartsProps> = ({ data, onCl
               type="checkbox"
               checked={isAnimated}
               onChange={(e) => setIsAnimated(e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="rounded border-white/15 text-sky-200 focus:ring-blue-500"
             />
-            <span className="text-sm text-gray-700">Animações</span>
+            <span className="text-sm text-white">Animações</span>
           </label>
           
           {onClose && (
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-white/70 hover:text-golffox-muted transition-colors"
             >
               ×
             </button>
@@ -351,7 +351,7 @@ export const InteractiveCharts: React.FC<InteractiveChartsProps> = ({ data, onCl
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Seletor de Gráficos */}
         <div className="lg:col-span-1">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Tipo de Gráfico</h3>
+          <h3 className="text-lg font-medium text-white mb-4">Tipo de Gráfico</h3>
           <div className="space-y-2">
             {chartTypes.map((chart) => {
               const Icon = chart.icon;
@@ -363,15 +363,15 @@ export const InteractiveCharts: React.FC<InteractiveChartsProps> = ({ data, onCl
                   onClick={() => setSelectedChart(chart.id)}
                   className={`w-full p-3 text-left border rounded-lg transition-all ${
                     isSelected
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-blue-500 bg-sky-500/15'
+                      : 'border-white/12 hover:border-white/15'
                   }`}
                 >
                   <div className="flex items-center space-x-3">
                     <Icon className={`h-5 w-5 ${chart.color}`} />
                     <div>
-                      <h4 className="font-medium text-gray-900">{chart.name}</h4>
-                      <p className="text-sm text-gray-600">{chart.description}</p>
+                      <h4 className="font-medium text-white">{chart.name}</h4>
+                      <p className="text-sm text-golffox-muted">{chart.description}</p>
                     </div>
                   </div>
                 </button>
@@ -382,7 +382,7 @@ export const InteractiveCharts: React.FC<InteractiveChartsProps> = ({ data, onCl
           {/* Seletor de Período (apenas para performance) */}
           {selectedChart === 'performance' && (
             <div className="mt-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Período</h3>
+              <h3 className="text-lg font-medium text-white mb-4">Período</h3>
               <div className="space-y-2">
                 {timeRanges.map((range) => (
                   <button
@@ -390,8 +390,8 @@ export const InteractiveCharts: React.FC<InteractiveChartsProps> = ({ data, onCl
                     onClick={() => setTimeRange(range.id)}
                     className={`w-full p-2 text-left border rounded transition-all ${
                       timeRange === range.id
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-blue-500 bg-sky-500/15 text-sky-200'
+                        : 'border-white/12 hover:border-white/15'
                     }`}
                   >
                     {range.name}
@@ -404,28 +404,28 @@ export const InteractiveCharts: React.FC<InteractiveChartsProps> = ({ data, onCl
 
         {/* Área do Gráfico */}
         <div className="lg:col-span-3">
-          <div className="bg-gray-50 rounded-lg p-4" style={{ height: '500px' }}>
+          <div className="bg-white/10 rounded-lg p-4" style={{ height: '500px' }}>
             {renderChart()}
           </div>
 
           {/* Estatísticas Rápidas */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-            <div className="bg-blue-50 p-4 rounded-lg">
+            <div className="bg-sky-500/15 p-4 rounded-lg">
               <div className="flex items-center space-x-2">
-                <TrendingUp className="h-5 w-5 text-blue-600" />
+                <TrendingUp className="h-5 w-5 text-sky-200" />
                 <span className="text-sm font-medium text-blue-900">Tendência</span>
               </div>
               <div className="text-2xl font-bold text-blue-900 mt-1">+12%</div>
-              <div className="text-xs text-blue-700">vs. período anterior</div>
+              <div className="text-xs text-sky-200">vs. período anterior</div>
             </div>
 
-            <div className="bg-green-50 p-4 rounded-lg">
+            <div className="bg-emerald-500/15 p-4 rounded-lg">
               <div className="flex items-center space-x-2">
-                <Zap className="h-5 w-5 text-green-600" />
+                <Zap className="h-5 w-5 text-emerald-200" />
                 <span className="text-sm font-medium text-green-900">Eficiência</span>
               </div>
               <div className="text-2xl font-bold text-green-900 mt-1">87%</div>
-              <div className="text-xs text-green-700">média geral</div>
+              <div className="text-xs text-emerald-200">média geral</div>
             </div>
 
             <div className="bg-orange-50 p-4 rounded-lg">

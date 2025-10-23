@@ -16,7 +16,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white dark:bg-gray-800 shadow-sm transition-colors">
+    <nav className="bg-white/5 dark:bg-gray-800 shadow-sm transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
@@ -28,7 +28,7 @@ export default function Navbar() {
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <Link
                 href="/"
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/') ? 'border-primary-500 text-gray-900 dark:text-white' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white'}`}
+                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/') ? 'border-primary-500 text-white dark:text-white' : 'border-transparent text-golffox-muted/90 hover:border-white/15 hover:text-white dark:text-white/60 dark:hover:text-white'}`}
               >
                 Início
               </Link>
@@ -38,7 +38,7 @@ export default function Navbar() {
                   {user.role === 'admin' && (
                     <Link
                       href="/administrador"
-                      className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/administrador') ? 'border-primary-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}`}
+                      className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/administrador') ? 'border-primary-500 text-white' : 'border-transparent text-golffox-muted/90 hover:border-white/15 hover:text-white'}`}
                     >
                       Administrador
                     </Link>
@@ -47,7 +47,7 @@ export default function Navbar() {
                   {user.role === 'operator' && (
                     <Link
                       href="/operador"
-                      className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/operador') ? 'border-primary-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}`}
+                      className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/operador') ? 'border-primary-500 text-white' : 'border-transparent text-golffox-muted/90 hover:border-white/15 hover:text-white'}`}
                     >
                       Operador
                     </Link>
@@ -56,7 +56,7 @@ export default function Navbar() {
                   {user.role === 'driver' && (
                     <Link
                       href="/motorista"
-                      className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/motorista') ? 'border-primary-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}`}
+                      className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/motorista') ? 'border-primary-500 text-white' : 'border-transparent text-golffox-muted/90 hover:border-white/15 hover:text-white'}`}
                     >
                       Motorista
                     </Link>
@@ -65,7 +65,7 @@ export default function Navbar() {
                   {user.role === 'passenger' && (
                     <Link
                       href="/passageiro"
-                      className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/passageiro') ? 'border-primary-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}`}
+                      className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/passageiro') ? 'border-primary-500 text-white' : 'border-transparent text-golffox-muted/90 hover:border-white/15 hover:text-white'}`}
                     >
                       Passageiro
                     </Link>
@@ -75,7 +75,7 @@ export default function Navbar() {
               
               <Link
                 href="/about"
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/about') ? 'border-primary-500 text-gray-900 dark:text-white' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white'}`}
+                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/about') ? 'border-primary-500 text-white dark:text-white' : 'border-transparent text-golffox-muted/90 hover:border-white/15 hover:text-white dark:text-white/60 dark:hover:text-white'}`}
               >
                 Sobre
               </Link>
@@ -87,10 +87,10 @@ export default function Navbar() {
             <div className="ml-4"></div>
             {user ? (
               <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-700 dark:text-gray-300">{user.name}</span>
+                <span className="text-sm text-white dark:text-white/60">{user.name}</span>
                 <button
                   onClick={signOut}
-                  className="px-3 py-1 text-sm text-red-600 hover:text-red-800"
+                  className="px-3 py-1 text-sm text-rose-200 hover:text-red-800"
                 >
                   Sair
                 </button>
@@ -116,7 +116,7 @@ export default function Navbar() {
           <div className="-mr-2 flex items-center sm:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+              className="inline-flex items-center justify-center p-2 rounded-md text-white/70 hover:text-golffox-muted/90 hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
             >
               <span className="sr-only">Abrir menu</span>
               {isMenuOpen ? (
@@ -139,7 +139,7 @@ export default function Navbar() {
           <div className="pt-2 pb-3 space-y-1">
             <Link
               href="/"
-              className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${isActive('/') ? 'border-primary-500 text-primary-700 bg-primary-50' : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800'}`}
+              className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${isActive('/') ? 'border-primary-500 text-primary-700 bg-primary-50' : 'border-transparent text-golffox-muted hover:bg-white/10 hover:border-white/15 hover:text-white'}`}
             >
               Início
             </Link>
@@ -149,7 +149,7 @@ export default function Navbar() {
                 {user.role === 'admin' && (
                   <Link
                     href="/administrador"
-                    className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${isActive('/administrador') ? 'border-primary-500 text-primary-700 bg-primary-50' : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800'}`}
+                    className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${isActive('/administrador') ? 'border-primary-500 text-primary-700 bg-primary-50' : 'border-transparent text-golffox-muted hover:bg-white/10 hover:border-white/15 hover:text-white'}`}
                   >
                     Administrador
                   </Link>
@@ -158,7 +158,7 @@ export default function Navbar() {
                 {user.role === 'operator' && (
                   <Link
                     href="/operador"
-                    className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${isActive('/operador') ? 'border-primary-500 text-primary-700 bg-primary-50' : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800'}`}
+                    className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${isActive('/operador') ? 'border-primary-500 text-primary-700 bg-primary-50' : 'border-transparent text-golffox-muted hover:bg-white/10 hover:border-white/15 hover:text-white'}`}
                   >
                     Operador
                   </Link>
@@ -167,7 +167,7 @@ export default function Navbar() {
                 {user.role === 'driver' && (
                   <Link
                     href="/motorista"
-                    className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${isActive('/motorista') ? 'border-primary-500 text-primary-700 bg-primary-50' : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800'}`}
+                    className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${isActive('/motorista') ? 'border-primary-500 text-primary-700 bg-primary-50' : 'border-transparent text-golffox-muted hover:bg-white/10 hover:border-white/15 hover:text-white'}`}
                   >
                     Motorista
                   </Link>
@@ -176,7 +176,7 @@ export default function Navbar() {
                 {user.role === 'passenger' && (
                   <Link
                     href="/passageiro"
-                    className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${isActive('/passageiro') ? 'border-primary-500 text-primary-700 bg-primary-50' : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800'}`}
+                    className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${isActive('/passageiro') ? 'border-primary-500 text-primary-700 bg-primary-50' : 'border-transparent text-golffox-muted hover:bg-white/10 hover:border-white/15 hover:text-white'}`}
                   >
                     Passageiro
                   </Link>
@@ -186,30 +186,30 @@ export default function Navbar() {
             
             <Link
               href="/about"
-              className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${isActive('/about') ? 'border-primary-500 text-primary-700 bg-primary-50' : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800'}`}
+              className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${isActive('/about') ? 'border-primary-500 text-primary-700 bg-primary-50' : 'border-transparent text-golffox-muted hover:bg-white/10 hover:border-white/15 hover:text-white'}`}
             >
               Sobre
             </Link>
           </div>
           
-          <div className="pt-4 pb-3 border-t border-gray-200">
+          <div className="pt-4 pb-3 border-t border-white/12">
             {user ? (
               <div>
                 <div className="flex items-center px-4">
                   <div className="flex-shrink-0">
-                    <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                      <span className="text-gray-600">{user.name.charAt(0)}</span>
+                    <div className="h-10 w-10 rounded-full bg-white/12 flex items-center justify-center">
+                      <span className="text-golffox-muted">{user.name.charAt(0)}</span>
                     </div>
                   </div>
                   <div className="ml-3">
-                    <div className="text-base font-medium text-gray-800">{user.name}</div>
-                    <div className="text-sm font-medium text-gray-500">{user.email}</div>
+                    <div className="text-base font-medium text-white">{user.name}</div>
+                    <div className="text-sm font-medium text-golffox-muted/90">{user.email}</div>
                   </div>
                 </div>
                 <div className="mt-3 space-y-1">
                   <button
                     onClick={signOut}
-                    className="block px-4 py-2 text-base font-medium text-red-600 hover:text-red-800 hover:bg-gray-100 w-full text-left"
+                    className="block px-4 py-2 text-base font-medium text-rose-200 hover:text-red-800 hover:bg-white/5 w-full text-left"
                   >
                     Sair
                   </button>

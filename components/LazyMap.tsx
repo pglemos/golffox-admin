@@ -23,12 +23,12 @@ interface LazyMapProps {
 // Componente de loading para o mapa
 const MapSkeleton = ({ height = '400px', width = '100%' }: { height?: string; width?: string }) => (
   <div 
-    className="bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg flex items-center justify-center"
+    className="bg-white/10 dark:bg-gray-700 animate-pulse rounded-lg flex items-center justify-center"
     style={{ height, width }}
   >
     <div className="text-center">
-      <div className="w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-4 animate-pulse"></div>
-      <p className="text-gray-500 dark:text-gray-400 text-sm">Carregando mapa...</p>
+      <div className="w-12 h-12 bg-white/12 dark:bg-gray-600 rounded-full mx-auto mb-4 animate-pulse"></div>
+      <p className="text-golffox-muted/90 dark:text-white/70 text-sm">Carregando mapa...</p>
     </div>
   </div>
 );
@@ -40,12 +40,12 @@ const MapError = ({ height = '400px', width = '100%', onRetry }: {
   onRetry?: () => void;
 }) => (
   <div 
-    className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center justify-center"
+    className="bg-rose-500/15 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center justify-center"
     style={{ height, width }}
   >
     <div className="text-center p-4">
-      <div className="text-red-600 dark:text-red-400 text-4xl mb-2">🗺️</div>
-      <p className="text-red-700 dark:text-red-300 text-sm mb-3">
+      <div className="text-rose-200 dark:text-rose-300 text-4xl mb-2">🗺️</div>
+      <p className="text-rose-200 dark:text-red-300 text-sm mb-3">
         Erro ao carregar o mapa
       </p>
       {onRetry && (

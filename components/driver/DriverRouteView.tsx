@@ -294,7 +294,7 @@ const DriverRouteView: React.FC<DriverRouteViewProps> = ({ onStartNavigation }) 
     }, [mapStatus, calculateOptimizedRoute]);
 
     return (
-        <div className="flex flex-col h-full bg-gray-50">
+        <div className="flex flex-col h-full bg-white/10">
             {/* Header responsivo com informações da rota */}
             <header className="bg-gradient-to-r from-golffox-blue-dark to-blue-800 text-white p-3 sm:p-4 shadow-lg">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
@@ -324,10 +324,10 @@ const DriverRouteView: React.FC<DriverRouteViewProps> = ({ onStartNavigation }) 
             </header>
 
             {/* Mapa */}
-            <div className="relative flex-1 bg-gray-300 min-h-0">
+            <div className="relative flex-1 bg-white/12 min-h-0">
                 {mapStatus === 'error' && <MapApiKeyWarning />}
                 {mapStatus === 'loading' && (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                    <div className="w-full h-full flex items-center justify-center bg-white/10">
                         <div className="text-center">
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-golffox-orange-primary mx-auto mb-2"></div>
                             <p className="text-golffox-gray-medium">Carregando Rota...</p>
@@ -341,10 +341,10 @@ const DriverRouteView: React.FC<DriverRouteViewProps> = ({ onStartNavigation }) 
                         <div className="bg-white/95 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-lg border border-white/20">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2 sm:space-x-3">
-                                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full animate-pulse"></div>
+                                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-emerald-500/150 rounded-full animate-pulse"></div>
                                     <div>
-                                        <p className="text-sm sm:text-base font-semibold text-gray-800">Rota Otimizada</p>
-                                        <p className="text-xs sm:text-sm text-gray-600">
+                                        <p className="text-sm sm:text-base font-semibold text-white">Rota Otimizada</p>
+                                        <p className="text-xs sm:text-sm text-golffox-muted">
                                             {optimizedRoute?.orderedPassengers?.[0]?.name || 'Calculando...'}
                                         </p>
                                     </div>
@@ -353,7 +353,7 @@ const DriverRouteView: React.FC<DriverRouteViewProps> = ({ onStartNavigation }) 
                                     <p className="text-base sm:text-lg font-bold text-golffox-orange-primary">
                                         {optimizedRoute ? `${(optimizedRoute.totalDistance ?? 0).toFixed(1)} km` : '12 km'}
                                     </p>
-                                    <p className="text-xs sm:text-sm text-gray-600">
+                                    <p className="text-xs sm:text-sm text-golffox-muted">
                                         {optimizedRoute ? `${Math.round(optimizedRoute.totalDuration ?? 0)} min` : 'restantes'}
                                     </p>
                                 </div>
@@ -364,12 +364,12 @@ const DriverRouteView: React.FC<DriverRouteViewProps> = ({ onStartNavigation }) 
             </div>
 
             {/* Lista de Passageiros */}
-            <div className="bg-white border-t border-gray-200 max-h-48 sm:max-h-64 flex flex-col">
+            <div className="bg-white/5 border-t border-white/12 max-h-48 sm:max-h-64 flex flex-col">
                 {routeError && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4 mb-4">
+                    <div className="bg-rose-500/15 border border-red-200 rounded-lg p-3 sm:p-4 mb-4">
                         <div className="flex items-start">
                             <div className="flex-shrink-0">
-                                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                <svg className="h-5 w-5 text-rose-300" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                                 </svg>
                             </div>
@@ -377,7 +377,7 @@ const DriverRouteView: React.FC<DriverRouteViewProps> = ({ onStartNavigation }) 
                                 <h3 className="text-sm font-medium text-red-800">
                                     Erro na otimização da rota
                                 </h3>
-                                <div className="mt-2 text-sm text-red-700">
+                                <div className="mt-2 text-sm text-rose-200">
                                     <p>{routeError}</p>
                                     <p className="mt-1">Exibindo rota básica com estimativas.</p>
                                 </div>
@@ -386,20 +386,20 @@ const DriverRouteView: React.FC<DriverRouteViewProps> = ({ onStartNavigation }) 
                     </div>
                 )}
 
-                <div className="p-3 sm:p-4 border-b border-gray-100">
+                <div className="p-3 sm:p-4 border-b border-white/10">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2 sm:space-x-3">
-                            <div className="bg-blue-100 p-1.5 sm:p-2 rounded-lg">
-                                <UsersIcon className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" variant="float" />
+                            <div className="bg-sky-500/20 p-1.5 sm:p-2 rounded-lg">
+                                <UsersIcon className="h-4 w-4 sm:h-5 sm:w-5 text-sky-200" variant="float" />
                             </div>
-                            <h2 className="text-base sm:text-lg font-bold text-gray-800">Passageiros</h2>
+                            <h2 className="text-base sm:text-lg font-bold text-white">Passageiros</h2>
                         </div>
                         <div className={`px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-semibold ${
                             routeError 
-                                ? 'bg-red-100 text-red-800' 
+                                ? 'bg-rose-500/20 text-red-800' 
                                 : routeCalculating 
-                                    ? 'bg-yellow-100 text-yellow-800' 
-                                    : 'bg-green-100 text-green-800'
+                                    ? 'bg-amber-500/20 text-yellow-800' 
+                                    : 'bg-emerald-500/20 text-emerald-200'
                         }`}>
                             {routeError ? 'Erro' : routeCalculating ? 'Calculando' : 'Otimizada'}
                         </div>
@@ -412,7 +412,7 @@ const DriverRouteView: React.FC<DriverRouteViewProps> = ({ onStartNavigation }) 
                         const estimatedTime = optimizedRoute?.pickupTimes?.[passenger.id]
                         
                         return (
-                            <div key={passenger.id} className="bg-gradient-to-r from-gray-50 to-white hover:shadow-md p-3 sm:p-4 rounded-lg sm:rounded-xl flex items-center transition-all duration-200 hover:border-orange-200 border border-gray-100">
+                            <div key={passenger.id} className="bg-gradient-to-r from-gray-50 to-white hover:shadow-md p-3 sm:p-4 rounded-lg sm:rounded-xl flex items-center transition-all duration-200 hover:border-orange-200 border border-white/10">
                                 <div className="bg-orange-100 text-orange-600 text-xs font-bold rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
                                     {index + 1}
                                 </div>
@@ -426,18 +426,18 @@ const DriverRouteView: React.FC<DriverRouteViewProps> = ({ onStartNavigation }) 
                                         className="h-10 w-10 sm:h-12 sm:w-12 rounded-full border-2 border-white shadow-sm object-cover" 
                                     />
                                     <div className={`absolute -bottom-0.5 -right-0.5 sm:-bottom-1 sm:-right-1 w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 border-white ${
-                                        isOnboard ? 'bg-green-500' : 'bg-gray-300'
+                                        isOnboard ? 'bg-emerald-500/150' : 'bg-white/12'
                                     }`}></div>
                                 </div>
                                 <div className="flex-grow min-w-0">
-                                    <p className="font-semibold text-gray-800 mb-1 text-sm sm:text-base truncate">{passenger.name}</p>
+                                    <p className="font-semibold text-white mb-1 text-sm sm:text-base truncate">{passenger.name}</p>
                                     <div className="flex items-center space-x-1 sm:space-x-2">
-                                        <ClockIcon className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" variant="rotate" />
-                                        <span className="text-xs sm:text-sm text-gray-600 font-medium truncate">
+                                        <ClockIcon className="h-3 w-3 sm:h-4 sm:w-4 text-white/70 flex-shrink-0" variant="rotate" />
+                                        <span className="text-xs sm:text-sm text-golffox-muted font-medium truncate">
                                             {estimatedTime ? estimatedTime : passenger.pickupTime}
                                         </span>
                                     </div>
-                                    <p className="text-xs text-gray-500 truncate">{passenger.address}</p>
+                                    <p className="text-xs text-golffox-muted/90 truncate">{passenger.address}</p>
                                 </div>
                                 <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
                                     {/* Ações futuras */}
@@ -448,14 +448,14 @@ const DriverRouteView: React.FC<DriverRouteViewProps> = ({ onStartNavigation }) 
                 </div>
             </div>
 
-            <div className="p-3 sm:p-4 bg-white border-t border-gray-200">
+            <div className="p-3 sm:p-4 bg-white/5 border-t border-white/12">
                 <button 
                     onClick={onStartNavigation}
                     className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 sm:space-x-3 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]"
                 >
                     <MapPinIcon className="h-4 w-4 sm:h-5 sm:w-5" variant="premium" />
                     <span className="text-sm sm:text-base">Iniciar Navegação</span>
-                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full animate-pulse"></div>
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white/5 rounded-full animate-pulse"></div>
                 </button>
             </div>
         </div>

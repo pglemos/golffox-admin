@@ -10,11 +10,11 @@ import { PlusCircleIcon, PencilIcon, TrashIcon, XMarkIcon, UserGroupIcon, KeyIco
 const getStatusClass = (status: 'Ativo' | 'Inativo') => {
   switch (status) {
     case 'Ativo':
-      return 'bg-green-100 text-green-800';
+      return 'bg-emerald-500/20 text-emerald-200';
     case 'Inativo':
-      return 'bg-gray-200 text-gray-800';
+      return 'bg-white/10 text-white';
     default:
-      return 'bg-gray-100 text-gray-800';
+      return 'bg-white/5 text-white';
   }
 };
 
@@ -234,7 +234,7 @@ const CompaniesManagement: React.FC<CompaniesManagementProps> = ({ companies, se
           </thead>
           <tbody className="text-golffox-gray-medium">
             {companies.map((company: Company, index: number) => (
-              <tr key={company.id} className={index % 2 === 0 ? 'bg-white' : 'bg-golffox-gray-light'}>
+              <tr key={company.id} className={index % 2 === 0 ? 'bg-white/5' : 'bg-golffox-gray-light'}>
                 <td className="py-4 px-6 font-medium text-golffox-gray-dark">{company.name}</td>
                 <td className="py-4 px-6">{company.address.text}</td>
                 <td className="py-4 px-6 text-center">{company.contractedPassengers}</td>
@@ -251,7 +251,7 @@ const CompaniesManagement: React.FC<CompaniesManagementProps> = ({ companies, se
                     <button onClick={() => openCompanyEditModal(company)} className="text-golffox-blue-light hover:text-golffox-blue-dark p-1" title="Editar Empresa">
                       <PencilIcon className="h-5 w-5" />
                     </button>
-                    <button onClick={() => openCompanyConfirmModal(company.id)} className="text-golffox-red hover:text-red-700 p-1" title="Excluir Empresa">
+                    <button onClick={() => openCompanyConfirmModal(company.id)} className="text-golffox-red hover:text-rose-200 p-1" title="Excluir Empresa">
                       <TrashIcon className="h-5 w-5" />
                     </button>
                   </div>
@@ -265,7 +265,7 @@ const CompaniesManagement: React.FC<CompaniesManagementProps> = ({ companies, se
       {/* Mobile Card View */}
       <div className="lg:hidden space-y-4">
         {companies.map((company: Company) => (
-          <div key={company.id} className="bg-white rounded-lg shadow-md p-4 border border-golffox-gray-light">
+          <div key={company.id} className="bg-white/5 rounded-lg shadow-md p-4 border border-golffox-gray-light">
             <div className="flex justify-between items-start mb-3">
               <div className="flex-1">
                 <h3 className="text-lg font-bold text-golffox-gray-dark">{company.name}</h3>
@@ -300,7 +300,7 @@ const CompaniesManagement: React.FC<CompaniesManagementProps> = ({ companies, se
               </button>
               <button 
                 onClick={() => openCompanyConfirmModal(company.id)} 
-                className="text-golffox-red hover:text-red-700 p-2 touch-manipulation no-tap-highlight" 
+                className="text-golffox-red hover:text-rose-200 p-2 touch-manipulation no-tap-highlight" 
                 title="Excluir Empresa"
               >
                 <TrashIcon className="h-5 w-5" />
@@ -313,7 +313,7 @@ const CompaniesManagement: React.FC<CompaniesManagementProps> = ({ companies, se
       {/* Company Edit/Create Modal */}
       {isCompanyModalOpen && currentCompany && (
          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in-down">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg">
+          <div className="bg-white/5 rounded-lg shadow-xl p-6 w-full max-w-lg">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-golffox-gray-dark">{companyModalMode === 'create' ? 'Cadastrar Nova Empresa' : 'Editar Empresa'}</h3>
               <button onClick={handleCompanyClose} className="p-1 rounded-full hover:bg-golffox-gray-light"><XMarkIcon className="h-6 w-6 text-golffox-gray-medium" /></button>
@@ -336,7 +336,7 @@ const CompaniesManagement: React.FC<CompaniesManagementProps> = ({ companies, se
               <div><label className="block text-sm font-medium text-golffox-gray-dark">Contato (Email ou Telefone)</label><input type="text" value={currentCompany.contact || ''} onChange={(e) => handleCompanyInputChange('contact', e.target.value)} className="mt-1 block w-full px-3 py-2 border border-golffox-gray-light rounded-md text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-golffox-orange-primary"/></div>
               <div><label className="block text-sm font-medium text-golffox-gray-dark">Status</label><select value={currentCompany.status || 'Ativo'} onChange={(e) => handleCompanyInputChange('status', e.target.value as 'Ativo' | 'Inativo')} className="mt-1 block w-full px-3 py-2 border border-golffox-gray-light rounded-md text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-golffox-orange-primary"><option>Ativo</option><option>Inativo</option></select></div>
             </div>
-            <div className="mt-6 flex justify-end space-x-2 border-t pt-4"><button onClick={handleCompanyClose} className="px-4 py-2 bg-golffox-gray-light text-golffox-gray-dark font-semibold rounded-lg hover:bg-gray-300">Cancelar</button><button onClick={handleCompanySave} className="px-4 py-2 bg-golffox-orange-primary text-white font-semibold rounded-lg hover:bg-orange-600">Salvar</button></div>
+            <div className="mt-6 flex justify-end space-x-2 border-t pt-4"><button onClick={handleCompanyClose} className="px-4 py-2 bg-golffox-gray-light text-golffox-gray-dark font-semibold rounded-lg hover:bg-white/12">Cancelar</button><button onClick={handleCompanySave} className="px-4 py-2 bg-golffox-orange-primary text-white font-semibold rounded-lg hover:bg-orange-600">Salvar</button></div>
           </div>
         </div>
       )}
@@ -344,14 +344,14 @@ const CompaniesManagement: React.FC<CompaniesManagementProps> = ({ companies, se
       {/* Company Delete Confirmation Modal */}
       {isCompanyConfirmOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in-down">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm"><h3 className="text-xl font-bold text-golffox-gray-dark">Confirmar Exclusão</h3><p className="text-golffox-gray-medium my-4">Tem certeza que deseja excluir esta empresa? Esta ação não pode ser desfeita.</p><div className="mt-6 flex justify-end space-x-2"><button onClick={handleCompanyClose} className="px-4 py-2 bg-golffox-gray-light text-golffox-gray-dark font-semibold rounded-lg hover:bg-gray-300">Cancelar</button><button onClick={handleCompanyDelete} className="px-4 py-2 bg-golffox-red text-white font-semibold rounded-lg hover:bg-red-700">Excluir</button></div></div>
+          <div className="bg-white/5 rounded-lg shadow-xl p-6 w-full max-w-sm"><h3 className="text-xl font-bold text-golffox-gray-dark">Confirmar Exclusão</h3><p className="text-golffox-gray-medium my-4">Tem certeza que deseja excluir esta empresa? Esta ação não pode ser desfeita.</p><div className="mt-6 flex justify-end space-x-2"><button onClick={handleCompanyClose} className="px-4 py-2 bg-golffox-gray-light text-golffox-gray-dark font-semibold rounded-lg hover:bg-white/12">Cancelar</button><button onClick={handleCompanyDelete} className="px-4 py-2 bg-golffox-red text-white font-semibold rounded-lg hover:bg-red-700">Excluir</button></div></div>
         </div>
       )}
 
       {/* Employees Management Modal */}
       {isEmployeesModalOpen && selectedCompanyForEmployees && (
           <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] animate-fade-in-down">
-              <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl max-h-[90vh] flex flex-col">
+              <div className="bg-white/5 rounded-lg shadow-xl p-6 w-full max-w-4xl max-h-[90vh] flex flex-col">
                   <div className="flex justify-between items-center mb-4 flex-shrink-0">
                       <h3 className="text-xl font-bold text-golffox-gray-dark">Funcionários de {selectedCompanyForEmployees.name}</h3>
                       <button onClick={handleEmployeesClose} className="p-1 rounded-full hover:bg-golffox-gray-light"><XMarkIcon className="h-6 w-6 text-golffox-gray-medium" /></button>
@@ -378,7 +378,7 @@ const CompaniesManagement: React.FC<CompaniesManagementProps> = ({ companies, se
                                       <td className="py-2 px-3 text-center">
                                           <div className="flex justify-center items-center space-x-1">
                                               <button onClick={() => openEmployeeEditModal(employee)} className="text-golffox-blue-light hover:text-golffox-blue-dark p-1" title="Editar Funcionário"><PencilIcon className="h-5 w-5" /></button>
-                                              <button onClick={() => openEmployeeConfirmModal(employee.id)} className="text-golffox-red hover:text-red-700 p-1" title="Excluir Funcionário"><TrashIcon className="h-5 w-5" /></button>
+                                              <button onClick={() => openEmployeeConfirmModal(employee.id)} className="text-golffox-red hover:text-rose-200 p-1" title="Excluir Funcionário"><TrashIcon className="h-5 w-5" /></button>
                                           </div>
                                       </td>
                                   </tr>
@@ -393,7 +393,7 @@ const CompaniesManagement: React.FC<CompaniesManagementProps> = ({ companies, se
       {/* Employee Form Modal */}
       {isEmployeeFormModalOpen && currentEmployee && (
            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[70] animate-fade-in-down">
-                <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg">
+                <div className="bg-white/5 rounded-lg shadow-xl p-6 w-full max-w-lg">
                     <div className="flex justify-between items-center mb-4"><h3 className="text-xl font-bold">{employeeModalMode === 'create' ? 'Cadastrar Novo Funcionário' : 'Editar Funcionário'}</h3><button onClick={handleEmployeeFormClose}><XMarkIcon className="h-6 w-6" /></button></div>
                     <div className="space-y-3">
                         <input type="text" placeholder="Nome Completo" value={currentEmployee.name || ''} onChange={e => setCurrentEmployee({...currentEmployee, name: e.target.value})} className="w-full p-2 border rounded"/>
@@ -405,7 +405,7 @@ const CompaniesManagement: React.FC<CompaniesManagementProps> = ({ companies, se
                             <select 
                                 value={currentEmployee.permissionProfileId || ''} 
                                 onChange={e => setCurrentEmployee({...currentEmployee, permissionProfileId: e.target.value})} 
-                                className="w-full p-2 border rounded bg-white"
+                                className="w-full p-2 border rounded bg-white/5"
                             >
                                 {permissionProfiles.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                             </select>
@@ -421,9 +421,9 @@ const CompaniesManagement: React.FC<CompaniesManagementProps> = ({ companies, se
       {/* Employee Delete Confirmation Modal */}
       {isEmployeeConfirmOpen && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[70]">
-              <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm">
+              <div className="bg-white/5 rounded-lg shadow-xl p-6 w-full max-w-sm">
                   <h3 className="text-xl font-bold">Confirmar Exclusão</h3><p className="my-4">Tem certeza que deseja excluir este funcionário?</p>
-                  <div className="mt-6 flex justify-end space-x-2"><button onClick={handleEmployeeConfirmClose} className="px-4 py-2 bg-gray-200 rounded">Cancelar</button><button onClick={handleEmployeeDelete} className="px-4 py-2 bg-red-600 text-white rounded">Excluir</button></div>
+                  <div className="mt-6 flex justify-end space-x-2"><button onClick={handleEmployeeConfirmClose} className="px-4 py-2 bg-white/10 rounded">Cancelar</button><button onClick={handleEmployeeDelete} className="px-4 py-2 bg-red-600 text-white rounded">Excluir</button></div>
               </div>
           </div>
       )}

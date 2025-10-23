@@ -140,26 +140,26 @@ const RouteHistory: React.FC = () => {
   };
 
   const getPunctualityColor = (punctuality: number) => {
-    if (Math.abs(punctuality) <= 5) return 'text-green-600';
-    if (Math.abs(punctuality) <= 15) return 'text-yellow-600';
-    return 'text-red-600';
+    if (Math.abs(punctuality) <= 5) return 'text-emerald-200';
+    if (Math.abs(punctuality) <= 15) return 'text-amber-200';
+    return 'text-rose-200';
   };
 
   const getOptimizationColor = (optimization: number) => {
-    if (optimization >= 90) return 'text-green-600';
-    if (optimization >= 80) return 'text-yellow-600';
-    return 'text-red-600';
+    if (optimization >= 90) return 'text-emerald-200';
+    if (optimization >= 80) return 'text-amber-200';
+    return 'text-rose-200';
   };
 
   return (
-    <div className="p-6 bg-white min-h-screen">
+    <div className="p-6 bg-white/5 min-h-screen">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-golffox-blue-dark mb-2">Histórico de Rotas</h1>
         <p className="text-golffox-gray-medium">Acompanhe o desempenho e métricas das rotas executadas</p>
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-lg shadow-sm border border-golffox-gray-light/20 p-6 mb-6">
+      <div className="bg-white/5 rounded-lg shadow-sm border border-golffox-gray-light/20 p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-golffox-blue-dark mb-2">Período</label>
@@ -209,20 +209,20 @@ const RouteHistory: React.FC = () => {
           <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 border border-blue-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-blue-600">Total de Rotas</p>
+                <p className="text-sm font-medium text-sky-200">Total de Rotas</p>
                 <p className="text-2xl font-bold text-blue-800">{metrics.totalRoutes}</p>
               </div>
-              <ChartBarIcon className="h-8 w-8 text-blue-600" />
+              <ChartBarIcon className="h-8 w-8 text-sky-200" />
             </div>
           </div>
 
           <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-6 border border-green-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-green-600">Pontualidade</p>
-                <p className="text-2xl font-bold text-green-800">{metrics.punctualityRate}%</p>
+                <p className="text-sm font-medium text-emerald-200">Pontualidade</p>
+                <p className="text-2xl font-bold text-emerald-200">{metrics.punctualityRate}%</p>
               </div>
-              <ClockIcon className="h-8 w-8 text-green-600" />
+              <ClockIcon className="h-8 w-8 text-emerald-200" />
             </div>
           </div>
 
@@ -249,7 +249,7 @@ const RouteHistory: React.FC = () => {
       )}
 
       {/* Tabela de Histórico */}
-      <div className="bg-white rounded-lg shadow-sm border border-golffox-gray-light/20 overflow-hidden">
+      <div className="bg-white/5 rounded-lg shadow-sm border border-golffox-gray-light/20 overflow-hidden">
         <div className="px-6 py-4 border-b border-golffox-gray-light/20">
           <h2 className="text-lg font-semibold text-golffox-blue-dark">Execuções de Rotas</h2>
         </div>
@@ -269,7 +269,7 @@ const RouteHistory: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-golffox-blue-dark uppercase tracking-wider">Custo</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-golffox-gray-light/20">
+            <tbody className="bg-white/5 divide-y divide-golffox-gray-light/20">
               {filteredHistory.map((history) => (
                 <tr key={history.id} className="hover:bg-golffox-gray-light/5">
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -298,7 +298,7 @@ const RouteHistory: React.FC = () => {
                       {history.passengersBoarded}/{history.totalPassengers}
                     </div>
                     {history.passengersNotBoarded > 0 && (
-                      <div className="text-xs text-red-600">
+                      <div className="text-xs text-rose-200">
                         {history.passengersNotBoarded} não embarcaram
                       </div>
                     )}

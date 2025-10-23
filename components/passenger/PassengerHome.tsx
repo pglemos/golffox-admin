@@ -120,15 +120,15 @@ const PassengerHome: React.FC<PassengerHomeProps> = ({ user }) => {
     }, [mapStatus]);
 
     return (
-        <div className="flex flex-col h-full bg-white">
+        <div className="flex flex-col h-full bg-white/5">
             <header className="bg-golffox-orange-primary text-white p-3 sm:p-4 flex justify-between items-center shadow-md">
                 <div><h1 className="text-lg sm:text-xl font-bold">Bom dia, {user.name.split(' ')[0]}!</h1><p className="text-xs sm:text-sm opacity-90">{route.name}</p></div>
                 <BellIcon className="h-5 w-5 sm:h-6 sm:w-6" />
             </header>
 
-            <div className="relative h-2/5 bg-gray-300">
+            <div className="relative h-2/5 bg-white/12">
                 {mapStatus === 'error' && <MapApiKeyWarning />}
-                {mapStatus === 'loading' && <div className="w-full h-full flex items-center justify-center bg-gray-200"><p className="text-golffox-gray-medium">Carregando Mapa...</p></div>}
+                {mapStatus === 'loading' && <div className="w-full h-full flex items-center justify-center bg-white/10"><p className="text-golffox-gray-medium">Carregando Mapa...</p></div>}
                 <div ref={mapRef} className={`w-full h-full ${mapStatus !== 'loaded' ? 'invisible' : ''}`} />
                  <div className="absolute bottom-2 left-2 bg-white/80 p-2 sm:p-3 rounded-lg shadow-lg text-center">
                     <p className="text-xs sm:text-sm text-golffox-gray-dark">Seu ônibus chega em</p>

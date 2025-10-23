@@ -560,19 +560,19 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-white/5 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="p-6">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-6">
+                    <h2 className="text-2xl font-bold text-white mb-6">
                         {initialData?.id ? 'Editar Motorista' : 'Cadastrar Novo Motorista'}
                     </h2>
 
                     <form onSubmit={handleSubmit} className="space-y-8">
                         {/* 1️⃣ Dados Pessoais */}
-                        <div className="bg-gray-50 p-6 rounded-lg">
-                            <h3 className="text-lg font-semibold text-gray-700 mb-4">1️⃣ Dados Pessoais</h3>
+                        <div className="bg-white/10 p-6 rounded-lg">
+                            <h3 className="text-lg font-semibold text-white mb-4">1️⃣ Dados Pessoais</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Nome Completo *
                                     </label>
                                     <input
@@ -580,15 +580,15 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                         value={formData.name || ''}
                                         onChange={(e) => handleInputChange('name', e.target.value)}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.name ? 'border-red-500' : 'border-gray-300'
+                                            errors.name ? 'border-red-500' : 'border-white/15'
                                         }`}
                                         placeholder="Digite o nome completo"
                                     />
-                                    {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                                    {errors.name && <p className="text-rose-300 text-xs mt-1">{errors.name}</p>}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         CPF *
                                     </label>
                                     <input
@@ -596,16 +596,16 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                         value={formData.cpf || ''}
                                         onChange={(e) => handleInputChange('cpf', e.target.value)}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.cpf ? 'border-red-500' : 'border-gray-300'
+                                            errors.cpf ? 'border-red-500' : 'border-white/15'
                                         }`}
                                         placeholder="000.000.000-00"
                                         maxLength={14}
                                     />
-                                    {errors.cpf && <p className="text-red-500 text-xs mt-1">{errors.cpf}</p>}
+                                    {errors.cpf && <p className="text-rose-300 text-xs mt-1">{errors.cpf}</p>}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         RG *
                                     </label>
                                     <input
@@ -613,15 +613,15 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                         value={formData.rg || ''}
                                         onChange={(e) => handleInputChange('rg', e.target.value)}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.rg ? 'border-red-500' : 'border-gray-300'
+                                            errors.rg ? 'border-red-500' : 'border-white/15'
                                         }`}
                                         placeholder="00.000.000-0"
                                     />
-                                    {errors.rg && <p className="text-red-500 text-xs mt-1">{errors.rg}</p>}
+                                    {errors.rg && <p className="text-rose-300 text-xs mt-1">{errors.rg}</p>}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Data de Nascimento *
                                     </label>
                                     <input
@@ -629,14 +629,14 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                         value={formData.birthDate || ''}
                                         onChange={(e) => handleInputChange('birthDate', e.target.value)}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.birthDate ? 'border-red-500' : 'border-gray-300'
+                                            errors.birthDate ? 'border-red-500' : 'border-white/15'
                                         }`}
                                     />
-                                    {errors.birthDate && <p className="text-red-500 text-xs mt-1">{errors.birthDate}</p>}
+                                    {errors.birthDate && <p className="text-rose-300 text-xs mt-1">{errors.birthDate}</p>}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Telefone/WhatsApp *
                                     </label>
                                     <input
@@ -644,16 +644,16 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                         value={formData.phone || ''}
                                         onChange={(e) => handleInputChange('phone', e.target.value)}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.phone ? 'border-red-500' : 'border-gray-300'
+                                            errors.phone ? 'border-red-500' : 'border-white/15'
                                         }`}
                                         placeholder="(00) 00000-0000"
                                         maxLength={15}
                                     />
-                                    {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+                                    {errors.phone && <p className="text-rose-300 text-xs mt-1">{errors.phone}</p>}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         E-mail *
                                     </label>
                                     <input
@@ -661,15 +661,15 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                         value={formData.email || ''}
                                         onChange={(e) => handleInputChange('email', e.target.value)}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.email ? 'border-red-500' : 'border-gray-300'
+                                            errors.email ? 'border-red-500' : 'border-white/15'
                                         }`}
                                         placeholder="email@exemplo.com"
                                     />
-                                    {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                                    {errors.email && <p className="text-rose-300 text-xs mt-1">{errors.email}</p>}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         CEP *
                                     </label>
                                     <input
@@ -677,16 +677,16 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                         value={formData.cep || ''}
                                         onChange={(e) => handleInputChange('cep', e.target.value)}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.cep ? 'border-red-500' : 'border-gray-300'
+                                            errors.cep ? 'border-red-500' : 'border-white/15'
                                         }`}
                                         placeholder="00000-000"
                                         maxLength={9}
                                     />
-                                    {errors.cep && <p className="text-red-500 text-xs mt-1">{errors.cep}</p>}
+                                    {errors.cep && <p className="text-rose-300 text-xs mt-1">{errors.cep}</p>}
                                 </div>
 
                                 <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Endereço Completo *
                                     </label>
                                     <input
@@ -694,21 +694,21 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                         value={formData.address || ''}
                                         onChange={(e) => handleInputChange('address', e.target.value)}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.address ? 'border-red-500' : 'border-gray-300'
+                                            errors.address ? 'border-red-500' : 'border-white/15'
                                         }`}
                                         placeholder="Rua, número, bairro, cidade - UF"
                                     />
-                                    {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
+                                    {errors.address && <p className="text-rose-300 text-xs mt-1">{errors.address}</p>}
                                 </div>
                             </div>
                         </div>
 
                         {/* 2️⃣ Dados Profissionais */}
-                        <div className="bg-gray-50 p-6 rounded-lg">
-                            <h3 className="text-lg font-semibold text-gray-700 mb-4">2️⃣ Dados Profissionais</h3>
+                        <div className="bg-white/10 p-6 rounded-lg">
+                            <h3 className="text-lg font-semibold text-white mb-4">2️⃣ Dados Profissionais</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Número da CNH *
                                     </label>
                                     <input
@@ -716,15 +716,15 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                         value={formData.cnh || ''}
                                         onChange={(e) => handleInputChange('cnh', e.target.value)}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.cnh ? 'border-red-500' : 'border-gray-300'
+                                            errors.cnh ? 'border-red-500' : 'border-white/15'
                                         }`}
                                         placeholder="Digite o número da CNH"
                                     />
-                                    {errors.cnh && <p className="text-red-500 text-xs mt-1">{errors.cnh}</p>}
+                                    {errors.cnh && <p className="text-rose-300 text-xs mt-1">{errors.cnh}</p>}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Validade da CNH *
                                     </label>
                                     <input
@@ -732,20 +732,20 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                         value={formData.cnhValidity || ''}
                                         onChange={(e) => handleInputChange('cnhValidity', e.target.value)}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.cnhValidity ? 'border-red-500' : 'border-gray-300'
+                                            errors.cnhValidity ? 'border-red-500' : 'border-white/15'
                                         }`}
                                     />
-                                    {errors.cnhValidity && <p className="text-red-500 text-xs mt-1">{errors.cnhValidity}</p>}
+                                    {errors.cnhValidity && <p className="text-rose-300 text-xs mt-1">{errors.cnhValidity}</p>}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Categoria da CNH *
                                     </label>
                                     <select
                                         value={formData.cnhCategory || 'D'}
                                         onChange={(e) => handleInputChange('cnhCategory', e.target.value as 'D' | 'E')}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-3 py-2 border border-white/15 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
                                         <option value="D">Categoria D</option>
                                         <option value="E">Categoria E</option>
@@ -753,7 +753,7 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         EAR (Exercício de Atividade Remunerada)
                                     </label>
                                     <div className="flex items-center space-x-4 mt-2">
@@ -781,31 +781,31 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Curso de Transporte Coletivo
                                     </label>
                                     <input
                                         type="file"
                                         accept=".pdf,.jpg,.jpeg,.png"
                                         onChange={(e) => handleFileChange('transportCourse', e.target.files?.[0] || null)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-3 py-2 border border-white/15 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Validade do Curso
                                     </label>
                                     <input
                                         type="date"
                                         value={formData.transportCourseValidity || ''}
                                         onChange={(e) => handleInputChange('transportCourseValidity', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-3 py-2 border border-white/15 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Data do Último Exame Toxicológico *
                                     </label>
                                     <input
@@ -813,14 +813,14 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                         value={formData.lastToxicologicalExam || ''}
                                         onChange={(e) => handleInputChange('lastToxicologicalExam', e.target.value)}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.lastToxicologicalExam ? 'border-red-500' : 'border-gray-300'
+                                            errors.lastToxicologicalExam ? 'border-red-500' : 'border-white/15'
                                         }`}
                                     />
-                                    {errors.lastToxicologicalExam && <p className="text-red-500 text-xs mt-1">{errors.lastToxicologicalExam}</p>}
+                                    {errors.lastToxicologicalExam && <p className="text-rose-300 text-xs mt-1">{errors.lastToxicologicalExam}</p>}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Foto do Motorista *
                                     </label>
                                     <input
@@ -828,20 +828,20 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                         accept=".jpg,.jpeg,.png"
                                         onChange={(e) => handleFileChange('photo', e.target.files?.[0] || null)}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.photo ? 'border-red-500' : 'border-gray-300'
+                                            errors.photo ? 'border-red-500' : 'border-white/15'
                                         }`}
                                     />
-                                    {errors.photo && <p className="text-red-500 text-xs mt-1">{errors.photo}</p>}
+                                    {errors.photo && <p className="text-rose-300 text-xs mt-1">{errors.photo}</p>}
                                 </div>
                             </div>
                         </div>
 
                         {/* 3️⃣ Documentos Obrigatórios */}
-                        <div className="bg-gray-50 p-6 rounded-lg">
-                            <h3 className="text-lg font-semibold text-gray-700 mb-4">3️⃣ Documentos Obrigatórios</h3>
+                        <div className="bg-white/10 p-6 rounded-lg">
+                            <h3 className="text-lg font-semibold text-white mb-4">3️⃣ Documentos Obrigatórios</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         CNH Digitalizada *
                                     </label>
                                     <input
@@ -849,14 +849,14 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                         accept=".pdf,.jpg,.jpeg,.png"
                                         onChange={(e) => handleFileChange('cnhFile', e.target.files?.[0] || null)}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.cnhFile ? 'border-red-500' : 'border-gray-300'
+                                            errors.cnhFile ? 'border-red-500' : 'border-white/15'
                                         }`}
                                     />
-                                    {errors.cnhFile && <p className="text-red-500 text-xs mt-1">{errors.cnhFile}</p>}
+                                    {errors.cnhFile && <p className="text-rose-300 text-xs mt-1">{errors.cnhFile}</p>}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Comprovante de Residência *
                                     </label>
                                     <input
@@ -864,26 +864,26 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                         accept=".pdf,.jpg,.jpeg,.png"
                                         onChange={(e) => handleFileChange('residenceProof', e.target.files?.[0] || null)}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.residenceProof ? 'border-red-500' : 'border-gray-300'
+                                            errors.residenceProof ? 'border-red-500' : 'border-white/15'
                                         }`}
                                     />
-                                    {errors.residenceProof && <p className="text-red-500 text-xs mt-1">{errors.residenceProof}</p>}
+                                    {errors.residenceProof && <p className="text-rose-300 text-xs mt-1">{errors.residenceProof}</p>}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Certificado do Curso
                                     </label>
                                     <input
                                         type="file"
                                         accept=".pdf,.jpg,.jpeg,.png"
                                         onChange={(e) => handleFileChange('courseFile', e.target.files?.[0] || null)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-3 py-2 border border-white/15 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Exame Toxicológico *
                                     </label>
                                     <input
@@ -891,14 +891,14 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                         accept=".pdf,.jpg,.jpeg,.png"
                                         onChange={(e) => handleFileChange('toxicologicalExam', e.target.files?.[0] || null)}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.toxicologicalExam ? 'border-red-500' : 'border-gray-300'
+                                            errors.toxicologicalExam ? 'border-red-500' : 'border-white/15'
                                         }`}
                                     />
-                                    {errors.toxicologicalExam && <p className="text-red-500 text-xs mt-1">{errors.toxicologicalExam}</p>}
+                                    {errors.toxicologicalExam && <p className="text-rose-300 text-xs mt-1">{errors.toxicologicalExam}</p>}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Foto 3x4/Selfie para Crachá *
                                     </label>
                                     <input
@@ -906,26 +906,26 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                         accept=".jpg,.jpeg,.png"
                                         onChange={(e) => handleFileChange('idPhoto', e.target.files?.[0] || null)}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.idPhoto ? 'border-red-500' : 'border-gray-300'
+                                            errors.idPhoto ? 'border-red-500' : 'border-white/15'
                                         }`}
                                     />
-                                    {errors.idPhoto && <p className="text-red-500 text-xs mt-1">{errors.idPhoto}</p>}
+                                    {errors.idPhoto && <p className="text-rose-300 text-xs mt-1">{errors.idPhoto}</p>}
                                 </div>
                             </div>
                         </div>
 
                         {/* 4️⃣ Vínculo com a Golffox */}
-                        <div className="bg-gray-50 p-6 rounded-lg">
-                            <h3 className="text-lg font-semibold text-gray-700 mb-4">4️⃣ Vínculo com a Golffox</h3>
+                        <div className="bg-white/10 p-6 rounded-lg">
+                            <h3 className="text-lg font-semibold text-white mb-4">4️⃣ Vínculo com a Golffox</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Tipo de Contrato *
                                     </label>
                                     <select
                                         value={formData.contractType || 'CLT'}
                                         onChange={(e) => handleInputChange('contractType', e.target.value as 'CLT' | 'terceirizado' | 'autônomo')}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-3 py-2 border border-white/15 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
                                         <option value="CLT">CLT</option>
                                         <option value="terceirizado">Terceirizado</option>
@@ -934,7 +934,7 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Data de Credenciamento *
                                     </label>
                                     <input
@@ -942,20 +942,20 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                         value={formData.credentialingDate || ''}
                                         onChange={(e) => handleInputChange('credentialingDate', e.target.value)}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.credentialingDate ? 'border-red-500' : 'border-gray-300'
+                                            errors.credentialingDate ? 'border-red-500' : 'border-white/15'
                                         }`}
                                     />
-                                    {errors.credentialingDate && <p className="text-red-500 text-xs mt-1">{errors.credentialingDate}</p>}
+                                    {errors.credentialingDate && <p className="text-rose-300 text-xs mt-1">{errors.credentialingDate}</p>}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Status *
                                     </label>
                                     <select
                                         value={formData.status || 'Em análise'}
                                         onChange={(e) => handleInputChange('status', e.target.value as 'Ativo' | 'Em análise' | 'Inativo')}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-3 py-2 border border-white/15 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
                                         <option value="Ativo">Ativo</option>
                                         <option value="Em análise">Em análise</option>
@@ -964,7 +964,7 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Empresa/Rota Vinculada *
                                     </label>
                                     <input
@@ -972,21 +972,21 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                         value={formData.linkedCompany || ''}
                                         onChange={(e) => handleInputChange('linkedCompany', e.target.value)}
                                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.linkedCompany ? 'border-red-500' : 'border-gray-300'
+                                            errors.linkedCompany ? 'border-red-500' : 'border-white/15'
                                         }`}
                                         placeholder="Digite a empresa ou rota vinculada"
                                     />
-                                    {errors.linkedCompany && <p className="text-red-500 text-xs mt-1">{errors.linkedCompany}</p>}
+                                    {errors.linkedCompany && <p className="text-rose-300 text-xs mt-1">{errors.linkedCompany}</p>}
                                 </div>
                             </div>
                         </div>
 
                         {/* 5️⃣ Informações Operacionais */}
-                        <div className="bg-gray-50 p-6 rounded-lg">
-                            <h3 className="text-lg font-semibold text-gray-700 mb-4">5️⃣ Informações Operacionais</h3>
+                        <div className="bg-white/10 p-6 rounded-lg">
+                            <h3 className="text-lg font-semibold text-white mb-4">5️⃣ Informações Operacionais</h3>
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-white mb-2">
                                         Linha/Rota (seleção múltipla)
                                     </label>
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -1005,29 +1005,29 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Disponibilidade de Horários
                                     </label>
                                     <textarea
                                         value={formData.availability || ''}
                                         onChange={(e) => handleInputChange('availability', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-3 py-2 border border-white/15 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         rows={3}
                                         placeholder="Ex: Segunda a Sexta: 06:00-18:00"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-white mb-1">
                                         Última Atualização
                                     </label>
                                     <input
                                         type="date"
                                         value={formData.lastUpdate || ''}
                                         readOnly
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+                                        className="w-full px-3 py-2 border border-white/15 rounded-md bg-white/5"
                                     />
-                                    <p className="text-xs text-gray-500 mt-1">Data gerada automaticamente pelo sistema</p>
+                                    <p className="text-xs text-golffox-muted/90 mt-1">Data gerada automaticamente pelo sistema</p>
                                 </div>
                             </div>
                         </div>
@@ -1037,7 +1037,7 @@ const DriverRegistrationForm: React.FC<DriverRegistrationFormProps> = ({
                             <button
                                 type="button"
                                 onClick={handleCancel}
-                                className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="px-6 py-2 border border-white/15 rounded-md text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 Cancelar
                             </button>

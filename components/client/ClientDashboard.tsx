@@ -54,7 +54,7 @@ const ClientDashboard: React.FC = () => {
 
     return (
         <div className="h-full w-full bg-golffox-gray-light/80 flex flex-col">
-            <header className="bg-white p-4 shadow-sm flex justify-between items-center border-b border-golffox-gray-light">
+            <header className="bg-white/5 p-4 shadow-sm flex justify-between items-center border-b border-golffox-gray-light">
                 <div className="flex items-center">
                     <Image src="/golffox-logo.svg" alt="Client Logo" className="h-10 mr-4" width={40} height={40} />
                     <h1 className="text-xl font-semibold">Bem-vindo, Cliente</h1>
@@ -104,7 +104,7 @@ const ClientDashboard: React.FC = () => {
                         </thead>
                         <tbody className="text-golffox-gray-medium">
                             {clientRoutes.map((route: Route, index: number) => (
-                            <tr key={route.id} className={index % 2 === 0 ? 'bg-white' : 'bg-golffox-gray-light'}>
+                            <tr key={route.id} className={index % 2 === 0 ? 'bg-white/5' : 'bg-golffox-gray-light'}>
                                 <td className="py-4 px-6 font-medium text-golffox-gray-dark">{route.name}</td>
                                 <td className="py-4 px-6">{route.driver}</td>
                                 <td className="py-4 px-6 text-center">

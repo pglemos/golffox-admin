@@ -8,7 +8,7 @@ interface LoginScreenProps {
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
     return (
-        <div className="flex flex-col items-center justify-center h-full bg-white p-4 sm:p-6 md:p-8">
+        <div className="flex flex-col items-center justify-center h-full bg-white/5 p-4 sm:p-6 md:p-8">
             <div className="w-full max-w-sm mx-auto flex flex-col items-center justify-center min-h-full">
                 <Image src="/golffox-logo.svg" alt="Golffox Logo" className="h-16 sm:h-20 md:h-24 mb-6 sm:mb-8" width={96} height={96} priority />
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-golffox-gray-dark mb-2 text-center">Bem-vindo, Motorista</h1>
@@ -19,14 +19,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                         type="text" 
                         placeholder="Usuário (CPF)" 
                         defaultValue="123.456.789-00"
-                        className="w-full p-3 sm:p-4 bg-white border border-golffox-gray-light rounded-lg text-golffox-gray-dark focus:ring-2 focus:ring-golffox-orange-primary focus:outline-none text-sm sm:text-base min-h-[48px]"
+                        className="w-full p-3 sm:p-4 bg-white/5 border border-golffox-gray-light rounded-lg text-golffox-gray-dark focus:ring-2 focus:ring-golffox-orange-primary focus:outline-none text-sm sm:text-base min-h-[48px]"
                         autoComplete="username"
                     />
                     <input 
                         type="password" 
                         placeholder="Senha" 
                         defaultValue="********"
-                        className="w-full p-3 sm:p-4 bg-white border border-golffox-gray-light rounded-lg text-golffox-gray-dark focus:ring-2 focus:ring-golffox-orange-primary focus:outline-none text-sm sm:text-base min-h-[48px]"
+                        className="w-full p-3 sm:p-4 bg-white/5 border border-golffox-gray-light rounded-lg text-golffox-gray-dark focus:ring-2 focus:ring-golffox-orange-primary focus:outline-none text-sm sm:text-base min-h-[48px]"
                         autoComplete="current-password"
                     />
                 </div>

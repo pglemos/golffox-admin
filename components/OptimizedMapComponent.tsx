@@ -174,58 +174,58 @@ const OptimizedMapComponent: React.FC<OptimizedMapProps> = ({
       <div
         ref={mapRef}
         style={{ height, width }}
-        className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700"
+        className="rounded-lg overflow-hidden border border-white/12 dark:border-gray-700"
       />
 
       {/* Loading overlay */}
       {!isMapLoaded && (
-        <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 flex items-center justify-center rounded-lg">
+        <div className="absolute inset-0 bg-white/5 dark:bg-gray-800 flex items-center justify-center rounded-lg">
           <div className="text-center">
             <Loader2 className="w-8 h-8 animate-spin text-golffox-orange-primary mx-auto mb-2" />
-            <p className="text-sm text-gray-600 dark:text-gray-400">Carregando mapa...</p>
+            <p className="text-sm text-golffox-muted dark:text-white/70">Carregando mapa...</p>
           </div>
         </div>
       )}
 
       {/* Painel de informações da rota */}
       {showRouteOptimization && optimizedRoute && (
-        <div className="absolute top-4 left-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm">
+        <div className="absolute top-4 left-4 bg-white/5 dark:bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm">
           <div className="flex items-center gap-2 mb-3">
             <Route className="w-5 h-5 text-golffox-orange-primary" />
-            <h3 className="font-semibold text-gray-900 dark:text-white">Rota Otimizada</h3>
+            <h3 className="font-semibold text-white dark:text-white">Rota Otimizada</h3>
           </div>
 
           <div className="space-y-2 text-sm">
             <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-gray-500" />
-              <span className="text-gray-700 dark:text-gray-300">
+              <MapPin className="w-4 h-4 text-golffox-muted/90" />
+              <span className="text-white dark:text-white/60">
                 {optimizedRoute.waypoints.length} paradas
               </span>
             </div>
 
             <div className="flex items-center gap-2">
-              <Route className="w-4 h-4 text-gray-500" />
-              <span className="text-gray-700 dark:text-gray-300">
+              <Route className="w-4 h-4 text-golffox-muted/90" />
+              <span className="text-white dark:text-white/60">
                 {optimizedRoute.totalDistance.toFixed(1)} km
               </span>
             </div>
 
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-gray-500" />
-              <span className="text-gray-700 dark:text-gray-300">
+              <Clock className="w-4 h-4 text-golffox-muted/90" />
+              <span className="text-white dark:text-white/60">
                 {Math.round(optimizedRoute.totalDuration)} min
               </span>
             </div>
 
             <div className="flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-gray-500" />
-              <span className="text-gray-700 dark:text-gray-300">
+              <DollarSign className="w-4 h-4 text-golffox-muted/90" />
+              <span className="text-white dark:text-white/60">
                 R$ {optimizedRoute.estimatedFuelCost.toFixed(2)}
               </span>
             </div>
 
             {optimizedRoute.savings.percentage > 0 && (
-              <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+              <div className="flex items-center gap-2 text-emerald-200 dark:text-green-400">
                 <Zap className="w-4 h-4" />
                 <span className="font-medium">
                   {optimizedRoute.savings.percentage.toFixed(1)}% economia
@@ -266,7 +266,7 @@ const OptimizedMapComponent: React.FC<OptimizedMapProps> = ({
       )}
 
       {optimizationStatus === 'error' && (
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-full shadow-lg">
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-rose-500/150 text-white px-4 py-2 rounded-full shadow-lg">
           <span className="text-sm font-medium">Erro na otimização</span>
         </div>
       )}

@@ -49,7 +49,7 @@ const ClientLoginScreen: React.FC<ClientLoginScreenProps> = ({ onLogin, employee
 
     return (
         <div className="w-full flex items-center justify-center bg-golffox-gray-light">
-            <div className="w-full max-w-md bg-white p-10 rounded-xl shadow-2xl text-center">
+            <div className="w-full max-w-md bg-white/5 p-10 rounded-xl shadow-2xl text-center">
                 <Image src="/golffox-logo.svg" alt="Golffox Logo" className="h-20 mb-6 mx-auto" width={80} height={80} priority />
                 <h1 className="text-3xl font-bold text-golffox-gray-dark mb-2">Portal do Operador</h1>
                 <p className="text-golffox-gray-medium mb-8">Faça login para gerenciar suas operações.</p>
@@ -64,7 +64,7 @@ const ClientLoginScreen: React.FC<ClientLoginScreenProps> = ({ onLogin, employee
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="seu.email@empresa.com" 
                                 disabled={isLoading}
-                                className="mt-1 w-full p-3 bg-white border border-golffox-gray-light rounded-lg text-golffox-gray-dark focus:ring-2 focus:ring-golffox-orange-primary focus:outline-none"
+                                className="mt-1 w-full p-3 bg-white/5 border border-golffox-gray-light rounded-lg text-golffox-gray-dark focus:ring-2 focus:ring-golffox-orange-primary focus:outline-none"
                             />
                         </div>
                          <div>
@@ -75,7 +75,7 @@ const ClientLoginScreen: React.FC<ClientLoginScreenProps> = ({ onLogin, employee
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="********" 
                                 disabled={isLoading}
-                                className="mt-1 w-full p-3 bg-white border border-golffox-gray-light rounded-lg text-golffox-gray-dark focus:ring-2 focus:ring-golffox-orange-primary focus:outline-none"
+                                className="mt-1 w-full p-3 bg-white/5 border border-golffox-gray-light rounded-lg text-golffox-gray-dark focus:ring-2 focus:ring-golffox-orange-primary focus:outline-none"
                             />
                         </div>
                     </div>

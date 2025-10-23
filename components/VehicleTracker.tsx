@@ -53,12 +53,12 @@ const VehicleTracker: React.FC = () => {
 
   const getEventIcon = (event: TrackingEvent) => {
     switch (event.type) {
-      case 'location_update': return <MapPin className="w-4 h-4 text-blue-500" />;
-      case 'status_change': return <Settings className="w-4 h-4 text-yellow-500" />;
-      case 'emergency': return <AlertTriangle className="w-4 h-4 text-red-500" />;
+      case 'location_update': return <MapPin className="w-4 h-4 text-sky-200" />;
+      case 'status_change': return <Settings className="w-4 h-4 text-amber-200" />;
+      case 'emergency': return <AlertTriangle className="w-4 h-4 text-rose-300" />;
       case 'route_start': return <Play className="w-4 h-4 text-green-500" />;
-      case 'route_end': return <Pause className="w-4 h-4 text-gray-500" />;
-      default: return <Activity className="w-4 h-4 text-gray-500" />;
+      case 'route_end': return <Pause className="w-4 h-4 text-golffox-muted/90" />;
+      default: return <Activity className="w-4 h-4 text-golffox-muted/90" />;
     }
   };
 
@@ -70,7 +70,7 @@ const VehicleTracker: React.FC = () => {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <span className="ml-2 text-gray-600">Carregando veículos...</span>
+        <span className="ml-2 text-golffox-muted">Carregando veículos...</span>
       </div>
     );
   }
@@ -80,9 +80,9 @@ const VehicleTracker: React.FC = () => {
       {/* Header com controles principais */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center space-x-4">
-          <h2 className="text-2xl font-bold text-gray-800">Rastreamento de Veículos</h2>
+          <h2 className="text-2xl font-bold text-white">Rastreamento de Veículos</h2>
           <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-            isTracking ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+            isTracking ? 'bg-emerald-500/20 text-emerald-200' : 'bg-white/5 text-white'
           }`}>
             {isTracking ? 'Rastreando' : 'Parado'}
           </div>
@@ -118,16 +118,16 @@ const VehicleTracker: React.FC = () => {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div className="bg-rose-500/15 border border-red-200 rounded-lg p-4">
           <div className="flex items-center">
-            <AlertTriangle className="w-5 h-5 text-red-500 mr-2" />
-            <span className="text-red-700">{error}</span>
+            <AlertTriangle className="w-5 h-5 text-rose-300 mr-2" />
+            <span className="text-rose-200">{error}</span>
           </div>
         </div>
       )}
 
       {/* Tabs */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-white/12">
         <nav className="-mb-px flex space-x-8">
           {[
             { id: 'vehicles', label: 'Veículos', icon: Truck },
@@ -139,8 +139,8 @@ const VehicleTracker: React.FC = () => {
               onClick={() => setSelectedTab(id as any)}
               className={`flex items-center space-x-2 py-2 px-1 border-b-2 font-medium text-sm ${
                 selectedTab === id
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-blue-500 text-sky-200'
+                  : 'border-transparent text-golffox-muted/90 hover:text-white hover:border-white/15'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -154,7 +154,7 @@ const VehicleTracker: React.FC = () => {
       {selectedTab === 'vehicles' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Lista de veículos */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white/5 rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold mb-4">Frota ({vehicles.length} veículos)</h3>
             <div className="space-y-3">
               {vehicles.map(vehicle => (
@@ -162,8 +162,8 @@ const VehicleTracker: React.FC = () => {
                   key={vehicle.id}
                   className={`p-4 border rounded-lg cursor-pointer transition-colors ${
                     selectedVehicle?.id === vehicle.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-blue-500 bg-sky-500/15'
+                      : 'border-white/12 hover:border-white/15'
                   }`}
                   onClick={() => selectVehicle(vehicle.id)}
                 >
@@ -172,21 +172,21 @@ const VehicleTracker: React.FC = () => {
                       <Truck className={`w-5 h-5 ${getStatusColor(vehicle.status)}`} />
                       <div>
                         <div className="font-medium">{vehicle.plate}</div>
-                        <div className="text-sm text-gray-600">{vehicle.model}</div>
+                        <div className="text-sm text-golffox-muted">{vehicle.model}</div>
                       </div>
                     </div>
                     <div className="text-right">
                       <div className={`text-sm font-medium ${getStatusColor(vehicle.status)}`}>
                         {getStatusLabel(vehicle.status)}
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-golffox-muted/90">
                         {vehicle.currentPassengers}/{vehicle.capacity} passageiros
                       </div>
                     </div>
                   </div>
                   
                   <div className="mt-3 flex items-center justify-between">
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-golffox-muted">
                       Motorista: {vehicle.driver}
                     </div>
                     <div className="flex space-x-2">
@@ -196,7 +196,7 @@ const VehicleTracker: React.FC = () => {
                             e.stopPropagation();
                             startTracking(vehicle.id);
                           }}
-                          className="text-green-600 hover:text-green-800"
+                          className="text-emerald-200 hover:text-emerald-200"
                         >
                           <Play className="w-4 h-4" />
                         </button>
@@ -206,7 +206,7 @@ const VehicleTracker: React.FC = () => {
                           e.stopPropagation();
                           simulateEmergency(vehicle.id);
                         }}
-                        className="text-red-600 hover:text-red-800"
+                        className="text-rose-200 hover:text-red-800"
                       >
                         <AlertTriangle className="w-4 h-4" />
                       </button>
@@ -218,7 +218,7 @@ const VehicleTracker: React.FC = () => {
           </div>
 
           {/* Detalhes do veículo selecionado */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white/5 rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold mb-4">
               {selectedVehicle ? `Detalhes - ${selectedVehicle.plate}` : 'Selecione um veículo'}
             </h3>
@@ -227,11 +227,11 @@ const VehicleTracker: React.FC = () => {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-700">Status</label>
+                    <label className="text-sm font-medium text-white">Status</label>
                     <select
                       value={selectedVehicle.status}
                       onChange={(e) => handleStatusChange(selectedVehicle.id, e.target.value as Vehicle['status'])}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      className="mt-1 block w-full rounded-md border-white/15 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     >
                       <option value="active">Ativo</option>
                       <option value="inactive">Inativo</option>
@@ -240,8 +240,8 @@ const VehicleTracker: React.FC = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700">Capacidade</label>
-                    <div className="mt-1 text-sm text-gray-900">
+                    <label className="text-sm font-medium text-white">Capacidade</label>
+                    <div className="mt-1 text-sm text-white">
                       {selectedVehicle.currentPassengers}/{selectedVehicle.capacity} passageiros
                     </div>
                   </div>
@@ -249,8 +249,8 @@ const VehicleTracker: React.FC = () => {
 
                 {selectedVehicle.lastLocation && (
                   <div>
-                    <label className="text-sm font-medium text-gray-700">Última Localização</label>
-                    <div className="mt-1 text-sm text-gray-900">
+                    <label className="text-sm font-medium text-white">Última Localização</label>
+                    <div className="mt-1 text-sm text-white">
                       <div>Lat: {selectedVehicle.lastLocation.lat.toFixed(6)}</div>
                       <div>Lng: {selectedVehicle.lastLocation.lng.toFixed(6)}</div>
                       <div>Velocidade: {formatSpeed(selectedVehicle.lastLocation.speed)}</div>
@@ -285,8 +285,8 @@ const VehicleTracker: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div className="text-center text-gray-500 py-8">
-                <Truck className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+              <div className="text-center text-golffox-muted/90 py-8">
+                <Truck className="w-12 h-12 mx-auto mb-4 text-white/60" />
                 <p>Selecione um veículo para ver os detalhes</p>
               </div>
             )}
@@ -297,14 +297,14 @@ const VehicleTracker: React.FC = () => {
       {selectedTab === 'tracking' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Histórico de localizações */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white/5 rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">
                 Histórico de Localizações
                 {selectedVehicle && ` - ${selectedVehicle.plate}`}
               </h3>
               {locationHistory.length > 0 && (
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-golffox-muted/90">
                   {locationHistory.length} pontos
                 </span>
               )}
@@ -317,47 +317,47 @@ const VehicleTracker: React.FC = () => {
                     <div key={location.id} className="p-3 border rounded-lg">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
-                          <MapPin className="w-4 h-4 text-blue-500" />
+                          <MapPin className="w-4 h-4 text-sky-200" />
                           <span className="text-sm font-medium">
                             {formatEventTime(location.timestamp)}
                           </span>
                         </div>
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm text-golffox-muted">
                           {formatSpeed(location.speed)}
                         </span>
                       </div>
-                      <div className="mt-1 text-xs text-gray-500">
+                      <div className="mt-1 text-xs text-golffox-muted/90">
                         {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-center text-gray-500 py-8">
-                    <MapPin className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                  <div className="text-center text-golffox-muted/90 py-8">
+                    <MapPin className="w-12 h-12 mx-auto mb-4 text-white/60" />
                     <p>Nenhuma localização registrada</p>
                   </div>
                 )}
               </div>
             ) : (
-              <div className="text-center text-gray-500 py-8">
-                <Navigation className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+              <div className="text-center text-golffox-muted/90 py-8">
+                <Navigation className="w-12 h-12 mx-auto mb-4 text-white/60" />
                 <p>Selecione um veículo para ver o histórico</p>
               </div>
             )}
           </div>
 
           {/* Eventos em tempo real */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white/5 rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Eventos em Tempo Real</h3>
               <div className="flex space-x-2">
                 <button
                   onClick={clearEvents}
-                  className="text-gray-600 hover:text-gray-800"
+                  className="text-golffox-muted hover:text-white"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-golffox-muted/90">
                   {events.length} eventos
                 </span>
               </div>
@@ -372,11 +372,11 @@ const VehicleTracker: React.FC = () => {
                       <span className="text-sm font-medium">
                         {formatEventTime(event.timestamp)}
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-golffox-muted/90">
                         {vehicles.find(v => v.id === event.vehicleId)?.plate}
                       </span>
                     </div>
-                    <div className="mt-1 text-xs text-gray-600">
+                    <div className="mt-1 text-xs text-golffox-muted">
                       {event.type === 'location_update' && 'Localização atualizada'}
                       {event.type === 'status_change' && `Status alterado: ${event.data.oldStatus} → ${event.data.newStatus}`}
                       {event.type === 'emergency' && `Emergência: ${event.data.type}`}
@@ -386,8 +386,8 @@ const VehicleTracker: React.FC = () => {
                   </div>
                 ))
               ) : (
-                <div className="text-center text-gray-500 py-8">
-                  <Activity className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                <div className="text-center text-golffox-muted/90 py-8">
+                  <Activity className="w-12 h-12 mx-auto mb-4 text-white/60" />
                   <p>Nenhum evento registrado</p>
                 </div>
               )}
@@ -397,7 +397,7 @@ const VehicleTracker: React.FC = () => {
       )}
 
       {selectedTab === 'metrics' && (
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white/5 rounded-lg shadow-md p-6">
           <h3 className="text-lg font-semibold mb-4">
             Métricas de Performance
             {selectedVehicle && ` - ${selectedVehicle.plate}`}
@@ -406,52 +406,52 @@ const VehicleTracker: React.FC = () => {
           {selectedVehicle && metrics ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="text-center">
-                <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mx-auto mb-3">
-                  <Navigation className="w-6 h-6 text-blue-600" />
+                <div className="flex items-center justify-center w-12 h-12 bg-sky-500/20 rounded-lg mx-auto mb-3">
+                  <Navigation className="w-6 h-6 text-sky-200" />
                 </div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-white">
                   {formatDistance(metrics.totalDistance)}
                 </div>
-                <div className="text-sm text-gray-600">Distância Total</div>
+                <div className="text-sm text-golffox-muted">Distância Total</div>
               </div>
 
               <div className="text-center">
-                <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg mx-auto mb-3">
-                  <Activity className="w-6 h-6 text-green-600" />
+                <div className="flex items-center justify-center w-12 h-12 bg-emerald-500/20 rounded-lg mx-auto mb-3">
+                  <Activity className="w-6 h-6 text-emerald-200" />
                 </div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-white">
                   {formatSpeed(metrics.averageSpeed)}
                 </div>
-                <div className="text-sm text-gray-600">Velocidade Média</div>
+                <div className="text-sm text-golffox-muted">Velocidade Média</div>
               </div>
 
               <div className="text-center">
-                <div className="flex items-center justify-center w-12 h-12 bg-yellow-100 rounded-lg mx-auto mb-3">
-                  <Fuel className="w-6 h-6 text-yellow-600" />
+                <div className="flex items-center justify-center w-12 h-12 bg-amber-500/20 rounded-lg mx-auto mb-3">
+                  <Fuel className="w-6 h-6 text-amber-200" />
                 </div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-white">
                   {metrics.fuelConsumption.toFixed(1)}L
                 </div>
-                <div className="text-sm text-gray-600">Combustível</div>
+                <div className="text-sm text-golffox-muted">Combustível</div>
               </div>
 
               <div className="text-center">
                 <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg mx-auto mb-3">
                   <Clock className="w-6 h-6 text-purple-600" />
                 </div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-white">
                   {formatDuration(metrics.uptime)}
                 </div>
-                <div className="text-sm text-gray-600">Tempo Ativo</div>
+                <div className="text-sm text-golffox-muted">Tempo Ativo</div>
               </div>
 
               <div className="md:col-span-2 lg:col-span-4">
-                <div className="bg-gray-50 rounded-lg p-4">
+                <div className="bg-white/10 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700">Eficiência</span>
-                    <span className="text-sm text-gray-600">{metrics.efficiency}%</span>
+                    <span className="text-sm font-medium text-white">Eficiência</span>
+                    <span className="text-sm text-golffox-muted">{metrics.efficiency}%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-white/10 rounded-full h-2">
                     <div
                       className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${metrics.efficiency}%` }}
@@ -461,8 +461,8 @@ const VehicleTracker: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="text-center text-gray-500 py-8">
-              <TrendingUp className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+            <div className="text-center text-golffox-muted/90 py-8">
+              <TrendingUp className="w-12 h-12 mx-auto mb-4 text-white/60" />
               <p>
                 {selectedVehicle 
                   ? 'Aguardando dados de rastreamento...' 

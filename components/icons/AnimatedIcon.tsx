@@ -170,7 +170,7 @@ export const NavigationIcon: React.FC<AnimatedIconProps> = (props) => (
   <AnimatedIcon
     variant="premium"
     size="md"
-    className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+    className="text-golffox-muted dark:text-white/60 hover:text-sky-200 dark:hover:text-sky-200"
     {...props}
   />
 );
@@ -180,7 +180,7 @@ export const DashboardIcon: React.FC<AnimatedIconProps> = (props) => (
   <AnimatedIcon
     variant="glow"
     size="lg"
-    className="text-blue-600 dark:text-blue-400"
+    className="text-sky-200 dark:text-sky-200"
     {...props}
   />
 );
@@ -200,7 +200,7 @@ export const ActionIcon: React.FC<AnimatedIconProps> = (props) => (
   <AnimatedIcon
     variant="bounce"
     size="md"
-    className="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300"
+    className="text-emerald-200 dark:text-green-400 hover:text-emerald-200 dark:hover:text-green-300"
     {...props}
   />
 );
