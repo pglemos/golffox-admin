@@ -15,8 +15,8 @@ function App() {
     return () => { supabaseClient.removeChannel(channel) }
   }, [])
   return (
-    <div className="min-h-screen bg-white text-gray-900 dark:bg-[#0B0B0F] dark:text-gray-100">
-      <header className="sticky top-0 backdrop-blur bg-white/60 dark:bg-black/40 border-b border-gray-200/40 dark:border-white/10 p-4">
+    <div className="min-h-screen bg-white/5 text-white dark:bg-[#0B0B0F] dark:text-gray-100">
+      <header className="sticky top-0 backdrop-blur bg-white/60 dark:bg-black/40 border-b border-white/12/40 dark:border-white/10 p-4">
         <h1 className="text-xl font-semibold max-w-6xl mx-auto">Golffox — App do Passageiro</h1>
       </header>
       <main className="max-w-6xl mx-auto p-6 space-y-4">

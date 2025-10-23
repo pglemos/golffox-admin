@@ -476,13 +476,13 @@ const RealTimeMap: React.FC = () => {
       <div>
         <h2 className="text-3xl font-bold text-golffox-gray-dark mb-6">Mapa em Tempo Real</h2>
         <div className="bg-golffox-white rounded-lg shadow-md p-4">
-          <div className="relative w-full h-[60vh] bg-gray-200 rounded-lg overflow-hidden">
+          <div className="relative w-full h-[60vh] bg-white/10 rounded-lg overflow-hidden">
             {mapStatus.status === 'error' && <MapApiKeyWarning message={mapStatus.message} />}
-            {mapStatus.status === 'loading' && <div className="w-full h-full flex items-center justify-center bg-gray-200"><p className="text-golffox-gray-medium">Carregando Mapa...</p></div>}
+            {mapStatus.status === 'loading' && <div className="w-full h-full flex items-center justify-center bg-white/10"><p className="text-golffox-gray-medium">Carregando Mapa...</p></div>}
             <div ref={mapRef} className={`w-full h-full ${mapStatus.status !== 'loaded' ? 'invisible' : ''}`} />
 
             {selectedVehicle && (
-              <div className="absolute top-4 left-4 bg-white p-4 rounded-lg shadow-xl w-80 animate-fade-in-down z-10">
+              <div className="absolute top-4 left-4 bg-white/5 p-4 rounded-lg shadow-xl w-80 animate-fade-in-down z-10">
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex items-center">
                     <TruckIcon className="h-6 w-6 mr-2 text-golffox-gray-dark" />
@@ -507,7 +507,7 @@ const RealTimeMap: React.FC = () => {
               </div>
             )}
 
-            <div className="absolute bottom-4 right-4 bg-white p-4 rounded-lg shadow-xl z-0">
+            <div className="absolute bottom-4 right-4 bg-white/5 p-4 rounded-lg shadow-xl z-0">
               <h4 className="font-bold mb-2 text-golffox-gray-dark">Legenda</h4>
               <ul className="text-sm">
                 <li className="flex items-center mb-1">
@@ -527,7 +527,7 @@ const RealTimeMap: React.FC = () => {
                   <span>Garagem</span>
                 </li>
                 <li className="flex items-center">
-                  <div className="w-4 h-4 rounded-full mr-2 border-2 border-blue-500 bg-white"></div>
+                  <div className="w-4 h-4 rounded-full mr-2 border-2 border-blue-500 bg-white/5"></div>
                   <span>Pontos de parada (clique no ônibus)</span>
                 </li>
               </ul>

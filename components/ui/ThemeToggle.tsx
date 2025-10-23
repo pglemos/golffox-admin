@@ -39,7 +39,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+      className="p-2 rounded-full hover:bg-white/10 dark:hover:bg-gray-700 transition-colors"
       aria-label={darkMode ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
     >
       {darkMode ? (
@@ -60,7 +60,7 @@ export default function ThemeToggle() {
         // Ícone da lua para tema escuro
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5 text-gray-700"
+          className="h-5 w-5 text-white"
           viewBox="0 0 20 20"
           fill="currentColor"
         >

@@ -345,7 +345,7 @@ const RoutesTable: React.FC<RoutesTableProps> = ({ routes, setRoutes }) => {
           </thead>
           <tbody className="text-golffox-gray-medium">
             {routes.map((route: Route, index: number) => (
-              <tr key={route.id} className={index % 2 === 0 ? 'bg-white' : 'bg-golffox-gray-light'}>
+              <tr key={route.id} className={index % 2 === 0 ? 'bg-white/5' : 'bg-golffox-gray-light'}>
                 <td className="py-4 px-6 font-medium text-golffox-gray-dark">{route.name}</td>
                 <td className="py-4 px-6">{route.driver}</td>
                 <td className="py-4 px-6">{route.vehicle}</td>
@@ -363,7 +363,7 @@ const RoutesTable: React.FC<RoutesTableProps> = ({ routes, setRoutes }) => {
                     <button onClick={() => openEditModal(route)} className="text-golffox-blue-light hover:text-golffox-blue-dark p-1" title="Editar Rota">
                       <PencilIcon className="h-5 w-5" variant="hover" />
                     </button>
-                    <button onClick={() => openConfirmModal(route.id)} className="text-golffox-red hover:text-red-700 p-1" title="Excluir Rota">
+                    <button onClick={() => openConfirmModal(route.id)} className="text-golffox-red hover:text-rose-200 p-1" title="Excluir Rota">
                       <TrashIcon className="h-5 w-5" variant="pulse" />
                     </button>
                   </div>
@@ -377,7 +377,7 @@ const RoutesTable: React.FC<RoutesTableProps> = ({ routes, setRoutes }) => {
       {/* Edit/Create Modal */}
       {isModalOpen && currentRoute && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in-down">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] flex flex-col">
+          <div className="bg-white/5 rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] flex flex-col">
             <div className="flex justify-between items-center mb-4 flex-shrink-0">
               <h3 className="text-xl font-bold text-golffox-gray-dark">{modalMode === 'create' ? 'Criar Nova Rota' : 'Editar Rota'}</h3>
               <button onClick={handleClose} className="p-1 rounded-full hover:bg-golffox-gray-light">
@@ -393,7 +393,7 @@ const RoutesTable: React.FC<RoutesTableProps> = ({ routes, setRoutes }) => {
                   id="routeName"
                   value={currentRoute.name || ''}
                   onChange={(e) => setCurrentRoute({...currentRoute, name: e.target.value})}
-                  className="mt-1 block w-full px-3 py-2 bg-white border border-golffox-gray-light rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-golffox-orange-primary focus:ring-1 focus:ring-golffox-orange-primary"
+                  className="mt-1 block w-full px-3 py-2 bg-white/5 border border-golffox-gray-light rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-golffox-orange-primary focus:ring-1 focus:ring-golffox-orange-primary"
                   placeholder="Ex: Rota Minerva - Noite"
                 />
               </div>
@@ -404,7 +404,7 @@ const RoutesTable: React.FC<RoutesTableProps> = ({ routes, setRoutes }) => {
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="text-lg font-bold text-golffox-gray-dark">Passageiros da Rota</h4>
                   {routeOptimizationSuggestion && (
-                    <div className="flex items-center text-sm text-golffox-blue-light bg-blue-50 px-3 py-1 rounded-lg">
+                    <div className="flex items-center text-sm text-golffox-blue-light bg-sky-500/15 px-3 py-1 rounded-lg">
                       <TruckIcon className="h-4 w-4 mr-2" />
                       {routeOptimizationSuggestion}
                     </div>
@@ -420,7 +420,7 @@ const RoutesTable: React.FC<RoutesTableProps> = ({ routes, setRoutes }) => {
                     <select
                       value={selectedCompany}
                       onChange={(e) => setSelectedCompany(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-golffox-orange-primary"
+                      className="w-full px-3 py-2 border border-white/15 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-golffox-orange-primary"
                     >
                       <option value="">Selecione uma empresa...</option>
                       {MOCK_COMPANIES.map(company => (
@@ -442,7 +442,7 @@ const RoutesTable: React.FC<RoutesTableProps> = ({ routes, setRoutes }) => {
                         className="w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-golffox-orange-primary"
                       />
                       {showEmployeeSuggestions && filteredEmployees.length > 0 && (
-                        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                        <div className="absolute z-10 w-full mt-1 bg-white/5 border border-white/15 rounded-md shadow-lg max-h-40 overflow-y-auto">
                           {filteredEmployees.map(employee => (
                             <button
                               key={employee.id}
@@ -450,7 +450,7 @@ const RoutesTable: React.FC<RoutesTableProps> = ({ routes, setRoutes }) => {
                               className="w-full text-left px-3 py-2 hover:bg-golffox-gray-light text-sm"
                             >
                               <div className="font-medium">{employee.name}</div>
-                              <div className="text-xs text-gray-500">{employee.cpf}</div>
+                              <div className="text-xs text-golffox-muted/90">{employee.cpf}</div>
                             </button>
                           ))}
                         </div>
@@ -484,10 +484,10 @@ const RoutesTable: React.FC<RoutesTableProps> = ({ routes, setRoutes }) => {
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-golffox-orange-primary"></div>
                           </div>
                         )}
-                        <MapPinIcon className="absolute right-2 top-2 h-4 w-4 text-gray-400" variant="float" />
+                        <MapPinIcon className="absolute right-2 top-2 h-4 w-4 text-white/70" variant="float" />
                       </div>
                       {showAddressSuggestions && addressSuggestions.length > 0 && (
-                        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                        <div className="absolute z-10 w-full mt-1 bg-white/5 border border-white/15 rounded-md shadow-lg max-h-40 overflow-y-auto">
                           {addressSuggestions.map((prediction, index) => (
                             <button
                               key={prediction.place_id}
@@ -495,7 +495,7 @@ const RoutesTable: React.FC<RoutesTableProps> = ({ routes, setRoutes }) => {
                               className="w-full text-left px-3 py-2 hover:bg-golffox-gray-light text-sm"
                             >
                               <div className="flex items-center">
-                                <MapPinIcon className="h-4 w-4 mr-2 text-gray-400" variant="float" />
+                                <MapPinIcon className="h-4 w-4 mr-2 text-white/70" variant="float" />
                                 {prediction.description}
                               </div>
                             </button>
@@ -508,7 +508,7 @@ const RoutesTable: React.FC<RoutesTableProps> = ({ routes, setRoutes }) => {
                   <button 
                     onClick={handleAddPassenger} 
                     disabled={!newPassengerName.trim() || !newPassengerAddress.trim()}
-                    className="w-full md:w-auto px-4 py-2 bg-golffox-blue-light text-white text-sm font-semibold rounded-lg hover:bg-golffox-blue-dark disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                    className="w-full md:w-auto px-4 py-2 bg-golffox-blue-light text-white text-sm font-semibold rounded-lg hover:bg-golffox-blue-dark disabled:bg-white/12 disabled:cursor-not-allowed transition-colors"
                   >
                     <PlusCircleIcon className="h-4 w-4 mr-2 inline" variant="bounce" />
                     Adicionar Passageiro
@@ -521,7 +521,7 @@ const RoutesTable: React.FC<RoutesTableProps> = ({ routes, setRoutes }) => {
                   ) : (
                     <div className="space-y-2">
                       {currentRoute.passengers.list.map((p, index) => (
-                        <div key={p.id} className="bg-white border border-golffox-gray-light p-4 rounded-lg">
+                        <div key={p.id} className="bg-white/5 border border-golffox-gray-light p-4 rounded-lg">
                           <div className="flex justify-between items-start">
                             <div className="flex items-start flex-1">
                               <div className="flex items-center justify-center w-8 h-8 bg-golffox-blue-light text-white rounded-full text-sm font-bold mr-3 mt-1">
@@ -532,7 +532,7 @@ const RoutesTable: React.FC<RoutesTableProps> = ({ routes, setRoutes }) => {
                                   <UserIcon className="h-4 w-4 mr-2 text-golffox-gray-medium" variant="hover"/>
                                   <p className="font-semibold text-golffox-gray-dark">{p.name}</p>
                                   {p.cpf !== '000.000.000-00' && (
-                                    <span className="ml-2 text-xs text-golffox-gray-medium bg-gray-100 px-2 py-1 rounded">
+                                    <span className="ml-2 text-xs text-golffox-gray-medium bg-white/5 px-2 py-1 rounded">
                                       {p.cpf}
                                     </span>
                                   )}
@@ -551,7 +551,7 @@ const RoutesTable: React.FC<RoutesTableProps> = ({ routes, setRoutes }) => {
                             </div>
                             <button 
                               onClick={() => handleRemovePassenger(p.id)} 
-                              className="text-golffox-red hover:text-red-700 p-1 ml-2" 
+                              className="text-golffox-red hover:text-rose-200 p-1 ml-2" 
                               title="Remover Passageiro"
                             >
                               <TrashIcon className="h-5 w-5"/>
@@ -566,7 +566,7 @@ const RoutesTable: React.FC<RoutesTableProps> = ({ routes, setRoutes }) => {
             </div>
 
             <div className="mt-6 flex justify-end space-x-2 flex-shrink-0 border-t pt-4">
-              <button onClick={handleClose} className="px-4 py-2 bg-golffox-gray-light text-golffox-gray-dark font-semibold rounded-lg hover:bg-gray-300">Cancelar</button>
+              <button onClick={handleClose} className="px-4 py-2 bg-golffox-gray-light text-golffox-gray-dark font-semibold rounded-lg hover:bg-white/12">Cancelar</button>
               <button onClick={handleSave} className="px-4 py-2 bg-golffox-orange-primary text-white font-semibold rounded-lg hover:bg-orange-600">Salvar Rota</button>
             </div>
           </div>
@@ -576,11 +576,11 @@ const RoutesTable: React.FC<RoutesTableProps> = ({ routes, setRoutes }) => {
       {/* Delete Confirmation Modal */}
       {isConfirmOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in-down">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm">
+          <div className="bg-white/5 rounded-lg shadow-xl p-6 w-full max-w-sm">
             <h3 className="text-xl font-bold text-golffox-gray-dark">Confirmar Exclusão</h3>
             <p className="text-golffox-gray-medium my-4">Tem certeza que deseja excluir esta rota? Esta ação não pode ser desfeita.</p>
             <div className="mt-6 flex justify-end space-x-2">
-              <button onClick={handleClose} className="px-4 py-2 bg-golffox-gray-light text-golffox-gray-dark font-semibold rounded-lg hover:bg-gray-300">Cancelar</button>
+              <button onClick={handleClose} className="px-4 py-2 bg-golffox-gray-light text-golffox-gray-dark font-semibold rounded-lg hover:bg-white/12">Cancelar</button>
               <button onClick={handleDelete} className="px-4 py-2 bg-golffox-red text-white font-semibold rounded-lg hover:bg-red-700">Excluir</button>
             </div>
           </div>

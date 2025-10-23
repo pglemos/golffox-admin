@@ -92,13 +92,13 @@ const TravelTimeEstimator: React.FC<TravelTimeEstimatorProps> = ({
       case TrafficCondition.LIGHT:
         return <CheckCircle className="w-4 h-4 text-green-500" />;
       case TrafficCondition.MODERATE:
-        return <Minus className="w-4 h-4 text-yellow-500" />;
+        return <Minus className="w-4 h-4 text-amber-200" />;
       case TrafficCondition.HEAVY:
         return <TrendingUp className="w-4 h-4 text-orange-500" />;
       case TrafficCondition.SEVERE:
-        return <AlertTriangle className="w-4 h-4 text-red-500" />;
+        return <AlertTriangle className="w-4 h-4 text-rose-300" />;
       default:
-        return <Clock className="w-4 h-4 text-gray-500" />;
+        return <Clock className="w-4 h-4 text-golffox-muted/90" />;
     }
   };
 
@@ -106,15 +106,15 @@ const TravelTimeEstimator: React.FC<TravelTimeEstimatorProps> = ({
   const getTrafficBgColor = (condition: TrafficCondition) => {
     switch (condition) {
       case TrafficCondition.LIGHT:
-        return 'bg-green-50 border-green-200';
+        return 'bg-emerald-500/15 border-green-200';
       case TrafficCondition.MODERATE:
-        return 'bg-yellow-50 border-yellow-200';
+        return 'bg-amber-500/15 border-yellow-200';
       case TrafficCondition.HEAVY:
         return 'bg-orange-50 border-orange-200';
       case TrafficCondition.SEVERE:
-        return 'bg-red-50 border-red-200';
+        return 'bg-rose-500/15 border-red-200';
       default:
-        return 'bg-gray-50 border-gray-200';
+        return 'bg-white/10 border-white/12';
     }
   };
 
@@ -142,19 +142,19 @@ const TravelTimeEstimator: React.FC<TravelTimeEstimatorProps> = ({
   return (
     <div className="space-y-6">
       {/* Cabeçalho com resumo */}
-      <div className="bg-white p-6 rounded-lg shadow-md">
+      <div className="bg-white/5 p-6 rounded-lg shadow-md">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-gray-900">Estimativas de Tempo de Viagem</h2>
+          <h2 className="text-2xl font-bold text-white">Estimativas de Tempo de Viagem</h2>
           <div className="flex items-center space-x-4">
             {showTrafficMonitoring && (
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <div className="flex items-center space-x-2 text-sm text-golffox-muted">
                 <Navigation className="w-4 h-4" />
                 <span>{getTotalActiveMonitors()} rotas monitoradas</span>
               </div>
             )}
             <button
               onClick={clearAllEstimates}
-              className="flex items-center space-x-2 px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              className="flex items-center space-x-2 px-3 py-2 text-sm bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
             >
               <RefreshCw className="w-4 h-4" />
               <span>Limpar Tudo</span>
@@ -166,23 +166,23 @@ const TravelTimeEstimator: React.FC<TravelTimeEstimatorProps> = ({
         {trafficSummary.totalRoutes > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{trafficSummary.totalRoutes}</div>
-              <div className="text-sm text-gray-600">Rotas Calculadas</div>
+              <div className="text-2xl font-bold text-white">{trafficSummary.totalRoutes}</div>
+              <div className="text-sm text-golffox-muted">Rotas Calculadas</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{formatDuration(Math.round(trafficSummary.averageDelay))}</div>
-              <div className="text-sm text-gray-600">Atraso Médio</div>
+              <div className="text-2xl font-bold text-sky-200">{formatDuration(Math.round(trafficSummary.averageDelay))}</div>
+              <div className="text-sm text-golffox-muted">Atraso Médio</div>
             </div>
             <div className="text-center flex flex-col items-center">
               <div className="flex items-center space-x-2">
                 {getTrafficIcon(trafficSummary.worstTrafficCondition)}
                 <span className="text-lg font-semibold capitalize">{trafficSummary.worstTrafficCondition}</span>
               </div>
-              <div className="text-sm text-gray-600">Pior Condição</div>
+              <div className="text-sm text-golffox-muted">Pior Condição</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-red-600">{trafficSummary.routesWithHeavyTraffic}</div>
-              <div className="text-sm text-gray-600">Trânsito Pesado</div>
+              <div className="text-2xl font-bold text-rose-200">{trafficSummary.routesWithHeavyTraffic}</div>
+              <div className="text-sm text-golffox-muted">Trânsito Pesado</div>
             </div>
           </div>
         )}
@@ -199,16 +199,16 @@ const TravelTimeEstimator: React.FC<TravelTimeEstimatorProps> = ({
           return (
             <div
               key={route.id}
-              className={`bg-white rounded-lg shadow-md border-2 transition-all ${
-                estimate ? getTrafficBgColor(estimate.trafficConditions) : 'border-gray-200'
+              className={`bg-white/5 rounded-lg shadow-md border-2 transition-all ${
+                estimate ? getTrafficBgColor(estimate.trafficConditions) : 'border-white/12'
               }`}
             >
               {/* Cabeçalho da rota */}
-              <div className="p-4 border-b border-gray-200">
+              <div className="p-4 border-b border-white/12">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">{route.name}</h3>
-                    <div className="flex items-center space-x-4 text-sm text-gray-600">
+                    <h3 className="text-lg font-semibold text-white mb-1">{route.name}</h3>
+                    <div className="flex items-center space-x-4 text-sm text-golffox-muted">
                       <div className="flex items-center space-x-1">
                         <Users className="w-4 h-4" />
                         <span>{route.passengers.list.length} passageiros</span>
@@ -242,7 +242,7 @@ const TravelTimeEstimator: React.FC<TravelTimeEstimatorProps> = ({
                         className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
                           isMonitoring 
                             ? 'bg-green-600 text-white hover:bg-green-700' 
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            : 'bg-white/5 text-white hover:bg-white/10'
                         }`}
                       >
                         <Navigation className="w-4 h-4" />
@@ -254,7 +254,7 @@ const TravelTimeEstimator: React.FC<TravelTimeEstimatorProps> = ({
                       <button
                         onClick={() => refreshEstimate(route.id)}
                         disabled={loading}
-                        className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-2 text-golffox-muted hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                       >
                         <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                       </button>
@@ -266,7 +266,7 @@ const TravelTimeEstimator: React.FC<TravelTimeEstimatorProps> = ({
               {/* Conteúdo da estimativa */}
               <div className="p-4">
                 {error && (
-                  <div className="flex items-center space-x-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700">
+                  <div className="flex items-center space-x-2 p-3 bg-rose-500/15 border border-red-200 rounded-lg text-rose-200">
                     <AlertTriangle className="w-4 h-4" />
                     <span className="text-sm">{error}</span>
                   </div>
@@ -276,27 +276,27 @@ const TravelTimeEstimator: React.FC<TravelTimeEstimatorProps> = ({
                   <div className="space-y-4">
                     {/* Informações principais */}
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center p-3 bg-white rounded-lg border">
-                        <div className="text-2xl font-bold text-blue-600">
+                      <div className="text-center p-3 bg-white/5 rounded-lg border">
+                        <div className="text-2xl font-bold text-sky-200">
                           {formatDuration(estimate.totalDuration)}
                         </div>
-                        <div className="text-sm text-gray-600">Tempo Total</div>
+                        <div className="text-sm text-golffox-muted">Tempo Total</div>
                       </div>
-                      <div className="text-center p-3 bg-white rounded-lg border">
-                        <div className="text-2xl font-bold text-green-600">
+                      <div className="text-center p-3 bg-white/5 rounded-lg border">
+                        <div className="text-2xl font-bold text-emerald-200">
                           {formatDistance(estimate.totalDistance)}
                         </div>
-                        <div className="text-sm text-gray-600">Distância</div>
+                        <div className="text-sm text-golffox-muted">Distância</div>
                       </div>
                     </div>
 
                     {/* Condição de trânsito */}
-                    <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
+                    <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg border">
                       <div className="flex items-center space-x-2">
                         {getTrafficIcon(estimate.trafficConditions)}
                         <span className="font-medium capitalize">{estimate.trafficConditions}</span>
                       </div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-golffox-muted">
                         Chegada: {estimate.estimatedArrival.toLocaleTimeString('pt-BR', { 
                           hour: '2-digit', 
                           minute: '2-digit' 
@@ -307,20 +307,20 @@ const TravelTimeEstimator: React.FC<TravelTimeEstimatorProps> = ({
                     {/* Segmentos da rota */}
                     {estimate.segments.length > 0 && (
                       <div className="space-y-2">
-                        <h4 className="font-medium text-gray-900">Segmentos da Rota</h4>
+                        <h4 className="font-medium text-white">Segmentos da Rota</h4>
                         <div className="space-y-2 max-h-40 overflow-y-auto">
                           {estimate.segments.map((segment: any, index: number) => (
-                            <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm">
+                            <div key={index} className="flex items-center justify-between p-2 bg-white/10 rounded text-sm">
                               <div className="flex items-center space-x-2">
-                                <MapPin className="w-3 h-3 text-gray-500" />
+                                <MapPin className="w-3 h-3 text-golffox-muted/90" />
                                 <span className="truncate max-w-32">
                                   {segment.passengerPickup?.name || `Parada ${index + 1}`}
                                 </span>
                               </div>
-                              <div className="flex items-center space-x-2 text-gray-600">
+                              <div className="flex items-center space-x-2 text-golffox-muted">
                                 <span>{formatDuration(segment.duration)}</span>
                                 {segment.trafficDelay > 0 && (
-                                  <span className="text-red-500">+{formatDuration(segment.trafficDelay)}</span>
+                                  <span className="text-rose-300">+{formatDuration(segment.trafficDelay)}</span>
                                 )}
                               </div>
                             </div>
@@ -332,20 +332,20 @@ const TravelTimeEstimator: React.FC<TravelTimeEstimatorProps> = ({
                     {/* Rotas alternativas */}
                     {estimate.alternativeRoutes && estimate.alternativeRoutes.length > 0 && (
                       <div className="space-y-2">
-                        <h4 className="font-medium text-gray-900">Rotas Alternativas</h4>
+                        <h4 className="font-medium text-white">Rotas Alternativas</h4>
                         <div className="space-y-2">
                           {estimate.alternativeRoutes.map((altRoute: any, index: number) => (
-                            <div key={index} className="flex items-center justify-between p-2 bg-blue-50 rounded text-sm">
+                            <div key={index} className="flex items-center justify-between p-2 bg-sky-500/15 rounded text-sm">
                               <span className="font-medium">{altRoute.name}</span>
                               <div className="flex items-center space-x-2">
                                 <span>{formatDuration(altRoute.duration)}</span>
                                 {altRoute.savings > 0 ? (
-                                  <span className="text-green-600 flex items-center">
+                                  <span className="text-emerald-200 flex items-center">
                                     <TrendingDown className="w-3 h-3 mr-1" />
                                     -{formatDuration(altRoute.savings)}
                                   </span>
                                 ) : altRoute.savings < 0 ? (
-                                  <span className="text-red-600 flex items-center">
+                                  <span className="text-rose-200 flex items-center">
                                     <TrendingUp className="w-3 h-3 mr-1" />
                                     +{formatDuration(Math.abs(altRoute.savings))}
                                   </span>
@@ -360,7 +360,7 @@ const TravelTimeEstimator: React.FC<TravelTimeEstimatorProps> = ({
                 )}
 
                 {!estimate && !error && !loading && (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-center py-8 text-golffox-muted/90">
                     <Clock className="w-8 h-8 mx-auto mb-2 opacity-50" />
                     <p>Clique em &quot;Calcular&quot; para obter a estimativa de tempo</p>
                   </div>
@@ -372,7 +372,7 @@ const TravelTimeEstimator: React.FC<TravelTimeEstimatorProps> = ({
       </div>
 
       {routes.length === 0 && (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-golffox-muted/90">
           <RouteIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
           <p className="text-lg">Nenhuma rota disponível</p>
           <p className="text-sm">Adicione rotas para calcular estimativas de tempo</p>

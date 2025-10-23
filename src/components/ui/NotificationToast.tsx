@@ -58,13 +58,13 @@ const NotificationToast: React.FC<NotificationToastProps> = ({
         
         switch (notification.type) {
             case AlertType.Critical:
-                return `${baseStyles} bg-red-50 border-red-200 text-red-800`;
+                return `${baseStyles} bg-rose-500/15 border-red-200 text-red-800`;
             case AlertType.Warning:
-                return `${baseStyles} bg-yellow-50 border-yellow-200 text-yellow-800`;
+                return `${baseStyles} bg-amber-500/15 border-yellow-200 text-yellow-800`;
             case AlertType.Info:
-                return `${baseStyles} bg-blue-50 border-blue-200 text-blue-800`;
+                return `${baseStyles} bg-sky-500/15 border-blue-200 text-blue-800`;
             default:
-                return `${baseStyles} bg-gray-50 border-gray-200 text-gray-800`;
+                return `${baseStyles} bg-white/10 border-white/12 text-white`;
         }
     };
 

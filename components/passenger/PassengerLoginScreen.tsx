@@ -33,7 +33,7 @@ const PassengerLoginScreen: React.FC<PassengerLoginScreenProps> = ({ employees, 
     };
 
     return (
-        <div className="flex flex-col items-center justify-center h-full bg-white p-4 sm:p-8">
+        <div className="flex flex-col items-center justify-center h-full bg-white/5 p-4 sm:p-8">
             <Image src="/golffox-logo.svg" alt="Golffox Logo" width={96} height={96} className="h-20 sm:h-24 mb-6 sm:mb-8" />
             <h1 className="text-2xl sm:text-3xl font-bold text-golffox-gray-dark mb-2">Acesso do Passageiro</h1>
             <p className="text-golffox-gray-medium mb-8 sm:mb-10 text-center text-sm sm:text-base">Use seu CPF e senha para acompanhar sua rota.</p>
@@ -46,7 +46,7 @@ const PassengerLoginScreen: React.FC<PassengerLoginScreenProps> = ({ employees, 
                         value={cpf}
                         onChange={(e) => setCpf(e.target.value)}
                         disabled={isLoading}
-                        className="w-full p-4 bg-white border border-golffox-gray-light rounded-lg text-golffox-gray-dark focus:ring-2 focus:ring-golffox-orange-primary focus:outline-none text-base"
+                        className="w-full p-4 bg-white/5 border border-golffox-gray-light rounded-lg text-golffox-gray-dark focus:ring-2 focus:ring-golffox-orange-primary focus:outline-none text-base"
                         autoComplete="username"
                     />
                     <input 
@@ -55,7 +55,7 @@ const PassengerLoginScreen: React.FC<PassengerLoginScreenProps> = ({ employees, 
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         disabled={isLoading}
-                        className="w-full p-4 bg-white border border-golffox-gray-light rounded-lg text-golffox-gray-dark focus:ring-2 focus:ring-golffox-orange-primary focus:outline-none text-base"
+                        className="w-full p-4 bg-white/5 border border-golffox-gray-light rounded-lg text-golffox-gray-dark focus:ring-2 focus:ring-golffox-orange-primary focus:outline-none text-base"
                         autoComplete="current-password"
                     />
                 </div>

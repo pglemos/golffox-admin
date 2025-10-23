@@ -46,14 +46,14 @@ export const ReportExporter: React.FC<ReportExporterProps> = ({ onClose }) => {
       name: 'Dashboard de Análises',
       description: 'Relatório completo com todas as métricas',
       icon: FileText,
-      color: 'text-blue-600'
+      color: 'text-sky-200'
     },
     {
       id: 'routes',
       name: 'Análise de Rotas',
       description: 'Otimização e performance de rotas',
       icon: FileText,
-      color: 'text-green-600'
+      color: 'text-emerald-200'
     },
     {
       id: 'vehicles',
@@ -77,21 +77,21 @@ export const ReportExporter: React.FC<ReportExporterProps> = ({ onClose }) => {
       name: 'PDF',
       description: 'Documento formatado para impressão',
       icon: FileText,
-      color: 'text-red-600'
+      color: 'text-rose-200'
     },
     {
       id: 'excel' as const,
       name: 'Excel',
       description: 'Planilha para análise de dados',
       icon: Table,
-      color: 'text-green-600'
+      color: 'text-emerald-200'
     },
     {
       id: 'csv' as const,
       name: 'CSV',
       description: 'Dados tabulares simples',
       icon: File,
-      color: 'text-blue-600'
+      color: 'text-sky-200'
     }
   ];
 
@@ -167,17 +167,17 @@ export const ReportExporter: React.FC<ReportExporterProps> = ({ onClose }) => {
   const exportStats = getExportStats();
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 max-w-4xl mx-auto">
+    <div className="bg-white/5 rounded-lg shadow-lg p-6 max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
-          <Download className="h-6 w-6 text-blue-600" />
-          <h2 className="text-xl font-semibold text-gray-900">Exportar Relatórios</h2>
+          <Download className="h-6 w-6 text-sky-200" />
+          <h2 className="text-xl font-semibold text-white">Exportar Relatórios</h2>
         </div>
         {onClose && (
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-white/70 hover:text-golffox-muted transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -186,12 +186,12 @@ export const ReportExporter: React.FC<ReportExporterProps> = ({ onClose }) => {
 
       {/* Error Display */}
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-2">
-          <AlertCircle className="h-5 w-5 text-red-600" />
-          <span className="text-red-700">{error}</span>
+        <div className="mb-4 p-3 bg-rose-500/15 border border-red-200 rounded-lg flex items-center space-x-2">
+          <AlertCircle className="h-5 w-5 text-rose-200" />
+          <span className="text-rose-200">{error}</span>
           <button
             onClick={clearError}
-            className="ml-auto text-red-600 hover:text-red-800"
+            className="ml-auto text-rose-200 hover:text-red-800"
           >
             <X className="h-4 w-4" />
           </button>
@@ -201,7 +201,7 @@ export const ReportExporter: React.FC<ReportExporterProps> = ({ onClose }) => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Seleção de Relatórios */}
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Selecionar Relatórios</h3>
+          <h3 className="text-lg font-medium text-white mb-4">Selecionar Relatórios</h3>
           <div className="space-y-3">
             {reportTypes.map((report) => {
               const Icon = report.icon;
@@ -212,19 +212,19 @@ export const ReportExporter: React.FC<ReportExporterProps> = ({ onClose }) => {
                   key={report.id}
                   className={`p-3 border rounded-lg cursor-pointer transition-all ${
                     isSelected
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-blue-500 bg-sky-500/15'
+                      : 'border-white/12 hover:border-white/15'
                   }`}
                   onClick={() => handleReportToggle(report.id)}
                 >
                   <div className="flex items-center space-x-3">
                     <Icon className={`h-5 w-5 ${report.color}`} />
                     <div className="flex-1">
-                      <h4 className="font-medium text-gray-900">{report.name}</h4>
-                      <p className="text-sm text-gray-600">{report.description}</p>
+                      <h4 className="font-medium text-white">{report.name}</h4>
+                      <p className="text-sm text-golffox-muted">{report.description}</p>
                     </div>
                     {isSelected && (
-                      <CheckCircle className="h-5 w-5 text-blue-600" />
+                      <CheckCircle className="h-5 w-5 text-sky-200" />
                     )}
                   </div>
                 </div>
@@ -235,7 +235,7 @@ export const ReportExporter: React.FC<ReportExporterProps> = ({ onClose }) => {
 
         {/* Configurações de Exportação */}
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Formato de Exportação</h3>
+          <h3 className="text-lg font-medium text-white mb-4">Formato de Exportação</h3>
           
           {/* Formatos */}
           <div className="space-y-3 mb-6">
@@ -248,19 +248,19 @@ export const ReportExporter: React.FC<ReportExporterProps> = ({ onClose }) => {
                   key={format.id}
                   className={`p-3 border rounded-lg cursor-pointer transition-all ${
                     isSelected
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-blue-500 bg-sky-500/15'
+                      : 'border-white/12 hover:border-white/15'
                   }`}
                   onClick={() => setSelectedFormat(format.id)}
                 >
                   <div className="flex items-center space-x-3">
                     <Icon className={`h-5 w-5 ${format.color}`} />
                     <div className="flex-1">
-                      <h4 className="font-medium text-gray-900">{format.name}</h4>
-                      <p className="text-sm text-gray-600">{format.description}</p>
+                      <h4 className="font-medium text-white">{format.name}</h4>
+                      <p className="text-sm text-golffox-muted">{format.description}</p>
                     </div>
                     {isSelected && (
-                      <CheckCircle className="h-5 w-5 text-blue-600" />
+                      <CheckCircle className="h-5 w-5 text-sky-200" />
                     )}
                   </div>
                 </div>
@@ -270,7 +270,7 @@ export const ReportExporter: React.FC<ReportExporterProps> = ({ onClose }) => {
 
           {/* Nome do Arquivo */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-white mb-2">
               Nome do Arquivo (opcional)
             </label>
             <input
@@ -278,7 +278,7 @@ export const ReportExporter: React.FC<ReportExporterProps> = ({ onClose }) => {
               value={customFileName}
               onChange={(e) => setCustomFileName(e.target.value)}
               placeholder="relatorio_personalizado"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-white/15 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
 
@@ -286,31 +286,31 @@ export const ReportExporter: React.FC<ReportExporterProps> = ({ onClose }) => {
           <div className="mb-6">
             <button
               onClick={() => setShowAdvanced(!showAdvanced)}
-              className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800"
+              className="flex items-center space-x-2 text-sm text-sky-200 hover:text-blue-800"
             >
               <Settings className="h-4 w-4" />
               <span>Configurações Avançadas</span>
             </button>
 
             {showAdvanced && (
-              <div className="mt-3 space-y-3 p-3 bg-gray-50 rounded-lg">
+              <div className="mt-3 space-y-3 p-3 bg-white/10 rounded-lg">
                 <label className="flex items-center space-x-2">
                   <input
                     type="checkbox"
                     checked={includeCharts}
                     onChange={(e) => setIncludeCharts(e.target.checked)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-white/15 text-sky-200 focus:ring-blue-500"
                   />
-                  <span className="text-sm text-gray-700">Incluir gráficos</span>
+                  <span className="text-sm text-white">Incluir gráficos</span>
                 </label>
                 <label className="flex items-center space-x-2">
                   <input
                     type="checkbox"
                     checked={includeRawData}
                     onChange={(e) => setIncludeRawData(e.target.checked)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-white/15 text-sky-200 focus:ring-blue-500"
                   />
-                  <span className="text-sm text-gray-700">Incluir dados brutos</span>
+                  <span className="text-sm text-white">Incluir dados brutos</span>
                 </label>
               </div>
             )}
@@ -339,28 +339,28 @@ export const ReportExporter: React.FC<ReportExporterProps> = ({ onClose }) => {
 
       {/* Histórico de Exportações */}
       {exportHistory.length > 0 && (
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Histórico de Exportações</h3>
+        <div className="mt-8 pt-6 border-t border-white/12">
+          <h3 className="text-lg font-medium text-white mb-4">Histórico de Exportações</h3>
           
           {/* Estatísticas */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-            <div className="bg-gray-50 p-3 rounded-lg">
-              <div className="text-sm text-gray-600">Total</div>
-              <div className="text-lg font-semibold text-gray-900">{exportStats.totalExports}</div>
+            <div className="bg-white/10 p-3 rounded-lg">
+              <div className="text-sm text-golffox-muted">Total</div>
+              <div className="text-lg font-semibold text-white">{exportStats.totalExports}</div>
             </div>
-            <div className="bg-gray-50 p-3 rounded-lg">
-              <div className="text-sm text-gray-600">Formato Preferido</div>
-              <div className="text-lg font-semibold text-gray-900">{exportStats.mostUsedFormat}</div>
+            <div className="bg-white/10 p-3 rounded-lg">
+              <div className="text-sm text-golffox-muted">Formato Preferido</div>
+              <div className="text-lg font-semibold text-white">{exportStats.mostUsedFormat}</div>
             </div>
-            <div className="bg-gray-50 p-3 rounded-lg">
-              <div className="text-sm text-gray-600">Último Export</div>
-              <div className="text-lg font-semibold text-gray-900">
+            <div className="bg-white/10 p-3 rounded-lg">
+              <div className="text-sm text-golffox-muted">Último Export</div>
+              <div className="text-lg font-semibold text-white">
                 {exportStats.lastExport ? exportStats.lastExport.format : 'N/A'}
               </div>
             </div>
-            <div className="bg-gray-50 p-3 rounded-lg">
-              <div className="text-sm text-gray-600">PDF</div>
-              <div className="text-lg font-semibold text-gray-900">
+            <div className="bg-white/10 p-3 rounded-lg">
+              <div className="text-sm text-golffox-muted">PDF</div>
+              <div className="text-lg font-semibold text-white">
                 {exportStats.formatCounts.PDF || 0}
               </div>
             </div>
@@ -369,17 +369,17 @@ export const ReportExporter: React.FC<ReportExporterProps> = ({ onClose }) => {
           {/* Lista do Histórico */}
           <div className="space-y-2 max-h-40 overflow-y-auto">
             {exportHistory.slice(0, 5).map((item) => (
-              <div key={item.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+              <div key={item.id} className="flex items-center justify-between p-2 bg-white/10 rounded">
                 <div className="flex items-center space-x-3">
-                  <Clock className="h-4 w-4 text-gray-400" />
+                  <Clock className="h-4 w-4 text-white/70" />
                   <div>
-                    <div className="text-sm font-medium text-gray-900">{item.fileName}</div>
-                    <div className="text-xs text-gray-600">
+                    <div className="text-sm font-medium text-white">{item.fileName}</div>
+                    <div className="text-xs text-golffox-muted">
                       {item.reportType} • {item.format} • {item.size}
                     </div>
                   </div>
                 </div>
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-golffox-muted/90">
                   {item.exportedAt.toLocaleString('pt-BR')}
                 </div>
               </div>

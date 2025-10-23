@@ -15,7 +15,7 @@ export default function PassageiroPage() {
       <ProtectedRoute
         requiredRole="passenger"
         fallback={
-          <div className="min-h-screen w-screen bg-gray-100 flex items-center justify-center p-4">
+          <div className="flex min-h-screen w-screen items-center justify-center bg-golffox-base p-4 text-white">
             <PassengerLoginScreen employees={employees} onLoginSuccess={() => router.push('/passageiro')} />
           </div>
         }

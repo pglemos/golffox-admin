@@ -228,7 +228,7 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
     <div className="space-y-6">
       {/* Tema */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">Tema</label>
+        <label className="block text-sm font-medium text-white mb-3">Tema</label>
         <div className="grid grid-cols-3 gap-3">
           {[
             { value: 'light', label: 'Claro', icon: Sun },
@@ -240,8 +240,8 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
               onClick={() => updatePreference('theme', value)}
               className={`flex flex-col items-center p-4 border-2 rounded-lg transition-colors ${
                 preferences.theme === value
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-blue-500 bg-sky-500/15'
+                  : 'border-white/12 hover:border-white/15'
               }`}
             >
               <Icon className="h-6 w-6 mb-2" />
@@ -253,11 +253,11 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
 
       {/* Idioma */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Idioma</label>
+        <label className="block text-sm font-medium text-white mb-2">Idioma</label>
         <select
           value={preferences.language}
           onChange={(e) => updatePreference('language', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-3 py-2 border border-white/15 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
           <option value="pt-BR">Português (Brasil)</option>
           <option value="en-US">English (US)</option>
@@ -267,11 +267,11 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
 
       {/* Tamanho da fonte */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Tamanho da Fonte</label>
+        <label className="block text-sm font-medium text-white mb-2">Tamanho da Fonte</label>
         <select
           value={preferences.fontSize}
           onChange={(e) => updatePreference('fontSize', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-3 py-2 border border-white/15 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
           <option value="small">Pequena</option>
           <option value="medium">Média</option>
@@ -282,8 +282,8 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
       {/* Modo compacto */}
       <div className="flex items-center justify-between">
         <div>
-          <label className="text-sm font-medium text-gray-700">Modo Compacto</label>
-          <p className="text-sm text-gray-500">Reduz o espaçamento entre elementos</p>
+          <label className="text-sm font-medium text-white">Modo Compacto</label>
+          <p className="text-sm text-golffox-muted/90">Reduz o espaçamento entre elementos</p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
           <input
@@ -292,7 +292,7 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
             onChange={(e) => updatePreference('compactMode', e.target.checked)}
             className="sr-only peer"
           />
-          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+          <div className="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white/5 after:border-white/15 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
         </label>
       </div>
     </div>
@@ -303,8 +303,8 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
       {/* Notificações gerais */}
       <div className="flex items-center justify-between">
         <div>
-          <label className="text-sm font-medium text-gray-700">Ativar Notificações</label>
-          <p className="text-sm text-gray-500">Receber notificações do sistema</p>
+          <label className="text-sm font-medium text-white">Ativar Notificações</label>
+          <p className="text-sm text-golffox-muted/90">Receber notificações do sistema</p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
           <input
@@ -313,12 +313,12 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
             onChange={(e) => updatePreference('notifications.enabled', e.target.checked)}
             className="sr-only peer"
           />
-          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+          <div className="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white/5 after:border-white/15 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
         </label>
       </div>
 
       {preferences.notifications.enabled && (
-        <div className="space-y-4 pl-4 border-l-2 border-gray-200">
+        <div className="space-y-4 pl-4 border-l-2 border-white/12">
           {[
             { key: 'sound', label: 'Som', icon: Volume2, description: 'Reproduzir som nas notificações' },
             { key: 'desktop', label: 'Desktop', icon: Monitor, description: 'Notificações na área de trabalho' },
@@ -328,10 +328,10 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
           ].map(({ key, label, icon: Icon, description }) => (
             <div key={key} className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <Icon className="h-5 w-5 text-gray-400" />
+                <Icon className="h-5 w-5 text-white/70" />
                 <div>
-                  <label className="text-sm font-medium text-gray-700">{label}</label>
-                  <p className="text-sm text-gray-500">{description}</p>
+                  <label className="text-sm font-medium text-white">{label}</label>
+                  <p className="text-sm text-golffox-muted/90">{description}</p>
                 </div>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
@@ -341,7 +341,7 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
                   onChange={(e) => updatePreference(`notifications.${key}`, e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <div className="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white/5 after:border-white/15 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
               </label>
             </div>
           ))}
@@ -355,8 +355,8 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
       {/* Auto-refresh */}
       <div className="flex items-center justify-between">
         <div>
-          <label className="text-sm font-medium text-gray-700">Atualização Automática</label>
-          <p className="text-sm text-gray-500">Atualizar dados automaticamente</p>
+          <label className="text-sm font-medium text-white">Atualização Automática</label>
+          <p className="text-sm text-golffox-muted/90">Atualizar dados automaticamente</p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
           <input
@@ -365,13 +365,13 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
             onChange={(e) => updatePreference('dashboard.autoRefresh', e.target.checked)}
             className="sr-only peer"
           />
-          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+          <div className="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white/5 after:border-white/15 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
         </label>
       </div>
 
       {preferences.dashboard.autoRefresh && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-white mb-2">
             Intervalo de Atualização (segundos)
           </label>
           <input
@@ -383,7 +383,7 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
             onChange={(e) => updatePreference('dashboard.refreshInterval', parseInt(e.target.value))}
             className="w-full"
           />
-          <div className="flex justify-between text-sm text-gray-500 mt-1">
+          <div className="flex justify-between text-sm text-golffox-muted/90 mt-1">
             <span>10s</span>
             <span>{preferences.dashboard.refreshInterval}s</span>
             <span>5min</span>
@@ -393,11 +393,11 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
 
       {/* Visualização padrão */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Visualização Padrão</label>
+        <label className="block text-sm font-medium text-white mb-2">Visualização Padrão</label>
         <select
           value={preferences.dashboard.defaultView}
           onChange={(e) => updatePreference('dashboard.defaultView', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-3 py-2 border border-white/15 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
           <option value="overview">Visão Geral</option>
           <option value="vehicles">Veículos</option>
@@ -410,8 +410,8 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <label className="text-sm font-medium text-gray-700">Mostrar Mensagem de Boas-vindas</label>
-            <p className="text-sm text-gray-500">Exibir mensagem ao acessar o dashboard</p>
+            <label className="text-sm font-medium text-white">Mostrar Mensagem de Boas-vindas</label>
+            <p className="text-sm text-golffox-muted/90">Exibir mensagem ao acessar o dashboard</p>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
             <input
@@ -420,14 +420,14 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
               onChange={(e) => updatePreference('dashboard.showWelcomeMessage', e.target.checked)}
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            <div className="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white/5 after:border-white/15 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
           </label>
         </div>
 
         <div className="flex items-center justify-between">
           <div>
-            <label className="text-sm font-medium text-gray-700">Cards Compactos</label>
-            <p className="text-sm text-gray-500">Usar layout compacto para os cards</p>
+            <label className="text-sm font-medium text-white">Cards Compactos</label>
+            <p className="text-sm text-golffox-muted/90">Usar layout compacto para os cards</p>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
             <input
@@ -436,7 +436,7 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
               onChange={(e) => updatePreference('dashboard.compactCards', e.target.checked)}
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            <div className="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white/5 after:border-white/15 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
           </label>
         </div>
       </div>
@@ -452,23 +452,23 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
       case 'dashboard':
         return renderDashboardTab();
       case 'maps':
-        return <div className="text-center py-8 text-gray-500">Configurações de mapas em desenvolvimento...</div>;
+        return <div className="text-center py-8 text-golffox-muted/90">Configurações de mapas em desenvolvimento...</div>;
       case 'reports':
-        return <div className="text-center py-8 text-gray-500">Configurações de relatórios em desenvolvimento...</div>;
+        return <div className="text-center py-8 text-golffox-muted/90">Configurações de relatórios em desenvolvimento...</div>;
       case 'privacy':
-        return <div className="text-center py-8 text-gray-500">Configurações de privacidade em desenvolvimento...</div>;
+        return <div className="text-center py-8 text-golffox-muted/90">Configurações de privacidade em desenvolvimento...</div>;
       default:
         return null;
     }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg max-w-4xl mx-auto">
+    <div className="bg-white/5 rounded-lg shadow-lg max-w-4xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-gray-200">
+      <div className="flex items-center justify-between p-6 border-b border-white/12">
         <div className="flex items-center space-x-3">
-          <Settings className="h-6 w-6 text-blue-600" />
-          <h2 className="text-xl font-semibold text-gray-900">Configurações</h2>
+          <Settings className="h-6 w-6 text-sky-200" />
+          <h2 className="text-xl font-semibold text-white">Configurações</h2>
         </div>
         <div className="flex items-center space-x-2">
           {hasChanges && (
@@ -479,7 +479,7 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
           {onClose && (
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-white/70 hover:text-golffox-muted transition-colors"
             >
               ✕
             </button>
@@ -489,7 +489,7 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
 
       <div className="flex">
         {/* Sidebar */}
-        <div className="w-64 border-r border-gray-200 p-4">
+        <div className="w-64 border-r border-white/12 p-4">
           <nav className="space-y-2">
             {tabs.map(({ id, label, icon: Icon }) => (
               <button
@@ -497,8 +497,8 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
                 onClick={() => setActiveTab(id)}
                 className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
                   activeTab === id
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-600 hover:bg-gray-100'
+                    ? 'bg-sky-500/20 text-sky-200'
+                    : 'text-golffox-muted hover:bg-white/5'
                 }`}
               >
                 <Icon className="h-5 w-5" />
@@ -511,13 +511,13 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
           <div className="mt-8 space-y-2">
             <button
               onClick={exportPreferences}
-              className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-golffox-muted hover:bg-white/5 rounded-lg transition-colors"
             >
               <Download className="h-4 w-4" />
               <span>Exportar</span>
             </button>
             
-            <label className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer">
+            <label className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-golffox-muted hover:bg-white/5 rounded-lg transition-colors cursor-pointer">
               <Upload className="h-4 w-4" />
               <span>Importar</span>
               <input
@@ -530,7 +530,7 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
 
             <button
               onClick={resetPreferences}
-              className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-rose-200 hover:bg-rose-500/15 rounded-lg transition-colors"
             >
               <RotateCcw className="h-4 w-4" />
               <span>Resetar</span>
@@ -541,10 +541,10 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
         {/* Content */}
         <div className="flex-1 p-6">
           <div className="mb-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <h3 className="text-lg font-medium text-white mb-2">
               {tabs.find(tab => tab.id === activeTab)?.label}
             </h3>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-golffox-muted/90">
               Personalize suas preferências para uma melhor experiência.
             </p>
           </div>
@@ -554,14 +554,14 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between p-6 border-t border-gray-200 bg-gray-50">
-        <div className="text-sm text-gray-500">
+      <div className="flex items-center justify-between p-6 border-t border-white/12 bg-white/10">
+        <div className="text-sm text-golffox-muted/90">
           As configurações são salvas automaticamente no seu navegador.
         </div>
         <div className="flex items-center space-x-3">
           <button
             onClick={resetPreferences}
-            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+            className="px-4 py-2 text-sm text-golffox-muted hover:text-white transition-colors"
           >
             Resetar Tudo
           </button>
@@ -571,7 +571,7 @@ export const UserSettings: React.FC<UserSettingsProps> = ({
             className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               hasChanges
                 ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-white/12 text-golffox-muted/90 cursor-not-allowed'
             }`}
           >
             <Save className="h-4 w-4" />

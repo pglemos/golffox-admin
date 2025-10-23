@@ -53,7 +53,7 @@ const PermissionsManagement: React.FC<PermissionsManagementProps> = ({ permissio
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {permissionProfiles.map((profile: PermissionProfile) => (
-          <div key={profile.id} className="bg-white rounded-lg shadow-md p-6 flex flex-col border-t-4 border-golffox-blue-dark">
+          <div key={profile.id} className="bg-white/5 rounded-lg shadow-md p-6 flex flex-col border-t-4 border-golffox-blue-dark">
             <div className="flex-grow">
                 <h3 className="text-xl font-bold text-golffox-gray-dark mb-2">{profile.name}</h3>
                 <p className="text-sm text-golffox-gray-medium mb-4 h-20">{profile.description}</p>
@@ -85,7 +85,7 @@ const PermissionsManagement: React.FC<PermissionsManagementProps> = ({ permissio
       {/* Edit Permissions Modal */}
       {isModalOpen && editingProfile && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in-down">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg">
+          <div className="bg-white/5 rounded-lg shadow-xl p-6 w-full max-w-lg">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-golffox-gray-dark">Editar Permissões: {editingProfile.name}</h3>
               <button onClick={handleClose} className="p-1 rounded-full hover:bg-golffox-gray-light">
@@ -100,7 +100,7 @@ const PermissionsManagement: React.FC<PermissionsManagementProps> = ({ permissio
                     <label key={area} className="flex items-center p-3 bg-golffox-gray-light rounded-md cursor-pointer">
                         <input
                             type="checkbox"
-                            className="h-5 w-5 rounded border-gray-300 text-golffox-orange-primary focus:ring-golffox-orange-primary"
+                            className="h-5 w-5 rounded border-white/15 text-golffox-orange-primary focus:ring-golffox-orange-primary"
                             checked={tempAccess.includes(area)}
                             onChange={() => handleAccessChange(area)}
                             disabled={editingProfile.isAdminFeature}
@@ -111,11 +111,11 @@ const PermissionsManagement: React.FC<PermissionsManagementProps> = ({ permissio
             </div>
 
             {editingProfile.isAdminFeature && (
-                 <p className="text-xs text-center text-golffox-blue-dark font-semibold mt-4 p-2 bg-blue-50 rounded-md">As permissões do perfil Admin não podem ser alteradas para garantir a segurança do sistema.</p>
+                 <p className="text-xs text-center text-golffox-blue-dark font-semibold mt-4 p-2 bg-sky-500/15 rounded-md">As permissões do perfil Admin não podem ser alteradas para garantir a segurança do sistema.</p>
             )}
 
             <div className="mt-6 flex justify-end space-x-2 border-t pt-4">
-              <button onClick={handleClose} className="px-4 py-2 bg-golffox-gray-light text-golffox-gray-dark font-semibold rounded-lg hover:bg-gray-300">Cancelar</button>
+              <button onClick={handleClose} className="px-4 py-2 bg-golffox-gray-light text-golffox-gray-dark font-semibold rounded-lg hover:bg-white/12">Cancelar</button>
               <button 
                 onClick={handleSave} 
                 disabled={editingProfile.isAdminFeature}

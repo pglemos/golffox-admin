@@ -1,84 +1,77 @@
 @import "tailwindcss";
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-
-  --golffox-primary: #3b82f6;
-  --golffox-secondary: #60a5fa;
-  --golffox-accent: #22d3ee;
-  --golffox-dark: #1e293b;
-  --golffox-gray-light: #f1f5f9;
-  --golffox-gray-medium: #64748b;
-
-  /* Status Colors */
-  --success: #10b981;
-  --warning: #f59e0b;
-  --error: #ef4444;
-  --info: #3b82f6;
-
-  /* Premium theme tokens */
-  --golffox-background: #ffffff;
-  --golffox-surface: #f9fafb;
-  --golffox-text: #111827;
-  --golffox-muted: #6b7280;
-  --golffox-border: rgba(17, 24, 39, 0.08);
-  --golffox-gradient: linear-gradient(135deg, #5b2eff 0%, #00e0ff 100%);
+  color-scheme: dark;
+  --golffox-base: #050508;
+  --golffox-foreground: #f4f7fb;
+  --golffox-muted: rgba(244, 247, 251, 0.62);
+  --golffox-surface: rgba(13, 16, 24, 0.55);
+  --golffox-surface-strong: rgba(18, 22, 31, 0.85);
+  --golffox-border: rgba(148, 163, 184, 0.14);
+  --golffox-primary: #6c63ff;
+  --golffox-primary-soft: rgba(108, 99, 255, 0.2);
+  --golffox-secondary: #00d4ff;
+  --golffox-secondary-soft: rgba(0, 212, 255, 0.22);
+  --golffox-emerald: #35f0b5;
+  --golffox-rose: #ff4757;
+  --golffox-warning: #ffc857;
+  --golffox-gradient: linear-gradient(135deg, #6c63ff 0%, #00d4ff 45%, #ff4757 100%);
+  --golffox-backdrop: rgba(6, 9, 15, 0.76);
+  --golffox-card-radius: 28px;
+  --golffox-card-padding: 1.75rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-
-    --golffox-primary: #60a5fa;
-    --golffox-secondary: #93c5fd;
-    --golffox-accent: #67e8f9;
-    --golffox-dark: #f8fafc;
-    --golffox-gray-light: #334155;
-    --golffox-gray-medium: #94a3b8;
-
-    /* Status Colors - Adjusted for dark theme */
-    --success: #34d399;
-    --warning: #fbbf24;
-    --error: #f87171;
-    --info: #60a5fa;
-
-    --golffox-background: #0b0b0f;
-    --golffox-surface: #1f2937;
-    --golffox-text: #e5e7eb;
-    --golffox-muted: #9ca3af;
-    --golffox-border: rgba(229, 231, 235, 0.12);
-  }
+html {
+  font-family: 'Plus Jakarta Sans', 'SF Pro Display', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--golffox-base);
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background:
-    radial-gradient(circle at 20% 20%, rgba(91, 46, 255, 0.16), transparent 45%),
-    radial-gradient(circle at 80% 10%, rgba(0, 224, 255, 0.12), transparent 50%),
-    linear-gradient(180deg, rgba(10, 10, 10, 0.08), transparent 40%),
-    linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 15%, rgba(98, 81, 242, 0.22), transparent 55%),
+    radial-gradient(circle at 85% 10%, rgba(0, 212, 255, 0.18), transparent 45%),
+    radial-gradient(circle at 15% 85%, rgba(255, 71, 87, 0.16), transparent 60%),
+    linear-gradient(180deg, rgba(5, 5, 8, 0.95) 0%, rgba(5, 5, 8, 0.8) 55%, rgba(5, 5, 8, 1) 100%);
+  color: var(--golffox-foreground);
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(108, 99, 255, 0.8), rgba(0, 212, 255, 0.8));
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(108, 99, 255, 1), rgba(0, 212, 255, 1));
 }
 
 @layer base {
-  html {
-    font-family: 'Inter', 'SF Pro Display', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--golffox-background);
+  :root {
+    --radius: 16px;
   }
 
-  * {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    letter-spacing: -0.03em;
   }
 }
 
@@ -87,40 +80,95 @@ body {
     text-wrap: balance;
   }
 
-  .glass-panel {
-    border-radius: 1.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    background-color: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(24px);
+  .golffox-glass {
+    border-radius: var(--golffox-card-radius);
+    background: var(--golffox-surface);
+    border: 1px solid var(--golffox-border);
+    backdrop-filter: blur(24px) saturate(130%);
+    box-shadow:
+      0 30px 80px rgba(6, 8, 16, 0.65),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .golffox-glass-strong {
+    border-radius: calc(var(--golffox-card-radius) + 8px);
+    background: var(--golffox-surface-strong);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    backdrop-filter: blur(28px) saturate(160%);
+    box-shadow:
+      0 50px 90px rgba(5, 5, 8, 0.75),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .golffox-gradient-border {
+    position: relative;
+    border-radius: calc(var(--golffox-card-radius) + 10px);
+    background: transparent;
+  }
+
+  .golffox-gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: var(--golffox-gradient);
+    opacity: 0.65;
+  }
+
+  .golffox-gradient-border::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: inherit;
+    background: rgba(5, 5, 8, 0.92);
+  }
+
+  .golffox-gradient-border > * {
+    position: relative;
+    z-index: 10;
+  }
+
+  .golffox-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    padding: 0.35rem 0.85rem;
+    background: rgba(255, 255, 255, 0.04);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    font-size: 0.65rem;
+    color: var(--golffox-muted);
+  }
+
+  .golffox-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .golffox-shimmer::after {
+    content: '';
+    position: absolute;
+    inset: -150%;
+    background: linear-gradient(120deg, transparent 35%, rgba(255, 255, 255, 0.12) 50%, transparent 65%);
+    animation: shimmer 3.5s infinite;
+  }
+
+  .golffox-pill {
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.14);
+    padding: 0.4rem 0.9rem;
+  }
+
+  .golffox-grid {
+    display: grid;
+    gap: 1.5rem;
   }
 }
 
-/* Golffox custom styles */
-.golffox-blue-dark {
-  color: #1e40af;
-}
-
-.golffox-gray-medium {
-  color: #6b7280;
-}
-
-.golffox-gradient-border {
-  position: relative;
-}
-
-.golffox-gradient-border::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 1.75rem;
-  padding: 1px;
-  background: linear-gradient(135deg, rgba(91, 46, 255, 0.65), rgba(0, 224, 255, 0.65));
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-}
-
-.golffox-gradient-border > * {
-  position: relative;
-  z-index: 1;
+@keyframes shimmer {
+  to {
+    transform: translateX(60%);
+  }
 }

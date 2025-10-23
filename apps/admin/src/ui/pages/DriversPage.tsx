@@ -229,9 +229,9 @@ export const DriversPage = ({ glassClass, tokens, isLight }: DriversPageProps) =
   const filtroBase = 'px-4 py-2 rounded-full text-sm font-medium transition'
   const filtroAtivo = isLight
     ? 'bg-blue-600 text-white shadow-[0_12px_24px_rgba(37,99,235,0.35)]'
-    : 'bg-blue-500/25 text-blue-100 border border-blue-500/30 shadow-[0_16px_32px_rgba(37,99,235,0.32)]'
+    : 'bg-sky-500/150/25 text-blue-100 border border-blue-500/30 shadow-[0_16px_32px_rgba(37,99,235,0.32)]'
   const filtroInativo = isLight
-    ? 'bg-white/70 text-slate-600 border border-slate-200/70 hover:bg-white'
+    ? 'bg-white/70 text-slate-600 border border-slate-200/70 hover:bg-white/5'
     : 'bg-white/5 text-slate-100 border border-white/10 hover:bg-white/10'
 
   return (
@@ -254,8 +254,8 @@ export const DriversPage = ({ glassClass, tokens, isLight }: DriversPageProps) =
           <button
             className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
               isLight
-                ? 'bg-blue-600 text-white shadow-[0_14px_28px_rgba(37,99,235,0.3)] hover:bg-blue-500'
-                : 'bg-blue-500/25 text-blue-100 border border-blue-400/40 hover:bg-blue-500/40'
+                ? 'bg-blue-600 text-white shadow-[0_14px_28px_rgba(37,99,235,0.3)] hover:bg-sky-500/150'
+                : 'bg-sky-500/150/25 text-blue-100 border border-blue-400/40 hover:bg-sky-500/150/40'
             }`}
           >
             <Plus size={16} />
@@ -264,7 +264,7 @@ export const DriversPage = ({ glassClass, tokens, isLight }: DriversPageProps) =
           <button
             className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition ${
               isLight
-                ? 'bg-white/70 text-slate-600 border border-slate-200/70 hover:bg-white'
+                ? 'bg-white/70 text-slate-600 border border-slate-200/70 hover:bg-white/5'
                 : 'bg-white/5 text-slate-100 border border-white/10 hover:bg-white/10'
             }`}
           >
