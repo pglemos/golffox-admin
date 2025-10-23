@@ -360,7 +360,13 @@ export default function AdminDashboard() {
     <div className={`relative min-h-screen overflow-hidden transition-colors duration-700 ${backgroundClass}`}>
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(129,140,248,0.22),_transparent_58%)] dark:bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.32),_transparent_60%)] transition-all duration-700" />
-        <div className="absolute inset-0 opacity-40 mix-blend-soft-light bg-[linear-gradient(120deg,_rgba(15,23,42,0.06)_0%,_rgba(59,130,246,0.08)_45%,_transparent_90%)] dark:opacity-40" />
+        <div
+          className={`absolute inset-0 opacity-40 transition-all duration-700 ${
+            theme === 'dark'
+              ? 'mix-blend-soft-light bg-[linear-gradient(120deg,_rgba(15,23,42,0.12)_0%,_rgba(59,130,246,0.18)_45%,_transparent_90%)]'
+              : 'bg-[linear-gradient(120deg,_rgba(15,23,42,0.06)_0%,_rgba(59,130,246,0.08)_45%,_transparent_90%)]'
+          }`}
+        />
         <motion.div
           className={`absolute -top-32 left-[-10%] h-[28rem] w-[28rem] rounded-full blur-[160px] ${
             theme === 'dark' ? 'bg-indigo-500/35' : 'bg-indigo-300/40'
