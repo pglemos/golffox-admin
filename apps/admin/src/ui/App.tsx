@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import type { ReactNode } from 'react'
 import { LayoutGroup, motion } from 'framer-motion'
 import {
   AlertTriangle,
@@ -75,6 +76,21 @@ const navItems: NavItem[] = [
   { label: 'Histórico', icon: History },
   { label: 'Custos', icon: Wallet2 },
 ]
+
+const headerBadges: Record<string, string> = {
+  Painel: 'Visão geral em processamento',
+  Mapa: 'Monitoramento em tempo real',
+  Rotas: 'Roteirização otimizada',
+  Veículos: 'Status da frota conectado',
+  Motoristas: 'Equipe em operação',
+  Empresas: 'Parcerias ativas',
+  Permissões: 'Governança e acesso',
+  Suporte: 'Central de atendimento',
+  Alertas: 'Monitoramento crítico',
+  Relatórios: 'Análises disponíveis',
+  Histórico: 'Linha do tempo operacional',
+  Custos: 'Controle financeiro',
+}
 
 const metrics: Metric[] = [
   {
@@ -166,6 +182,244 @@ const quickActions: QuickAction[] = [
       dark: 'from-white/10 via-white/5 to-transparent text-slate-100 hover:shadow-[0_25px_45px_rgba(148,163,184,0.25)]',
     },
   },
+]
+
+type SimpleCard = {
+  title: string
+  description: string
+}
+
+const mapInsights = [
+  { title: 'Veículos ativos', value: '4', description: 'Última atualização há 8 segundos' },
+  { title: 'Cobertura de sinal', value: '98%', description: '16 zonas monitoradas com telemetria' },
+  { title: 'Alertas no mapa', value: '1 crítico', description: 'Rota 4 com parada não planejada' },
+]
+
+const mapLayers: SimpleCard[] = [
+  {
+    title: 'Tráfego em tempo real',
+    description: 'Integração com dados de trânsito urbano e sensores embarcados',
+  },
+  {
+    title: 'Zonas de segurança',
+    description: 'Geofences configuradas para embarque e desembarque seguro',
+  },
+  {
+    title: 'Clima e visibilidade',
+    description: 'Previsões atualizadas a cada 5 minutos para rotas críticas',
+  },
+  {
+    title: 'Rotas alternativas',
+    description: 'Sugestões automáticas em caso de incidentes ou desvios',
+  },
+]
+
+const routesToday = [
+  { name: 'Rota 1 · Linha Azul', departure: '06:00', occupancy: '82%', status: 'Operando' },
+  { name: 'Rota 2 · Linha Verde', departure: '06:15', occupancy: '77%', status: 'Operando' },
+  { name: 'Rota 3 · Linha Leste', departure: '06:40', occupancy: '63%', status: 'Monitorar' },
+  { name: 'Rota 4 · Linha Expressa', departure: '07:00', occupancy: '91%', status: 'Alerta' },
+]
+
+const routeHighlights: SimpleCard[] = [
+  {
+    title: 'Precisão da rota',
+    description: 'Desvio médio de 4% em relação ao planejado nesta manhã',
+  },
+  {
+    title: 'Tempo médio de trajeto',
+    description: '42 minutos — 3 minutos abaixo da média histórica',
+  },
+  {
+    title: 'Satisfação dos passageiros',
+    description: 'NPS 92 com base nas últimas 120 avaliações recebidas',
+  },
+]
+
+const vehicleFleet = [
+  { code: 'GFX-001', model: 'Marcopolo G8', lastUpdate: 'Há 2 min', status: 'Em rota' },
+  { code: 'GFX-014', model: 'Volvo Híbrido 9800', lastUpdate: 'Há 5 min', status: 'Stand-by' },
+  { code: 'GFX-022', model: 'Mercedes-Benz O500', lastUpdate: 'Há 1 min', status: 'Manutenção' },
+  { code: 'GFX-031', model: 'NeoCity Elétrico', lastUpdate: 'Há 3 min', status: 'Em rota' },
+]
+
+const maintenanceHighlights: SimpleCard[] = [
+  {
+    title: 'Revisão preventiva',
+    description: 'Próxima janela para o veículo GFX-022 em 14/05 às 09h',
+  },
+  {
+    title: 'Consumo otimizado',
+    description: 'Economia de 6% no consumo médio após calibragem inteligente',
+  },
+  {
+    title: 'Checklist diário',
+    description: '98% dos itens concluídos pelos motoristas no início do turno',
+  },
+]
+
+const driverRoster = [
+  { name: 'Ana Souza', route: 'Rota 1', shift: 'Manhã', status: 'Em operação' },
+  { name: 'Marcos Lima', route: 'Rota 2', shift: 'Manhã', status: 'Em operação' },
+  { name: 'Joana Martins', route: 'Rota 3', shift: 'Manhã', status: 'Revisar' },
+  { name: 'Carlos Alberto', route: 'Reserva', shift: 'Flex', status: 'Stand-by' },
+]
+
+const driverHighlights: SimpleCard[] = [
+  {
+    title: 'Treinamentos concluídos',
+    description: '100% da equipe certificada em direção defensiva e atendimento',
+  },
+  {
+    title: 'Pontualidade média',
+    description: '98,4% de chegadas dentro do SLA estabelecido para embarque',
+  },
+  {
+    title: 'Reconhecimento',
+    description: 'Destaque do dia: Ana Souza — 12 rotas consecutivas sem atrasos',
+  },
+]
+
+const companyPartners = [
+  { name: 'Tech Mobility', contact: 'operacoes@techmobility.com', status: 'Contrato ativo' },
+  { name: 'City Logistics', contact: 'contato@citylog.com', status: 'Negociação' },
+  { name: 'Edu Trans', contact: 'suporte@edutrans.com', status: 'Atendimento prioritário' },
+]
+
+const partnershipHighlights: SimpleCard[] = [
+  {
+    title: 'KPIs entregues',
+    description: 'Relatórios de SLA enviados semanalmente para 5 parceiros',
+  },
+  {
+    title: 'Integrações',
+    description: 'APIs de presença estudantil sincronizadas com 3 redes privadas',
+  },
+  {
+    title: 'Renovações',
+    description: 'Dois contratos com renovação automática prevista para junho',
+  },
+]
+
+const permissionMatrix = [
+  { role: 'Administrador', scope: 'Acesso total', users: 3 },
+  { role: 'Operador', scope: 'Gestão de rotas e alertas', users: 8 },
+  { role: 'Analista', scope: 'Relatórios e custos', users: 5 },
+  { role: 'Motorista', scope: 'Aplicativo embarcado', users: 24 },
+]
+
+const permissionHighlights: SimpleCard[] = [
+  {
+    title: 'Última revisão',
+    description: 'Fluxos de aprovação atualizados em 02/05 pelo time de segurança',
+  },
+  {
+    title: 'Autenticação',
+    description: 'Single Sign-On habilitado com Azure AD e MFA obrigatório',
+  },
+  {
+    title: 'Auditoria',
+    description: 'Logs de acesso exportados diariamente para o data lake',
+  },
+]
+
+const supportChannels = [
+  { channel: 'Chat em tempo real', availability: '24/7', detail: 'Fila atual: 2 atendimentos' },
+  { channel: 'Telefone prioritário', availability: '05h às 23h', detail: 'Tempo médio de resposta: 1m45s' },
+  { channel: 'Portal de tickets', availability: 'Sempre disponível', detail: '8 solicitações abertas' },
+]
+
+const supportHighlights: SimpleCard[] = [
+  {
+    title: 'Base de conhecimento',
+    description: 'Artigos atualizados com vídeos tutoriais sobre uso do painel',
+  },
+  {
+    title: 'SLA de resolução',
+    description: '92% dos tickets resolvidos dentro do prazo contratado',
+  },
+  {
+    title: 'Feedbacks',
+    description: 'Pontuação média de atendimento 4,8/5 nas últimas 50 interações',
+  },
+]
+
+const alertFeed = [
+  { level: 'Crítico', message: 'Veículo parado na Rota 4 há 3 minutos', time: '07:12', action: 'Acionar suporte avançado' },
+  { level: 'Atenção', message: 'Trânsito denso próximo ao Campus Norte', time: '07:05', action: 'Sugestão de rota alternativa' },
+  { level: 'Informativo', message: 'Atualização de firmware concluída no GFX-031', time: '06:55', action: 'Nenhuma ação necessária' },
+]
+
+const alertHighlights: SimpleCard[] = [
+  {
+    title: 'Regras ativas',
+    description: '12 automações disparando alertas por telemetria avançada',
+  },
+  {
+    title: 'Tempo de resposta',
+    description: 'Resposta média a alertas críticos em 4 minutos',
+  },
+  {
+    title: 'Ações sugeridas',
+    description: 'Planos de contingência configurados para 6 cenários distintos',
+  },
+]
+
+const reportCatalog = [
+  { name: 'Ocupação diária', frequency: 'Diário', delivery: '08:00' },
+  { name: 'Análise de rotas', frequency: 'Semanal', delivery: 'Segunda-feira' },
+  { name: 'Performance dos motoristas', frequency: 'Mensal', delivery: 'Dia 02' },
+  { name: 'Resumo financeiro', frequency: 'Mensal', delivery: 'Dia 05' },
+]
+
+const reportHighlights: SimpleCard[] = [
+  {
+    title: 'Exportações automáticas',
+    description: 'Integração direta com Google Drive, SharePoint e Data Lake',
+  },
+  {
+    title: 'Agendamentos',
+    description: '10 relatórios enviados automaticamente para stakeholders',
+  },
+  {
+    title: 'Personalização',
+    description: 'Filtros dinâmicos por rota, período e unidade de negócio',
+  },
+]
+
+const historyTimeline = [
+  { time: '05:50', title: 'Início das operações', detail: 'Checklist concluído para as rotas da manhã' },
+  { time: '06:30', title: 'Primeiro embarque', detail: 'Rota 1 registrou 28 passageiros' },
+  { time: '06:45', title: 'Ajuste de rota', detail: 'Desvio de 4 minutos contornado na Rota 3' },
+  { time: '07:10', title: 'Alerta crítico tratado', detail: 'Equipe acionada para suporte ao veículo GFX-022' },
+]
+
+const historyHighlights: SimpleCard[] = [
+  {
+    title: 'Eventos registrados',
+    description: '147 eventos catalogados nas últimas 24 horas',
+  },
+  {
+    title: 'Auditoria',
+    description: 'Exportação de histórico disponível para compliance em PDF e CSV',
+  },
+  {
+    title: 'Insights',
+    description: 'IA sugere consolidar dados de atrasos recorrentes na Rota 2',
+  },
+]
+
+const costSummary = [
+  { label: 'Custo operacional diário', value: 'R$ 12.450', variation: '+4,2%' },
+  { label: 'Receita projetada', value: 'R$ 18.600', variation: '+6,1%' },
+  { label: 'Margem estimada', value: '33%', variation: '+1,8%' },
+]
+
+const expenseBreakdown = [
+  { item: 'Combustível e energia', percentage: '38%', note: 'Contratos indexados ao reajuste trimestral' },
+  { item: 'Folha operacional', percentage: '27%', note: 'Inclui benefícios e treinamentos recorrentes' },
+  { item: 'Manutenção e peças', percentage: '19%', note: 'Programas preventivos e corretivos' },
+  { item: 'Tecnologia e licenças', percentage: '11%', note: 'Softwares embarcados e conectividade' },
 ]
 
 const occupancyData = [
@@ -356,6 +610,561 @@ export default function AdminDashboard() {
 
   const orbTransition = { duration: 18, repeat: Infinity, repeatType: 'reverse' as const, ease: 'easeInOut' }
 
+  const badgeText = headerBadges[activeNav] ?? 'Sincronização ativa'
+
+  const renderSectionBody = (): ReactNode => {
+    switch (activeNav) {
+      case 'Painel':
+        return (
+          <>
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+              {metrics.map((metric) => (
+                <MetricCard key={metric.title} {...metric} theme={theme} />
+              ))}
+            </div>
+
+            <section
+              className={`${cardBase} flex flex-col gap-6 border-slate-200/60 bg-white/90 dark:border-white/10 dark:bg-white/[0.04]`}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-black dark:text-white">Ocupação por hora</h2>
+                  <p className="text-sm text-black dark:text-slate-300">
+                    Monitore picos e vales de carregamento das rotas para otimizar a frota.
+                  </p>
+                </div>
+                <span className="rounded-full border border-slate-200/60 bg-white/80 px-3 py-1 text-xs font-semibold text-black backdrop-blur-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
+                  Hoje · Sincronização ao vivo
+                </span>
+              </div>
+              <div className="h-72 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={occupancyData} margin={{ left: 12, right: 12 }}>
+                    <CartesianGrid strokeDasharray="3 6" stroke="rgba(148,163,184,0.2)" />
+                    <XAxis dataKey="hour" stroke="rgba(100,116,139,0.6)" tickLine={false} axisLine={false} />
+                    <YAxis
+                      stroke="rgba(100,116,139,0.6)"
+                      tickLine={false}
+                      axisLine={false}
+                      width={40}
+                      tickFormatter={(value) => `${value}%`}
+                    />
+                    <Tooltip
+                      contentStyle={tooltipStyles(theme)}
+                      labelStyle={{ color: '#94a3b8', fontWeight: 600 }}
+                      formatter={(value: number) => [`${value}% de ocupação`, '']}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="occupancy"
+                      stroke="#3b82f6"
+                      strokeWidth={3}
+                      dot={{ r: 4, stroke: '#1d4ed8', strokeWidth: 2 }}
+                      activeDot={{ r: 6, stroke: '#1d4ed8', strokeWidth: 2 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </section>
+
+            <div className="flex flex-wrap gap-3">
+              {statusChips.map((chip) => (
+                <motion.span key={chip.label} whileHover={{ y: -4, scale: 1.01 }} className={`${pillBase} ${chip.tone[theme]} shadow-sm`}>
+                  {chip.label}
+                  <span className="text-xs font-normal text-black dark:text-slate-200/90">{chip.description}</span>
+                </motion.span>
+              ))}
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-3">
+              {quickActions.map((action) => (
+                <QuickActionCard key={action.title} {...action} theme={theme} />
+              ))}
+            </div>
+
+            <section className="grid gap-5 xl:grid-cols-2">
+              <motion.div
+                whileHover={{ y: -4 }}
+                className={`${cardBase} flex items-center justify-between gap-4 border-rose-200/70 bg-gradient-to-br from-rose-50/80 via-white/60 to-transparent text-black dark:border-rose-500/30 dark:bg-gradient-to-br dark:from-rose-500/15 dark:via-rose-500/5 dark:to-transparent dark:text-rose-100`}
+              >
+                <div className="relative flex items-start gap-4">
+                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/80 text-rose-500 shadow-inner shadow-rose-200/50 dark:bg-white/10 dark:text-rose-100">
+                    <AlertTriangle className="h-5 w-5" />
+                  </span>
+                  <div className="space-y-1">
+                    <p className="text-sm font-semibold">Alerta crítico: veículo parado há 2 minutos.</p>
+                    <p className="text-xs text-black dark:text-rose-100/90">
+                      Rota 4 · Ônibus GHI-7890 — assistência avançada já foi acionada e está a caminho.
+                    </p>
+                  </div>
+                </div>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.96 }}
+                  type="button"
+                  className="rounded-full border border-current px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.25em] transition-all duration-300 hover:bg-white/20"
+                >
+                  Abrir alerta
+                </motion.button>
+              </motion.div>
+              <motion.div
+                whileHover={{ y: -4 }}
+                className={`${cardBase} border-slate-200/60 bg-white/90 dark:border-white/10 dark:bg-white/[0.05]`}
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <p className="text-sm font-semibold text-black dark:text-slate-200">Insights da IA</p>
+                  <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-300">
+                    Atualizado agora
+                  </span>
+                </div>
+                <div className="mt-3 space-y-3 text-sm leading-relaxed text-black dark:text-slate-200">
+                  <p>
+                    Ocupação média semanal avançou para <span className="font-semibold text-black dark:text-indigo-200">+8%</span> e mantém tendência ascendente nos picos das 07h.
+                  </p>
+                  <div className="grid gap-2 text-xs font-medium">
+                    <div className="flex items-start gap-2">
+                      <span className="mt-0.5 h-2.5 w-2.5 rounded-full bg-indigo-500" />
+                      Redirecione o veículo reserva da Rota 3 para a Rota 1 entre 06h e 08h para absorver a demanda premium.
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="mt-0.5 h-2.5 w-2.5 rounded-full bg-sky-400" />
+                      Ative modo de climatização inteligente para reduzir consumo em 4% durante trajetos noturnos.
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </section>
+          </>
+        )
+      case 'Mapa':
+        return (
+          <div className="grid gap-6">
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <div className="grid gap-4 lg:grid-cols-3">
+                {mapInsights.map((item) => (
+                  <div
+                    key={item.title}
+                    className="rounded-2xl border border-slate-200/60 bg-white/80 p-5 text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-100"
+                  >
+                    <p className="text-sm font-semibold text-black/70 dark:text-slate-300">{item.title}</p>
+                    <p className="mt-2 text-3xl font-bold text-black dark:text-white">{item.value}</p>
+                    <p className="mt-1 text-sm text-black/60 dark:text-slate-300">{item.description}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-6 h-72 rounded-3xl border border-dashed border-slate-200/70 bg-white/70 p-6 text-center text-sm text-black/70 backdrop-blur-sm dark:border-white/15 dark:bg-white/[0.04] dark:text-slate-300">
+                Visualização do mapa interativo renderizada no produto final.
+              </div>
+            </section>
+
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Camadas habilitadas</h2>
+              <p className="mt-2 text-sm text-black/70 dark:text-slate-300">
+                Combine telemetria proprietária com dados públicos para enriquecer a análise de geolocalização.
+              </p>
+              <ul className="mt-5 grid gap-3 md:grid-cols-2">
+                {mapLayers.map((layer) => (
+                  <li
+                    key={layer.title}
+                    className="rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200"
+                  >
+                    <p className="font-semibold text-black dark:text-white">{layer.title}</p>
+                    <p className="mt-1 text-sm text-black/70 dark:text-slate-300">{layer.description}</p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </div>
+        )
+      case 'Rotas':
+        return (
+          <div className="grid gap-6">
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Operação do dia</h2>
+              <p className="mt-1 text-sm text-black/70 dark:text-slate-300">Acompanhe horários, ocupação e status de cada rota.</p>
+              <div className="mt-4 space-y-3">
+                {routesToday.map((route) => (
+                  <div
+                    key={route.name}
+                    className="flex flex-col gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="space-y-1">
+                      <p className="font-semibold text-black dark:text-white">{route.name}</p>
+                      <p className="text-xs text-black/70 dark:text-slate-300">Partida às {route.departure}</p>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs sm:text-sm">
+                      <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
+                        Ocupação {route.occupancy}
+                      </span>
+                      <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
+                        {route.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Destaques estratégicos</h2>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                {routeHighlights.map((item) => (
+                  <div
+                    key={item.title}
+                    className="rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200"
+                  >
+                    <p className="font-semibold text-black dark:text-white">{item.title}</p>
+                    <p className="mt-1 text-sm text-black/70 dark:text-slate-300">{item.description}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        )
+      case 'Veículos':
+        return (
+          <div className="grid gap-6">
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Status da frota</h2>
+              <div className="mt-4 space-y-3">
+                {vehicleFleet.map((vehicle) => (
+                  <div
+                    key={vehicle.code}
+                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-4"
+                  >
+                    <span className="font-semibold text-black dark:text-white">{vehicle.code}</span>
+                    <span>{vehicle.model}</span>
+                    <span className="text-black/70 dark:text-slate-300">{vehicle.lastUpdate}</span>
+                    <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-center font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
+                      {vehicle.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Manutenção inteligente</h2>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                {maintenanceHighlights.map((item) => (
+                  <div
+                    key={item.title}
+                    className="rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200"
+                  >
+                    <p className="font-semibold text-black dark:text-white">{item.title}</p>
+                    <p className="mt-1 text-sm text-black/70 dark:text-slate-300">{item.description}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        )
+      case 'Motoristas':
+        return (
+          <div className="grid gap-6">
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Escala operacional</h2>
+              <div className="mt-4 space-y-3">
+                {driverRoster.map((driver) => (
+                  <div
+                    key={driver.name}
+                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-4"
+                  >
+                    <span className="font-semibold text-black dark:text-white">{driver.name}</span>
+                    <span>{driver.route}</span>
+                    <span>{driver.shift}</span>
+                    <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-center font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
+                      {driver.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Desenvolvimento contínuo</h2>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                {driverHighlights.map((item) => (
+                  <div
+                    key={item.title}
+                    className="rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200"
+                  >
+                    <p className="font-semibold text-black dark:text-white">{item.title}</p>
+                    <p className="mt-1 text-sm text-black/70 dark:text-slate-300">{item.description}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        )
+      case 'Empresas':
+        return (
+          <div className="grid gap-6">
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Parceiros ativos</h2>
+              <div className="mt-4 space-y-3">
+                {companyPartners.map((company) => (
+                  <div
+                    key={company.name}
+                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-3"
+                  >
+                    <span className="font-semibold text-black dark:text-white">{company.name}</span>
+                    <span>{company.contact}</span>
+                    <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-center font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
+                      {company.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Relacionamento estratégico</h2>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                {partnershipHighlights.map((item) => (
+                  <div
+                    key={item.title}
+                    className="rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200"
+                  >
+                    <p className="font-semibold text-black dark:text-white">{item.title}</p>
+                    <p className="mt-1 text-sm text-black/70 dark:text-slate-300">{item.description}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        )
+      case 'Permissões':
+        return (
+          <div className="grid gap-6">
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Matriz de acesso</h2>
+              <div className="mt-4 space-y-3">
+                {permissionMatrix.map((role) => (
+                  <div
+                    key={role.role}
+                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-3"
+                  >
+                    <span className="font-semibold text-black dark:text-white">{role.role}</span>
+                    <span>{role.scope}</span>
+                    <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-center font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
+                      {role.users} usuários
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Governança e compliance</h2>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                {permissionHighlights.map((item) => (
+                  <div
+                    key={item.title}
+                    className="rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200"
+                  >
+                    <p className="font-semibold text-black dark:text-white">{item.title}</p>
+                    <p className="mt-1 text-sm text-black/70 dark:text-slate-300">{item.description}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        )
+      case 'Suporte':
+        return (
+          <div className="grid gap-6">
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Canais de atendimento</h2>
+              <div className="mt-4 space-y-3">
+                {supportChannels.map((channel) => (
+                  <div
+                    key={channel.channel}
+                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-3"
+                  >
+                    <span className="font-semibold text-black dark:text-white">{channel.channel}</span>
+                    <span>{channel.availability}</span>
+                    <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-center font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
+                      {channel.detail}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Qualidade do suporte</h2>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                {supportHighlights.map((item) => (
+                  <div
+                    key={item.title}
+                    className="rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200"
+                  >
+                    <p className="font-semibold text-black dark:text-white">{item.title}</p>
+                    <p className="mt-1 text-sm text-black/70 dark:text-slate-300">{item.description}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        )
+      case 'Alertas':
+        return (
+          <div className="grid gap-6">
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Fila de alertas</h2>
+              <div className="mt-4 space-y-3">
+                {alertFeed.map((alert) => (
+                  <div
+                    key={alert.message}
+                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-4"
+                  >
+                    <span className="font-semibold text-black dark:text-white">{alert.level}</span>
+                    <span>{alert.message}</span>
+                    <span className="text-black/70 dark:text-slate-300">{alert.time}</span>
+                    <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-center font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
+                      {alert.action}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Automação e resposta</h2>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                {alertHighlights.map((item) => (
+                  <div
+                    key={item.title}
+                    className="rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200"
+                  >
+                    <p className="font-semibold text-black dark:text-white">{item.title}</p>
+                    <p className="mt-1 text-sm text-black/70 dark:text-slate-300">{item.description}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        )
+      case 'Relatórios':
+        return (
+          <div className="grid gap-6">
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Catálogo de relatórios</h2>
+              <div className="mt-4 space-y-3">
+                {reportCatalog.map((report) => (
+                  <div
+                    key={report.name}
+                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-3"
+                  >
+                    <span className="font-semibold text-black dark:text-white">{report.name}</span>
+                    <span>{report.frequency}</span>
+                    <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-center font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
+                      Entrega: {report.delivery}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Automação de insights</h2>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                {reportHighlights.map((item) => (
+                  <div
+                    key={item.title}
+                    className="rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200"
+                  >
+                    <p className="font-semibold text-black dark:text-white">{item.title}</p>
+                    <p className="mt-1 text-sm text-black/70 dark:text-slate-300">{item.description}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        )
+      case 'Histórico':
+        return (
+          <div className="grid gap-6">
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Linha do tempo</h2>
+              <div className="mt-4 space-y-3">
+                {historyTimeline.map((event) => (
+                  <div
+                    key={event.time + event.title}
+                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-[80px_1fr]"
+                  >
+                    <span className="font-semibold text-black dark:text-white">{event.time}</span>
+                    <div>
+                      <p className="font-semibold text-black dark:text-white">{event.title}</p>
+                      <p className="text-sm text-black/70 dark:text-slate-300">{event.detail}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Resumo analítico</h2>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                {historyHighlights.map((item) => (
+                  <div
+                    key={item.title}
+                    className="rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200"
+                  >
+                    <p className="font-semibold text-black dark:text-white">{item.title}</p>
+                    <p className="mt-1 text-sm text-black/70 dark:text-slate-300">{item.description}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        )
+      case 'Custos':
+        return (
+          <div className="grid gap-6">
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Resumo financeiro</h2>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                {costSummary.map((item) => (
+                  <div
+                    key={item.label}
+                    className="rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200"
+                  >
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-black/70 dark:text-slate-300">{item.label}</p>
+                    <p className="mt-2 text-2xl font-bold text-black dark:text-white">{item.value}</p>
+                    <p className="text-sm text-emerald-600 dark:text-emerald-300">{item.variation}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
+              <h2 className="text-lg font-semibold text-black dark:text-white">Distribuição de custos</h2>
+              <div className="mt-4 space-y-3">
+                {expenseBreakdown.map((expense) => (
+                  <div
+                    key={expense.item}
+                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-[1.2fr_120px]"
+                  >
+                    <div>
+                      <p className="font-semibold text-black dark:text-white">{expense.item}</p>
+                      <p className="text-sm text-black/70 dark:text-slate-300">{expense.note}</p>
+                    </div>
+                    <span className="self-center rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-center font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
+                      {expense.percentage}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        )
+      default:
+        return null
+    }
+  }
+
   return (
     <div className={`relative min-h-screen overflow-hidden transition-colors duration-700 ${backgroundClass}`}>
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -453,9 +1262,9 @@ export default function AdminDashboard() {
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.4em] text-black dark:text-indigo-300">Golf Fox Admin</p>
                 <div className="mt-3 flex flex-wrap items-center gap-3 text-2xl font-semibold">
-                  Painel
+                  {activeNav}
                   <span className="rounded-full border border-slate-200/70 bg-white/80 px-3 py-1 text-xs font-medium text-black backdrop-blur-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
-                    Visão geral em processamento
+                    {badgeText}
                   </span>
                 </div>
               </div>
@@ -491,132 +1300,13 @@ export default function AdminDashboard() {
               </motion.button>
             </header>
 
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-              {metrics.map((metric) => (
-                <MetricCard key={metric.title} {...metric} theme={theme} />
-              ))}
-            </div>
+            {renderSectionBody()}
 
-            <section
-              className={`${cardBase} flex flex-col gap-6 border-slate-200/60 bg-white/90 dark:border-white/10 dark:bg-white/[0.04]`}
-            >
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-lg font-semibold text-black dark:text-white">Ocupação por hora</h2>
-                  <p className="text-sm text-black dark:text-slate-300">
-                    Monitore picos e vales de carregamento das rotas para otimizar a frota.
-                  </p>
-                </div>
-                <span className="rounded-full border border-slate-200/60 bg-white/80 px-3 py-1 text-xs font-semibold text-black backdrop-blur-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
-                  Hoje · Sincronização ao vivo
-                </span>
-              </div>
-              <div className="h-72 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={occupancyData} margin={{ left: 12, right: 12 }}>
-                    <CartesianGrid strokeDasharray="3 6" stroke="rgba(148,163,184,0.2)" />
-                    <XAxis dataKey="hour" stroke="rgba(100,116,139,0.6)" tickLine={false} axisLine={false} />
-                    <YAxis
-                      stroke="rgba(100,116,139,0.6)"
-                      tickLine={false}
-                      axisLine={false}
-                      width={40}
-                      tickFormatter={(value) => `${value}%`}
-                    />
-                    <Tooltip
-                      contentStyle={tooltipStyles(theme)}
-                      labelStyle={{ color: '#94a3b8', fontWeight: 600 }}
-                      formatter={(value: number) => [`${value}% de ocupação`, '']}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="occupancy"
-                      stroke="#3b82f6"
-                      strokeWidth={3}
-                      dot={{ r: 4, stroke: '#1d4ed8', strokeWidth: 2 }}
-                      activeDot={{ r: 6, stroke: '#1d4ed8', strokeWidth: 2 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </section>
-
-            <div className="flex flex-wrap gap-3">
-              {statusChips.map((chip) => (
-                <motion.span
-                  key={chip.label}
-                  whileHover={{ y: -4, scale: 1.01 }}
-                  className={`${pillBase} ${chip.tone[theme]} shadow-sm`}
-                >
-                  {chip.label}
-                  <span className="text-xs font-normal text-black dark:text-slate-200/90">{chip.description}</span>
-                </motion.span>
-              ))}
-            </div>
-
-            <div className="grid gap-4 lg:grid-cols-3">
-              {quickActions.map((action) => (
-                <QuickActionCard key={action.title} {...action} theme={theme} />
-              ))}
-            </div>
-
-            <section className="grid gap-5 xl:grid-cols-2">
-              <motion.div
-                whileHover={{ y: -4 }}
-                className={`${cardBase} flex items-center justify-between gap-4 border-rose-200/70 bg-gradient-to-br from-rose-50/80 via-white/60 to-transparent text-black dark:border-rose-500/30 dark:bg-gradient-to-br dark:from-rose-500/15 dark:via-rose-500/5 dark:to-transparent dark:text-rose-100`}
-              >
-                <div className="relative flex items-start gap-4">
-                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/80 text-rose-500 shadow-inner shadow-rose-200/50 dark:bg-white/10 dark:text-rose-100">
-                    <AlertTriangle className="h-5 w-5" />
-                  </span>
-                  <div className="space-y-1">
-                    <p className="text-sm font-semibold">Alerta crítico: veículo parado há 2 minutos.</p>
-                    <p className="text-xs text-black dark:text-rose-100/90">
-                      Rota 4 · Ônibus GHI-7890 — assistência avançada já foi acionada e está a caminho.
-                    </p>
-                  </div>
-                </div>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.96 }}
-                  type="button"
-                  className="rounded-full border border-current px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.25em] transition-all duration-300 hover:bg-white/20"
-                >
-                  Abrir alerta
-                </motion.button>
-              </motion.div>
-              <motion.div
-                whileHover={{ y: -4 }}
-                className={`${cardBase} border-slate-200/60 bg-white/90 dark:border-white/10 dark:bg-white/[0.05]`}
-              >
-                <div className="flex items-center justify-between gap-4">
-                  <p className="text-sm font-semibold text-black dark:text-slate-200">Insights da IA</p>
-                  <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-300">
-                    Atualizado agora
-                  </span>
-                </div>
-                <div className="mt-3 space-y-3 text-sm leading-relaxed text-black dark:text-slate-200">
-                  <p>
-                    Ocupação média semanal avançou para{' '}
-                  <span className="font-semibold text-black dark:text-indigo-200">+8%</span> e mantém tendência ascendente nos picos das 07h.
-                  </p>
-                  <div className="grid gap-2 text-xs font-medium">
-                    <div className="flex items-start gap-2">
-                      <span className="mt-0.5 h-2.5 w-2.5 rounded-full bg-indigo-500" />
-                      Redirecione o veículo reserva da Rota 3 para a Rota 1 entre 06h e 08h para absorver a demanda premium.
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <span className="mt-0.5 h-2.5 w-2.5 rounded-full bg-sky-400" />
-                      Ative modo de climatização inteligente para reduzir consumo em 4% durante trajetos noturnos.
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </section>
 
             <footer className="relative mt-10 border-t border-slate-200/60 pt-6 text-xs text-black dark:border-white/10 dark:text-slate-500">
               <div className="absolute -top-px left-0 h-px w-24 bg-gradient-to-r from-indigo-500/60 via-sky-400/60 to-transparent dark:from-indigo-400/80 dark:via-sky-400/60" />
-              Última sincronização às {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} • Telemetria proprietária Golf Fox conectada.
+              Seção {activeNav.toLowerCase()} atualizada às{' '}
+              {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} • Telemetria proprietária Golf Fox conectada.
             </footer>
           </main>
         </div>
