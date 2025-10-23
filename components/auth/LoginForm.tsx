@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import clsx from 'clsx';
 import { Eye, EyeOff, LogIn, Mail, Lock, AlertCircle } from 'lucide-react';
 import { useAuth, UserProfile } from '../../app/hooks/useAuth';
 
@@ -83,8 +82,10 @@ export function LoginForm({ onSuccess, onForgotPassword, className = '' }: Login
     setShowPassword(!showPassword);
   };
 
+  const containerClassName = ['relative mx-auto w-full max-w-md', className].filter(Boolean).join(' ');
+
   return (
-    <div className={clsx('relative mx-auto w-full max-w-md', className)}>
+    <div className={containerClassName}>
       <div className="absolute -inset-0.5 rounded-[30px] bg-gradient-to-br from-[#0F4C92] via-[#0B2C53] to-[#FF5F00] opacity-70 blur-lg" aria-hidden />
       <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-[#031431]/90 p-10 text-white shadow-xl backdrop-blur-2xl">
         <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
