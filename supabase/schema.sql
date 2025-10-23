@@ -22,6 +22,7 @@ CREATE TABLE permission_profiles (
     description TEXT,
     access TEXT[] NOT NULL DEFAULT '{}',
     is_admin_feature BOOLEAN DEFAULT FALSE,
+    users_display INTEGER DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -85,6 +86,8 @@ CREATE TABLE drivers (
     assigned_routes TEXT[] DEFAULT '{}',
     availability TEXT,
     last_update TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    route_badge TEXT,
+    shift_label TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -102,6 +105,7 @@ CREATE TABLE vehicles (
     last_maintenance DATE NOT NULL,
     next_maintenance DATE NOT NULL,
     is_registered BOOLEAN DEFAULT TRUE,
+    last_update_display TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -138,6 +142,7 @@ CREATE TABLE routes (
     start_location TEXT,
     destination TEXT,
     origin TEXT,
+    occupancy TEXT,
     company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -165,8 +170,10 @@ CREATE TABLE alerts (
     user_id UUID REFERENCES users(id) ON DELETE SET NULL,
     route_id UUID REFERENCES routes(id) ON DELETE SET NULL,
     vehicle_id UUID REFERENCES vehicles(id) ON DELETE SET NULL,
+    action_label TEXT,
     is_read BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Tabela de chamados de suporte
@@ -203,7 +210,9 @@ CREATE TABLE route_history (
     operational_cost DECIMAL(10, 2), -- em reais
     punctuality INTEGER DEFAULT 0, -- em minutos
     route_optimization DECIMAL(5, 2), -- percentual
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    detail TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Tabela de controle de custos
@@ -224,6 +233,7 @@ CREATE TABLE cost_control (
     profit_margin DECIMAL(5, 2) NOT NULL, -- margem de lucro em %
     cost_per_km DECIMAL(8, 2) NOT NULL,
     cost_per_passenger DECIMAL(8, 2) NOT NULL,
+    variation_note TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

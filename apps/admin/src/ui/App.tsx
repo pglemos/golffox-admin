@@ -24,8 +24,9 @@ import {
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
+import { supabaseClient } from '../lib/supabaseClient'
 import CreateEntityModal from './CreateEntityModal'
-import { entityConfigs, type EntityKey } from './entityConfigs'
+import { entityConfigs, type EntityKey, type FieldConfig } from './entityConfigs'
 
 type NavItem = {
   label: string
@@ -72,6 +73,156 @@ type EntityDetail = {
   record?: Record<string, any>
 }
 
+const ensureStringId = (value: any): string | null => {
+  if (value === null || value === undefined) {
+    return null
+  }
+
+  if (typeof value === 'string') {
+    return value
+  }
+
+  if (typeof value === 'number' || typeof value === 'bigint') {
+    return String(value)
+  }
+
+  if (value instanceof Date) {
+    return value.toISOString()
+  }
+
+  try {
+    const stringified = String(value)
+    return stringified === '[object Object]' ? null : stringified
+  } catch (error) {
+    console.error('Falha ao converter identificador em string', error)
+    return null
+  }
+}
+
+const toDateInputValue = (value: any): string => {
+  if (!value) {
+    return ''
+  }
+
+  if (typeof value === 'string') {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      return value
+    }
+
+    const parsed = new Date(value)
+    return Number.isNaN(parsed.getTime()) ? '' : parsed.toISOString().slice(0, 10)
+  }
+
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString().slice(0, 10)
+  }
+
+  return ''
+}
+
+const toTimeInputValue = (value: any): string => {
+  if (!value) {
+    return ''
+  }
+
+  if (typeof value === 'string') {
+    const match = value.match(/^(\d{2}:\d{2})/)
+    if (match) {
+      return match[1]
+    }
+
+    const parsed = new Date(`1970-01-01T${value}`)
+    return Number.isNaN(parsed.getTime()) ? '' : parsed.toISOString().slice(11, 16)
+  }
+
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString().slice(11, 16)
+  }
+
+  return ''
+}
+
+const toDateTimeInputValue = (value: any): string => {
+  if (!value) {
+    return ''
+  }
+
+  if (typeof value === 'string') {
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) {
+      return value
+    }
+
+    const parsed = new Date(value)
+    if (Number.isNaN(parsed.getTime())) {
+      return ''
+    }
+
+    const local = new Date(parsed.getTime() - parsed.getTimezoneOffset() * 60000)
+    return local.toISOString().slice(0, 16)
+  }
+
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    const local = new Date(value.getTime() - value.getTimezoneOffset() * 60000)
+    return local.toISOString().slice(0, 16)
+  }
+
+  return ''
+}
+
+const normalizeFieldValue = (field: FieldConfig, raw: any): any => {
+  if (field.type === 'checkbox') {
+    return Boolean(raw)
+  }
+
+  if (field.type === 'number') {
+    if (raw === null || raw === undefined || raw === '') {
+      return ''
+    }
+
+    const numeric = typeof raw === 'number' ? raw : Number(raw)
+    return Number.isNaN(numeric) ? '' : numeric
+  }
+
+  if (raw === null || raw === undefined || raw === '') {
+    return ''
+  }
+
+  if (Array.isArray(raw)) {
+    return raw.join(', ')
+  }
+
+  switch (field.type) {
+    case 'date':
+      return toDateInputValue(raw)
+    case 'time':
+      return toTimeInputValue(raw)
+    case 'datetime':
+      return toDateTimeInputValue(raw)
+    case 'select':
+      return typeof raw === 'string' ? raw : String(raw)
+    case 'textarea':
+    case 'text':
+    default:
+      return typeof raw === 'string' ? raw : String(raw)
+  }
+}
+
+const buildLabelMap = <T extends Record<string, any>>(
+  rows: T[],
+  getLabel: (row: T) => string | null | undefined,
+): Record<string, string> => {
+  return rows.reduce<Record<string, string>>((acc, row) => {
+    const id = ensureStringId(row.id)
+    const label = getLabel(row)
+
+    if (id && label) {
+      acc[id] = label
+    }
+
+    return acc
+  }, {})
+}
+
 const navItems: NavItem[] = [
   { label: 'Painel', icon: LayoutDashboard },
   { label: 'Mapa', icon: Map },
@@ -93,6 +244,62 @@ const buildDisplayFromDetail = <K extends EntityKey>(entity: K, detail: EntityDe
     record: detail.record,
     optionLabels: detail.optionLabels,
   })
+
+type LabelLookups = Record<string, Record<string, string>>
+
+const buildEntityDetailsFromRows = <K extends EntityKey>(
+  entity: K,
+  rows: Record<string, any>[],
+  labelLookups: LabelLookups,
+) => {
+  const config = entityConfigs[entity]
+
+  const detailEntries = rows
+    .map((row) => {
+      const id = ensureStringId(row.id)
+      if (!id) {
+        return null
+      }
+
+      const values: Record<string, any> = {}
+      const optionLabels: Record<string, string> = {}
+
+      config.fields.forEach((field) => {
+        const normalized = normalizeFieldValue(field, row[field.name])
+        values[field.name] = normalized
+
+        if (field.type === 'select') {
+          const lookup = labelLookups[field.name]
+          const key = typeof normalized === 'string' ? normalized : ensureStringId(normalized)
+
+          if (lookup && key && lookup[key]) {
+            optionLabels[field.name] = lookup[key]
+          } else if (typeof normalized === 'string' && normalized.trim()) {
+            optionLabels[field.name] = normalized
+          }
+        }
+      })
+
+      return [
+        id,
+        {
+          record: { ...row, id },
+          values,
+          optionLabels,
+        },
+      ] as [string, EntityDetail]
+    })
+    .filter((entry): entry is [string, EntityDetail] => Boolean(entry))
+
+  const map = detailEntries.reduce<Record<string, EntityDetail>>((acc, [id, detail]) => {
+    acc[id] = detail
+    return acc
+  }, {})
+
+  const list = detailEntries.map(([, detail]) => buildDisplayFromDetail(entity, detail))
+
+  return { map, list }
+}
 
 const headerBadges: Record<string, string> = {
   Painel: 'Visão geral em processamento',
@@ -1273,6 +1480,130 @@ export default function AdminDashboard() {
   const [costDetails, setCostDetails] = useState<Record<string, EntityDetail>>(initialCostDetails)
   const [createEntity, setCreateEntity] = useState<EntityKey | null>(null)
   const [editRequest, setEditRequest] = useState<{ entity: EntityKey; id: string } | null>(null)
+
+  useEffect(() => {
+    if (!supabaseClient) {
+      return
+    }
+
+    let isMounted = true
+
+    const fetchTable = async (table: string, columns = '*') => {
+      const { data, error } = await supabaseClient.from(table).select(columns)
+      if (error) {
+        throw error
+      }
+      return (data ?? []) as Record<string, any>[]
+    }
+
+    const syncWithSupabase = async () => {
+      try {
+        const [
+          routesRows,
+          vehiclesRows,
+          driversRows,
+          companiesRows,
+          permissionRows,
+          supportRows,
+          alertsRows,
+          reportsRows,
+          historyRows,
+          costRows,
+          usersRows,
+        ] = await Promise.all([
+          fetchTable('routes'),
+          fetchTable('vehicles'),
+          fetchTable('drivers'),
+          fetchTable('companies'),
+          fetchTable('permission_profiles'),
+          fetchTable('support_tickets'),
+          fetchTable('alerts'),
+          fetchTable('report_schedules'),
+          fetchTable('route_history'),
+          fetchTable('cost_control'),
+          fetchTable('users', 'id, name, email'),
+        ])
+
+        if (!isMounted) {
+          return
+        }
+
+        const routeLabels = buildLabelMap(routesRows, (row) => (row.name ? String(row.name) : null))
+        const vehicleLabels = buildLabelMap(vehiclesRows, (row) => {
+          const plate = row.plate ? String(row.plate).toUpperCase() : ''
+          const model = row.model ? String(row.model) : ''
+          if (plate && model) {
+            return `${plate} · ${model}`
+          }
+          return plate || model || null
+        })
+        const driverLabels = buildLabelMap(driversRows, (row) => (row.name ? String(row.name) : null))
+        const companyLabels = buildLabelMap(companiesRows, (row) => (row.name ? String(row.name) : null))
+        const userLabels = buildLabelMap(usersRows, (row) => {
+          if (row.name) {
+            return row.email ? `${row.name} (${row.email})` : String(row.name)
+          }
+          return row.email ? String(row.email) : null
+        })
+
+        const labelLookups: LabelLookups = {
+          route_id: routeLabels,
+          vehicle_id: vehicleLabels,
+          driver_id: driverLabels,
+          company_id: companyLabels,
+          user_id: userLabels,
+        }
+
+        const routeResult = buildEntityDetailsFromRows('Rotas', routesRows, labelLookups)
+        setRouteDetails(routeResult.map)
+        setRoutes(routeResult.list as typeof routesToday)
+
+        const vehicleResult = buildEntityDetailsFromRows('Veículos', vehiclesRows, labelLookups)
+        setVehicleDetails(vehicleResult.map)
+        setVehicles(vehicleResult.list as typeof vehicleFleet)
+
+        const driverResult = buildEntityDetailsFromRows('Motoristas', driversRows, labelLookups)
+        setDriverDetails(driverResult.map)
+        setDrivers(driverResult.list as typeof driverRoster)
+
+        const companyResult = buildEntityDetailsFromRows('Empresas', companiesRows, labelLookups)
+        setCompanyDetails(companyResult.map)
+        setCompanies(companyResult.list as typeof companyPartners)
+
+        const permissionResult = buildEntityDetailsFromRows('Permissões', permissionRows, labelLookups)
+        setPermissionDetails(permissionResult.map)
+        setPermissions(permissionResult.list as typeof permissionMatrix)
+
+        const supportResult = buildEntityDetailsFromRows('Suporte', supportRows, labelLookups)
+        setSupportDetails(supportResult.map)
+        setSupportEntries(supportResult.list as typeof supportChannels)
+
+        const alertResult = buildEntityDetailsFromRows('Alertas', alertsRows, labelLookups)
+        setAlertDetails(alertResult.map)
+        setAlerts(alertResult.list as typeof alertFeed)
+
+        const reportResult = buildEntityDetailsFromRows('Relatórios', reportsRows, labelLookups)
+        setReportDetails(reportResult.map)
+        setReports(reportResult.list as typeof reportCatalog)
+
+        const historyResult = buildEntityDetailsFromRows('Histórico', historyRows, labelLookups)
+        setHistoryDetails(historyResult.map)
+        setHistoryEntries(historyResult.list as typeof historyTimeline)
+
+        const costResult = buildEntityDetailsFromRows('Custos', costRows, labelLookups)
+        setCostDetails(costResult.map)
+        setCostCards(costResult.list as typeof costSummary)
+      } catch (error) {
+        console.error('Não foi possível sincronizar dados com o Supabase.', error)
+      }
+    }
+
+    void syncWithSupabase()
+
+    return () => {
+      isMounted = false
+    }
+  }, [supabaseClient])
 
   useEffect(() => {
     if (typeof window === 'undefined') return

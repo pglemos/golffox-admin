@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS public.permission_profiles (
   description TEXT,
   access TEXT[] NOT NULL DEFAULT '{}',
   is_admin_feature BOOLEAN NOT NULL DEFAULT FALSE,
+  users_display INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );
@@ -99,6 +100,9 @@ EXCEPTION
   WHEN duplicate_object THEN NULL;
 END
 $$;
+
+ALTER TABLE public.permission_profiles
+  ADD COLUMN IF NOT EXISTS users_display INTEGER DEFAULT 0;
 
 -- Users synced with Supabase Auth ----------------------------------------
 CREATE TABLE IF NOT EXISTS public.users (
@@ -185,7 +189,9 @@ ALTER TABLE public.drivers
   ADD COLUMN IF NOT EXISTS linked_company TEXT,
   ADD COLUMN IF NOT EXISTS assigned_routes TEXT[] DEFAULT '{}',
   ADD COLUMN IF NOT EXISTS availability TEXT,
-  ADD COLUMN IF NOT EXISTS last_update TIMESTAMPTZ;
+  ADD COLUMN IF NOT EXISTS last_update TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS route_badge TEXT,
+  ADD COLUMN IF NOT EXISTS shift_label TEXT;
 
 UPDATE public.drivers
 SET status = CASE
@@ -216,13 +222,15 @@ ALTER TABLE public.vehicles
   ADD COLUMN IF NOT EXISTS route_id UUID REFERENCES public.routes(id) ON DELETE SET NULL,
   ADD COLUMN IF NOT EXISTS last_maintenance DATE,
   ADD COLUMN IF NOT EXISTS next_maintenance DATE,
-  ADD COLUMN IF NOT EXISTS is_registered BOOLEAN DEFAULT FALSE;
+  ADD COLUMN IF NOT EXISTS is_registered BOOLEAN DEFAULT FALSE,
+  ADD COLUMN IF NOT EXISTS last_update_display TEXT;
 
 -- Routes ------------------------------------------------------------------
 ALTER TABLE public.routes
   ADD COLUMN IF NOT EXISTS scheduled_start TIME,
   ADD COLUMN IF NOT EXISTS start_location TEXT,
-  ADD COLUMN IF NOT EXISTS destination TEXT;
+  ADD COLUMN IF NOT EXISTS destination TEXT,
+  ADD COLUMN IF NOT EXISTS occupancy TEXT;
 
 UPDATE public.routes
 SET status = CASE
@@ -254,6 +262,7 @@ CREATE TABLE IF NOT EXISTS public.alerts (
   route_id UUID REFERENCES public.routes(id) ON DELETE SET NULL,
   vehicle_id UUID REFERENCES public.vehicles(id) ON DELETE SET NULL,
   user_id UUID REFERENCES public.users(id) ON DELETE SET NULL,
+  action_label TEXT,
   is_read BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
@@ -282,6 +291,9 @@ EXCEPTION
 END
 $$;
 
+ALTER TABLE public.alerts
+  ADD COLUMN IF NOT EXISTS action_label TEXT;
+
 CREATE TABLE IF NOT EXISTS public.route_history (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   route_id UUID REFERENCES public.routes(id) ON DELETE CASCADE,
@@ -302,6 +314,7 @@ CREATE TABLE IF NOT EXISTS public.route_history (
   operational_cost NUMERIC(10, 2),
   punctuality INTEGER,
   route_optimization NUMERIC(5, 2),
+  detail TEXT,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );
@@ -329,6 +342,9 @@ EXCEPTION
 END
 $$;
 
+ALTER TABLE public.route_history
+  ADD COLUMN IF NOT EXISTS detail TEXT;
+
 CREATE TABLE IF NOT EXISTS public.cost_control (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   route_id UUID REFERENCES public.routes(id) ON DELETE CASCADE,
@@ -346,6 +362,7 @@ CREATE TABLE IF NOT EXISTS public.cost_control (
   profit_margin NUMERIC(5, 2) NOT NULL,
   cost_per_km NUMERIC(10, 2) NOT NULL,
   cost_per_passenger NUMERIC(10, 2) NOT NULL,
+  variation_note TEXT,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );
@@ -372,6 +389,9 @@ EXCEPTION
   WHEN duplicate_object THEN NULL;
 END
 $$;
+
+ALTER TABLE public.cost_control
+  ADD COLUMN IF NOT EXISTS variation_note TEXT;
 
 CREATE TABLE IF NOT EXISTS public.support_tickets (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
