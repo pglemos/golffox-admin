@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { useAuth } from '../app/hooks/useAuth';
+import { useAuth, UserRole } from '../app/hooks/useAuth';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: string;
+  requiredRole?: UserRole;
   requiredPermission?: string;
   fallback?: React.ReactNode;
 }

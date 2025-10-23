@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useAuth } from '../../app/hooks/useAuth';
+import { useAuth, UserProfile } from '../../app/hooks/useAuth';
 import { Eye, EyeOff, LogIn, Mail, Lock, AlertCircle } from 'lucide-react';
 
 interface LoginFormProps {
-  onSuccess?: () => void;
+  onSuccess?: (user: UserProfile) => void;
   onForgotPassword?: () => void;
   className?: string;
 }
@@ -62,13 +62,13 @@ export function LoginForm({ onSuccess, onForgotPassword, className = '' }: Login
       const { user, error: signInError } = await signIn(formData.email, formData.password);
 
       if (signInError) {
-        setError(signInError.message || 'Erro ao fazer login');
+        setError(signInError);
         return;
       }
 
       if (user) {
         console.log('Login realizado com sucesso:', user.email);
-        onSuccess?.();
+        onSuccess?.(user);
       }
     } catch (err) {
       console.error('Erro no login:', err);
