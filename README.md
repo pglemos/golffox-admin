@@ -100,24 +100,22 @@ A aplicação estará disponível em `http://localhost:3000`.
 
 ## 🗄️ Estrutura do Projeto
 
-```
-/
-├── app/                  # Código da aplicação Next.js
-│   ├── layout.tsx        # Layout principal
-│   ├── page.tsx          # Página inicial
-│   └── providers.tsx     # Provedores de contexto globais
-├── components/           # Componentes React legados
-├── packages/
-│   └── shared/ui/        # Design System premium compartilhado (tokens, temas e componentes)
-├── hooks/                # Hooks personalizados
-├── services/             # Serviços e APIs externos
-├── public/               # Arquivos estáticos
-├── supabase/             # Migrações, seeds e scripts auxiliares
-├── scripts/              # Automação (deploy, push, etc.)
-├── .env.example          # Exemplo de variáveis de ambiente
-├── package.json          # Dependências e scripts
-└── README.md             # Documentação principal
-```
+> 🔎 Precisa de um panorama completo? Consulte [`docs/ARCHITECTURE_OVERVIEW.md`](./docs/ARCHITECTURE_OVERVIEW.md) para uma descrição detalhada de cada módulo e recomendações de manutenção.
+> 📚 Quer mergulhar em uma área específica? Explore os guias em [`docs/area-guides`](./docs/area-guides) para entender App Router, componentes, serviços, estado/hooks, dados mockados, microfrontends e automações.
+> 🧭 Precisa vasculhar versões anteriores? Consulte [`docs/LEGACY_CODEBASE.md`](./docs/LEGACY_CODEBASE.md) para mapear o código herdado (`src/`, `views/`, protótipos) antes de removê-lo ou migrá-lo.
+
+- `app/` – App Router Next.js com dashboards segmentados por persona e provedores globais. Consulte [`app/README.md`](./app/README.md) para mapa completo.
+- `components/` – Biblioteca de blocos compartilhados (auth, motorista, passageiro, UI premium). Veja [`components/README.md`](./components/README.md) para localizar telas por persona.
+- `hooks/` – Hooks reutilizáveis documentados em [`hooks/README.md`](./hooks/README.md) que conectam serviços, Supabase e contexto global.
+- `lib/` e `services/` – Clientes Supabase, wrappers de IA Gemini e serviços/mocks de domínio. Detalhes em [`lib/README.md`](./lib/README.md) e [`services/README.md`](./services/README.md).
+- `api/` – Serviço Hono para provisionamento Supabase e endpoints administrativos. Consulte [`api/README.md`](./api/README.md).
+- `packages/shared/` – Design System unificado, wrappers de IA e clientes reutilizados pelos microfrontends Vite. Estrutura descrita em [`packages/shared/README.md`](./packages/shared/README.md).
+- `apps/` – Microfrontends Vite (admin, carrier, driver, operator, passenger) mantidos como sandboxes. Instruções em [`apps/README.md`](./apps/README.md).
+- `src/` – Código legado da era Pages Router com componentes e serviços antigos. Consulte [`src/README.md`](./src/README.md) antes de migrar ou remover arquivos.
+- `views/` – Protótipos completos das principais jornadas (passageiro, motorista, cliente). Resumo em [`views/README.md`](./views/README.md).
+- `supabase/` – Scripts SQL, seeds e documentação oficial do banco.
+- `scripts/` & `src/scripts/` – Automação de setup, deploy e verificação de infraestrutura. Consulte [`scripts/README.md`](./scripts/README.md) para inventário completo.
+- `static-site/`, `static-solution/`, `dist/`, `golffox-admin-new/` – Protótipos e builds históricos para referência. Cada pasta possui README próprio explicando o contexto de uso.
 
 ## 🎨 Design System Premium
 
