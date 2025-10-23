@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { LayoutGroup, motion } from 'framer-motion'
+import { AnimatePresence, LayoutGroup, motion } from 'framer-motion'
 import {
   AlertTriangle,
   ArrowUpRight,
@@ -12,6 +12,7 @@ import {
   LifeBuoy,
   Map,
   Moon,
+  Plus,
   Route,
   Settings,
   ShieldCheck,
@@ -22,6 +23,8 @@ import {
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
+import CreateEntityModal from './CreateEntityModal'
+import { entityConfigs, type EntityKey } from './entityConfigs'
 
 type NavItem = {
   label: string
@@ -215,10 +218,10 @@ const mapLayers: SimpleCard[] = [
 ]
 
 const routesToday = [
-  { name: 'Rota 1 · Linha Azul', departure: '06:00', occupancy: '82%', status: 'Operando' },
-  { name: 'Rota 2 · Linha Verde', departure: '06:15', occupancy: '77%', status: 'Operando' },
-  { name: 'Rota 3 · Linha Leste', departure: '06:40', occupancy: '63%', status: 'Monitorar' },
-  { name: 'Rota 4 · Linha Expressa', departure: '07:00', occupancy: '91%', status: 'Alerta' },
+  { id: 'route-1', name: 'Rota 1 · Linha Azul', departure: '06:00', occupancy: '82%', status: 'Operando' },
+  { id: 'route-2', name: 'Rota 2 · Linha Verde', departure: '06:15', occupancy: '77%', status: 'Operando' },
+  { id: 'route-3', name: 'Rota 3 · Linha Leste', departure: '06:40', occupancy: '63%', status: 'Monitorar' },
+  { id: 'route-4', name: 'Rota 4 · Linha Expressa', departure: '07:00', occupancy: '91%', status: 'Alerta' },
 ]
 
 const routeHighlights: SimpleCard[] = [
@@ -237,10 +240,10 @@ const routeHighlights: SimpleCard[] = [
 ]
 
 const vehicleFleet = [
-  { code: 'GFX-001', model: 'Marcopolo G8', lastUpdate: 'Há 2 min', status: 'Em rota' },
-  { code: 'GFX-014', model: 'Volvo Híbrido 9800', lastUpdate: 'Há 5 min', status: 'Stand-by' },
-  { code: 'GFX-022', model: 'Mercedes-Benz O500', lastUpdate: 'Há 1 min', status: 'Manutenção' },
-  { code: 'GFX-031', model: 'NeoCity Elétrico', lastUpdate: 'Há 3 min', status: 'Em rota' },
+  { id: 'vehicle-gfx-001', code: 'GFX-001', model: 'Marcopolo G8', lastUpdate: 'Há 2 min', status: 'Em rota', driver: 'Ana Souza' },
+  { id: 'vehicle-gfx-014', code: 'GFX-014', model: 'Volvo Híbrido 9800', lastUpdate: 'Há 5 min', status: 'Stand-by', driver: 'Marcos Lima' },
+  { id: 'vehicle-gfx-022', code: 'GFX-022', model: 'Mercedes-Benz O500', lastUpdate: 'Há 1 min', status: 'Manutenção', driver: 'Equipe de apoio' },
+  { id: 'vehicle-gfx-031', code: 'GFX-031', model: 'NeoCity Elétrico', lastUpdate: 'Há 3 min', status: 'Em rota', driver: 'Joana Martins' },
 ]
 
 const maintenanceHighlights: SimpleCard[] = [
@@ -259,10 +262,10 @@ const maintenanceHighlights: SimpleCard[] = [
 ]
 
 const driverRoster = [
-  { name: 'Ana Souza', route: 'Rota 1', shift: 'Manhã', status: 'Em operação' },
-  { name: 'Marcos Lima', route: 'Rota 2', shift: 'Manhã', status: 'Em operação' },
-  { name: 'Joana Martins', route: 'Rota 3', shift: 'Manhã', status: 'Revisar' },
-  { name: 'Carlos Alberto', route: 'Reserva', shift: 'Flex', status: 'Stand-by' },
+  { id: 'driver-ana', name: 'Ana Souza', route: 'Rota 1', shift: 'Manhã', status: 'Em operação' },
+  { id: 'driver-marcos', name: 'Marcos Lima', route: 'Rota 2', shift: 'Manhã', status: 'Em operação' },
+  { id: 'driver-joana', name: 'Joana Martins', route: 'Rota 3', shift: 'Manhã', status: 'Revisar' },
+  { id: 'driver-carlos', name: 'Carlos Alberto', route: 'Reserva', shift: 'Flex', status: 'Stand-by' },
 ]
 
 const driverHighlights: SimpleCard[] = [
@@ -281,9 +284,9 @@ const driverHighlights: SimpleCard[] = [
 ]
 
 const companyPartners = [
-  { name: 'Tech Mobility', contact: 'operacoes@techmobility.com', status: 'Contrato ativo' },
-  { name: 'City Logistics', contact: 'contato@citylog.com', status: 'Negociação' },
-  { name: 'Edu Trans', contact: 'suporte@edutrans.com', status: 'Atendimento prioritário' },
+  { id: 'company-tech', name: 'Tech Mobility', contact: 'operacoes@techmobility.com', status: 'Contrato ativo' },
+  { id: 'company-city', name: 'City Logistics', contact: 'contato@citylog.com', status: 'Negociação' },
+  { id: 'company-edu', name: 'Edu Trans', contact: 'suporte@edutrans.com', status: 'Atendimento prioritário' },
 ]
 
 const partnershipHighlights: SimpleCard[] = [
@@ -302,10 +305,10 @@ const partnershipHighlights: SimpleCard[] = [
 ]
 
 const permissionMatrix = [
-  { role: 'Administrador', scope: 'Acesso total', users: 3 },
-  { role: 'Operador', scope: 'Gestão de rotas e alertas', users: 8 },
-  { role: 'Analista', scope: 'Relatórios e custos', users: 5 },
-  { role: 'Motorista', scope: 'Aplicativo embarcado', users: 24 },
+  { id: 'perm-admin', role: 'Administrador', scope: 'Acesso total', users: 3 },
+  { id: 'perm-operador', role: 'Operador', scope: 'Gestão de rotas e alertas', users: 8 },
+  { id: 'perm-analista', role: 'Analista', scope: 'Relatórios e custos', users: 5 },
+  { id: 'perm-motorista', role: 'Motorista', scope: 'Aplicativo embarcado', users: 24 },
 ]
 
 const permissionHighlights: SimpleCard[] = [
@@ -324,9 +327,9 @@ const permissionHighlights: SimpleCard[] = [
 ]
 
 const supportChannels = [
-  { channel: 'Chat em tempo real', availability: '24/7', detail: 'Fila atual: 2 atendimentos' },
-  { channel: 'Telefone prioritário', availability: '05h às 23h', detail: 'Tempo médio de resposta: 1m45s' },
-  { channel: 'Portal de tickets', availability: 'Sempre disponível', detail: '8 solicitações abertas' },
+  { id: 'support-chat', channel: 'Chat em tempo real', availability: '24/7', detail: 'Fila atual: 2 atendimentos' },
+  { id: 'support-phone', channel: 'Telefone prioritário', availability: '05h às 23h', detail: 'Tempo médio de resposta: 1m45s' },
+  { id: 'support-portal', channel: 'Portal de tickets', availability: 'Sempre disponível', detail: '8 solicitações abertas' },
 ]
 
 const supportHighlights: SimpleCard[] = [
@@ -345,9 +348,9 @@ const supportHighlights: SimpleCard[] = [
 ]
 
 const alertFeed = [
-  { level: 'Crítico', message: 'Veículo parado na Rota 4 há 3 minutos', time: '07:12', action: 'Acionar suporte avançado' },
-  { level: 'Atenção', message: 'Trânsito denso próximo ao Campus Norte', time: '07:05', action: 'Sugestão de rota alternativa' },
-  { level: 'Informativo', message: 'Atualização de firmware concluída no GFX-031', time: '06:55', action: 'Nenhuma ação necessária' },
+  { id: 'alert-critical', level: 'Crítico', message: 'Veículo parado na Rota 4 há 3 minutos', time: '07:12', action: 'Acionar suporte avançado' },
+  { id: 'alert-attention', level: 'Atenção', message: 'Trânsito denso próximo ao Campus Norte', time: '07:05', action: 'Sugestão de rota alternativa' },
+  { id: 'alert-info', level: 'Informativo', message: 'Atualização de firmware concluída no GFX-031', time: '06:55', action: 'Nenhuma ação necessária' },
 ]
 
 const alertHighlights: SimpleCard[] = [
@@ -366,10 +369,10 @@ const alertHighlights: SimpleCard[] = [
 ]
 
 const reportCatalog = [
-  { name: 'Ocupação diária', frequency: 'Diário', delivery: '08:00' },
-  { name: 'Análise de rotas', frequency: 'Semanal', delivery: 'Segunda-feira' },
-  { name: 'Performance dos motoristas', frequency: 'Mensal', delivery: 'Dia 02' },
-  { name: 'Resumo financeiro', frequency: 'Mensal', delivery: 'Dia 05' },
+  { id: 'report-occupancy', name: 'Ocupação diária', frequency: 'Diário', delivery: '08:00' },
+  { id: 'report-routes', name: 'Análise de rotas', frequency: 'Semanal', delivery: 'Segunda-feira' },
+  { id: 'report-drivers', name: 'Performance dos motoristas', frequency: 'Mensal', delivery: 'Dia 02' },
+  { id: 'report-finance', name: 'Resumo financeiro', frequency: 'Mensal', delivery: 'Dia 05' },
 ]
 
 const reportHighlights: SimpleCard[] = [
@@ -388,10 +391,10 @@ const reportHighlights: SimpleCard[] = [
 ]
 
 const historyTimeline = [
-  { time: '05:50', title: 'Início das operações', detail: 'Checklist concluído para as rotas da manhã' },
-  { time: '06:30', title: 'Primeiro embarque', detail: 'Rota 1 registrou 28 passageiros' },
-  { time: '06:45', title: 'Ajuste de rota', detail: 'Desvio de 4 minutos contornado na Rota 3' },
-  { time: '07:10', title: 'Alerta crítico tratado', detail: 'Equipe acionada para suporte ao veículo GFX-022' },
+  { id: 'history-start', time: '05:50', title: 'Início das operações', detail: 'Checklist concluído para as rotas da manhã' },
+  { id: 'history-board', time: '06:30', title: 'Primeiro embarque', detail: 'Rota 1 registrou 28 passageiros' },
+  { id: 'history-adjust', time: '06:45', title: 'Ajuste de rota', detail: 'Desvio de 4 minutos contornado na Rota 3' },
+  { id: 'history-alert', time: '07:10', title: 'Alerta crítico tratado', detail: 'Equipe acionada para suporte ao veículo GFX-022' },
 ]
 
 const historyHighlights: SimpleCard[] = [
@@ -410,16 +413,16 @@ const historyHighlights: SimpleCard[] = [
 ]
 
 const costSummary = [
-  { label: 'Custo operacional diário', value: 'R$ 12.450', variation: '+4,2%' },
-  { label: 'Receita projetada', value: 'R$ 18.600', variation: '+6,1%' },
-  { label: 'Margem estimada', value: '33%', variation: '+1,8%' },
+  { id: 'cost-operational', label: 'Custo operacional diário', value: 'R$ 12.450', variation: '+4,2%' },
+  { id: 'cost-revenue', label: 'Receita projetada', value: 'R$ 18.600', variation: '+6,1%' },
+  { id: 'cost-margin', label: 'Margem estimada', value: '33%', variation: '+1,8%' },
 ]
 
 const expenseBreakdown = [
-  { item: 'Combustível e energia', percentage: '38%', note: 'Contratos indexados ao reajuste trimestral' },
-  { item: 'Folha operacional', percentage: '27%', note: 'Inclui benefícios e treinamentos recorrentes' },
-  { item: 'Manutenção e peças', percentage: '19%', note: 'Programas preventivos e corretivos' },
-  { item: 'Tecnologia e licenças', percentage: '11%', note: 'Softwares embarcados e conectividade' },
+  { id: 'expense-fuel', item: 'Combustível e energia', percentage: '38%', note: 'Contratos indexados ao reajuste trimestral' },
+  { id: 'expense-payroll', item: 'Folha operacional', percentage: '27%', note: 'Inclui benefícios e treinamentos recorrentes' },
+  { id: 'expense-maintenance', item: 'Manutenção e peças', percentage: '19%', note: 'Programas preventivos e corretivos' },
+  { id: 'expense-tech', item: 'Tecnologia e licenças', percentage: '11%', note: 'Softwares embarcados e conectividade' },
 ]
 
 const occupancyData = [
@@ -527,6 +530,19 @@ const QuickActionCard = ({ title, description, icon: Icon, tone, theme }: QuickA
   </motion.button>
 )
 
+const CreateButton = ({ label, onClick }: { label: string; onClick: () => void }) => (
+  <motion.button
+    whileHover={{ y: -2 }}
+    whileTap={{ scale: 0.98 }}
+    onClick={onClick}
+    type="button"
+    className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-500/10 px-4 py-2 text-sm font-semibold text-indigo-600 shadow-sm transition hover:bg-indigo-500/15 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:border-indigo-400/40 dark:bg-indigo-400/10 dark:text-indigo-200 dark:hover:bg-indigo-400/20"
+  >
+    <Plus className="h-4 w-4" />
+    {label}
+  </motion.button>
+)
+
 const getInitialTheme = (): 'light' | 'dark' => {
   if (typeof window === 'undefined') return 'light'
 
@@ -541,6 +557,18 @@ const getInitialTheme = (): 'light' | 'dark' => {
 export default function AdminDashboard() {
   const [activeNav, setActiveNav] = useState(navItems[0].label)
   const [theme, setTheme] = useState<'light' | 'dark'>(() => getInitialTheme())
+  const [routes, setRoutes] = useState(routesToday)
+  const [vehicles, setVehicles] = useState(vehicleFleet)
+  const [drivers, setDrivers] = useState(driverRoster)
+  const [companies, setCompanies] = useState(companyPartners)
+  const [permissions, setPermissions] = useState(permissionMatrix)
+  const [supportEntries, setSupportEntries] = useState(supportChannels)
+  const [alerts, setAlerts] = useState(alertFeed)
+  const [reports, setReports] = useState(reportCatalog)
+  const [historyEntries, setHistoryEntries] = useState(historyTimeline)
+  const [costCards, setCostCards] = useState(costSummary)
+  const [expenseCards, setExpenseCards] = useState(expenseBreakdown)
+  const [createEntity, setCreateEntity] = useState<EntityKey | null>(null)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -611,6 +639,56 @@ const backgroundClass =
   const orbTransition = { duration: 18, repeat: Infinity, repeatType: 'reverse' as const, ease: 'easeInOut' }
 
   const badgeText = headerBadges[activeNav] ?? 'Sincronização ativa'
+  const activeConfig = createEntity ? entityConfigs[createEntity] : null
+
+  const handleEntityCreated = ({
+    entity,
+    values,
+    record,
+    optionLabels,
+  }: {
+    entity: EntityKey
+    values: Record<string, any>
+    record?: Record<string, any>
+    optionLabels: Record<string, string>
+  }) => {
+    const display = entityConfigs[entity].toDisplay({ values, record, optionLabels })
+
+    switch (entity) {
+      case 'Rotas':
+        setRoutes((prev) => [...prev, display as (typeof routesToday)[number]])
+        break
+      case 'Veículos':
+        setVehicles((prev) => [...prev, display as (typeof vehicleFleet)[number]])
+        break
+      case 'Motoristas':
+        setDrivers((prev) => [...prev, display as (typeof driverRoster)[number]])
+        break
+      case 'Empresas':
+        setCompanies((prev) => [...prev, display as (typeof companyPartners)[number]])
+        break
+      case 'Permissões':
+        setPermissions((prev) => [...prev, display as (typeof permissionMatrix)[number]])
+        break
+      case 'Suporte':
+        setSupportEntries((prev) => [...prev, display as (typeof supportChannels)[number]])
+        break
+      case 'Alertas':
+        setAlerts((prev) => [...prev, display as (typeof alertFeed)[number]])
+        break
+      case 'Relatórios':
+        setReports((prev) => [...prev, display as (typeof reportCatalog)[number]])
+        break
+      case 'Histórico':
+        setHistoryEntries((prev) => [...prev, display as (typeof historyTimeline)[number]])
+        break
+      case 'Custos':
+        setCostCards((prev) => [...prev, display as (typeof costSummary)[number]])
+        break
+      default:
+        break
+    }
+  }
 
   const renderSectionBody = (): ReactNode => {
     switch (activeNav) {
@@ -780,12 +858,17 @@ const backgroundClass =
         return (
           <div className="grid gap-6">
             <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
-              <h2 className="text-lg font-semibold text-black dark:text-white">Operação do dia</h2>
-              <p className="mt-1 text-sm text-black/70 dark:text-slate-300">Acompanhe horários, ocupação e status de cada rota.</p>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-black dark:text-white">Operação do dia</h2>
+                  <p className="mt-1 text-sm text-black/70 dark:text-slate-300">Acompanhe horários, ocupação e status de cada rota.</p>
+                </div>
+                <CreateButton label={entityConfigs['Rotas'].createLabel} onClick={() => setCreateEntity('Rotas')} />
+              </div>
               <div className="mt-4 space-y-3">
-                {routesToday.map((route) => (
+                {routes.map((route) => (
                   <div
-                    key={route.name}
+                    key={route.id ?? `${route.name}-${route.departure}`}
                     className="flex flex-col gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="space-y-1">
@@ -825,15 +908,22 @@ const backgroundClass =
         return (
           <div className="grid gap-6">
             <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
-              <h2 className="text-lg font-semibold text-black dark:text-white">Status da frota</h2>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-black dark:text-white">Status da frota</h2>
+                  <p className="mt-1 text-sm text-black/70 dark:text-slate-300">Monitore a disponibilidade e atualização da frota.</p>
+                </div>
+                <CreateButton label={entityConfigs['Veículos'].createLabel} onClick={() => setCreateEntity('Veículos')} />
+              </div>
               <div className="mt-4 space-y-3">
-                {vehicleFleet.map((vehicle) => (
+                {vehicles.map((vehicle) => (
                   <div
-                    key={vehicle.code}
-                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-4"
+                    key={vehicle.id ?? vehicle.code}
+                    className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-5"
                   >
                     <span className="font-semibold text-black dark:text-white">{vehicle.code}</span>
                     <span>{vehicle.model}</span>
+                    <span className="text-black/70 dark:text-slate-300">{vehicle.driver ?? '—'}</span>
                     <span className="text-black/70 dark:text-slate-300">{vehicle.lastUpdate}</span>
                     <span className="rounded-full border border-slate-200/60 bg-white/70 px-3 py-1 text-center font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
                       {vehicle.status}
@@ -863,11 +953,17 @@ const backgroundClass =
         return (
           <div className="grid gap-6">
             <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
-              <h2 className="text-lg font-semibold text-black dark:text-white">Escala operacional</h2>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-black dark:text-white">Escala operacional</h2>
+                  <p className="mt-1 text-sm text-black/70 dark:text-slate-300">Gerencie turnos e disponibilidade da equipe de motoristas.</p>
+                </div>
+                <CreateButton label={entityConfigs['Motoristas'].createLabel} onClick={() => setCreateEntity('Motoristas')} />
+              </div>
               <div className="mt-4 space-y-3">
-                {driverRoster.map((driver) => (
+                {drivers.map((driver) => (
                   <div
-                    key={driver.name}
+                    key={driver.id ?? driver.name}
                     className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-4"
                   >
                     <span className="font-semibold text-black dark:text-white">{driver.name}</span>
@@ -901,11 +997,17 @@ const backgroundClass =
         return (
           <div className="grid gap-6">
             <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
-              <h2 className="text-lg font-semibold text-black dark:text-white">Parceiros ativos</h2>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-black dark:text-white">Parceiros ativos</h2>
+                  <p className="mt-1 text-sm text-black/70 dark:text-slate-300">Cadastre novas empresas e acompanhe o status do relacionamento.</p>
+                </div>
+                <CreateButton label={entityConfigs['Empresas'].createLabel} onClick={() => setCreateEntity('Empresas')} />
+              </div>
               <div className="mt-4 space-y-3">
-                {companyPartners.map((company) => (
+                {companies.map((company) => (
                   <div
-                    key={company.name}
+                    key={company.id ?? company.name}
                     className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-3"
                   >
                     <span className="font-semibold text-black dark:text-white">{company.name}</span>
@@ -938,11 +1040,17 @@ const backgroundClass =
         return (
           <div className="grid gap-6">
             <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
-              <h2 className="text-lg font-semibold text-black dark:text-white">Matriz de acesso</h2>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-black dark:text-white">Matriz de acesso</h2>
+                  <p className="mt-1 text-sm text-black/70 dark:text-slate-300">Defina perfis de permissão personalizados para cada time.</p>
+                </div>
+                <CreateButton label={entityConfigs['Permissões'].createLabel} onClick={() => setCreateEntity('Permissões')} />
+              </div>
               <div className="mt-4 space-y-3">
-                {permissionMatrix.map((role) => (
+                {permissions.map((role) => (
                   <div
-                    key={role.role}
+                    key={role.id ?? role.role}
                     className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-3"
                   >
                     <span className="font-semibold text-black dark:text-white">{role.role}</span>
@@ -975,11 +1083,17 @@ const backgroundClass =
         return (
           <div className="grid gap-6">
             <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
-              <h2 className="text-lg font-semibold text-black dark:text-white">Canais de atendimento</h2>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-black dark:text-white">Canais de atendimento</h2>
+                  <p className="mt-1 text-sm text-black/70 dark:text-slate-300">Organize chamados e acompanhe a capacidade do time de suporte.</p>
+                </div>
+                <CreateButton label={entityConfigs['Suporte'].createLabel} onClick={() => setCreateEntity('Suporte')} />
+              </div>
               <div className="mt-4 space-y-3">
-                {supportChannels.map((channel) => (
+                {supportEntries.map((channel) => (
                   <div
-                    key={channel.channel}
+                    key={channel.id ?? channel.channel}
                     className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-3"
                   >
                     <span className="font-semibold text-black dark:text-white">{channel.channel}</span>
@@ -1012,11 +1126,17 @@ const backgroundClass =
         return (
           <div className="grid gap-6">
             <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
-              <h2 className="text-lg font-semibold text-black dark:text-white">Fila de alertas</h2>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-black dark:text-white">Fila de alertas</h2>
+                  <p className="mt-1 text-sm text-black/70 dark:text-slate-300">Dispare alertas manuais ou automatizados para a equipe em campo.</p>
+                </div>
+                <CreateButton label={entityConfigs['Alertas'].createLabel} onClick={() => setCreateEntity('Alertas')} />
+              </div>
               <div className="mt-4 space-y-3">
-                {alertFeed.map((alert) => (
+                {alerts.map((alert) => (
                   <div
-                    key={alert.message}
+                    key={alert.id ?? alert.message}
                     className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-4"
                   >
                     <span className="font-semibold text-black dark:text-white">{alert.level}</span>
@@ -1050,11 +1170,17 @@ const backgroundClass =
         return (
           <div className="grid gap-6">
             <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
-              <h2 className="text-lg font-semibold text-black dark:text-white">Catálogo de relatórios</h2>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-black dark:text-white">Catálogo de relatórios</h2>
+                  <p className="mt-1 text-sm text-black/70 dark:text-slate-300">Agende entregas automáticas e acompanhe os principais indicadores.</p>
+                </div>
+                <CreateButton label={entityConfigs['Relatórios'].createLabel} onClick={() => setCreateEntity('Relatórios')} />
+              </div>
               <div className="mt-4 space-y-3">
-                {reportCatalog.map((report) => (
+                {reports.map((report) => (
                   <div
-                    key={report.name}
+                    key={report.id ?? report.name}
                     className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-3"
                   >
                     <span className="font-semibold text-black dark:text-white">{report.name}</span>
@@ -1087,11 +1213,17 @@ const backgroundClass =
         return (
           <div className="grid gap-6">
             <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
-              <h2 className="text-lg font-semibold text-black dark:text-white">Linha do tempo</h2>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-black dark:text-white">Linha do tempo</h2>
+                  <p className="mt-1 text-sm text-black/70 dark:text-slate-300">Registre eventos relevantes para auditoria e análises futuras.</p>
+                </div>
+                <CreateButton label={entityConfigs['Histórico'].createLabel} onClick={() => setCreateEntity('Histórico')} />
+              </div>
               <div className="mt-4 space-y-3">
-                {historyTimeline.map((event) => (
+                {historyEntries.map((event) => (
                   <div
-                    key={event.time + event.title}
+                    key={event.id ?? event.time + event.title}
                     className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-[80px_1fr]"
                   >
                     <span className="font-semibold text-black dark:text-white">{event.time}</span>
@@ -1124,11 +1256,17 @@ const backgroundClass =
         return (
           <div className="grid gap-6">
             <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
-              <h2 className="text-lg font-semibold text-black dark:text-white">Resumo financeiro</h2>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-black dark:text-white">Resumo financeiro</h2>
+                  <p className="mt-1 text-sm text-black/70 dark:text-slate-300">Centralize os principais indicadores de custos por rota.</p>
+                </div>
+                <CreateButton label={entityConfigs['Custos'].createLabel} onClick={() => setCreateEntity('Custos')} />
+              </div>
               <div className="mt-4 grid gap-3 md:grid-cols-3">
-                {costSummary.map((item) => (
+                {costCards.map((item) => (
                   <div
-                    key={item.label}
+                    key={item.id ?? item.label}
                     className="rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200"
                   >
                     <p className="text-xs font-semibold uppercase tracking-[0.2em] text-black/70 dark:text-slate-300">{item.label}</p>
@@ -1142,9 +1280,9 @@ const backgroundClass =
             <section className={`${cardBase} border-slate-200/60 bg-white/85 dark:border-white/10 dark:bg-white/[0.05]`}>
               <h2 className="text-lg font-semibold text-black dark:text-white">Distribuição de custos</h2>
               <div className="mt-4 space-y-3">
-                {expenseBreakdown.map((expense) => (
+                {expenseCards.map((expense) => (
                   <div
-                    key={expense.item}
+                    key={expense.id ?? expense.item}
                     className="grid gap-2 rounded-2xl border border-slate-200/60 bg-white/80 p-4 text-sm text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200 sm:grid-cols-[1.2fr_120px]"
                   >
                     <div>
@@ -1302,6 +1440,16 @@ const backgroundClass =
 
             {renderSectionBody()}
 
+            <AnimatePresence>
+              {activeConfig && (
+                <CreateEntityModal
+                  key={activeConfig.entity}
+                  config={activeConfig}
+                  onClose={() => setCreateEntity(null)}
+                  onCreated={handleEntityCreated}
+                />
+              )}
+            </AnimatePresence>
 
             <footer className="relative mt-10 border-t border-slate-200/60 pt-6 text-xs text-black dark:border-white/10 dark:text-slate-500">
               <div className="absolute -top-px left-0 h-px w-24 bg-gradient-to-r from-indigo-500/60 via-sky-400/60 to-transparent dark:from-indigo-400/80 dark:via-sky-400/60" />
