@@ -8,12 +8,19 @@ Este diretório contém os scripts SQL necessários para configurar o banco de d
 - **Project ID**: afnlsvaswsokofldoqsf
 - **URL**: https://afnlsvaswsokofldoqsf.supabase.co
 
-## 📁 Arquivos
+## 📁 Estrutura
 
-- `schema.sql` - Schema completo do banco de dados com todas as tabelas, índices e dados iniciais
-- `rls_policies.sql` - Políticas de Row Level Security (RLS) para controle de acesso
-- `fixed_rls_policies.sql` - Versão corrigida das políticas RLS sem recursão
-- `missing_tables.sql` - Script para criar tabelas faltantes
+| Caminho | Responsabilidade |
+| --- | --- |
+| `schema.sql` | Schema completo do banco com tabelas, enums e índices principais. |
+| `rls_policies.sql` | Conjunto oficial de políticas RLS aplicadas após o schema. |
+| `fixed_rls_policies.sql` | Versão alternativa das políticas RLS sem recursões problemáticas (use quando o script principal falhar). |
+| `missing_tables.sql` | Correções rápidas para criar tabelas que eventualmente tenham ficado de fora de ambientes existentes. |
+| [`seed/`](./seed/README.md) | Seeds versionados aplicados após o schema (empresa demo, perfis, veículos e rotas). |
+| [`migrations/`](./migrations/README.md) | Migrações datadas utilizadas quando o time preferir aplicar mudanças incrementais. |
+| `firebase/` | Configurações auxiliares usadas durante experimentos de autenticação. |
+
+> 🔁 Scripts como `api/src/dbSetup.ts` e `scripts/setup-project.js` procuram os arquivos começando deste diretório. Ajuste a variável `SUPABASE_SCRIPTS_DIR` apenas se desejar apontar para uma cópia externa destes mesmos arquivos.
 
 ## 🚀 Configuração Passo a Passo
 
@@ -40,7 +47,15 @@ Este diretório contém os scripts SQL necessários para configurar o banco de d
 
 **⚠️ Importante**: Execute este script após o schema, pois ele depende das tabelas criadas anteriormente.
 
-### 4. Verificação da Configuração
+### 4. (Opcional) Execute Seeds e Migrações Incrementais
+
+Se preferir aplicar apenas parte dos scripts ou versionar alterações incrementais:
+
+- Rode `supabase/seed/000_seed.sql` após o schema para garantir dados de demonstração.
+- Utilize os arquivos de `supabase/migrations/` quando precisar auditar mudanças específicas (ex.: `20250125_golffox_core.sql`).
+- Para pipelines automatizados, combine `schema.sql`, `rls_policies.sql` e o seed através do comando `pnpm run setup -C api`, que chama `runSetup()` internamente.
+
+### 5. Verificação da Configuração
 
 Após executar ambos os scripts, verifique se tudo foi criado corretamente:
 
@@ -85,14 +100,14 @@ WHERE schemaname = 'public'
 ORDER BY tablename, policyname;
 ```
 
-### 5. Configuração de Autenticação
+### 6. Configuração de Autenticação
 
 1. Vá para **Authentication** > **Settings**
 2. Em **Site URL**, adicione: `http://localhost:3000` (para desenvolvimento)
 3. Em **Redirect URLs**, adicione: `http://localhost:3000/auth/callback`
 4. Salve as configurações
 
-### 6. Configuração de Storage (Opcional)
+### 7. Configuração de Storage (Opcional)
 
 Se precisar de upload de arquivos:
 
@@ -166,4 +181,4 @@ Após a configuração do banco:
 Para dúvidas ou problemas:
 1. Consulte a [documentação do Supabase](https://supabase.com/docs)
 2. Verifique os logs no dashboard do Supabase
-3. Teste as queries SQL diretamente no SQL Editor
+3. Teste as queries SQL diretamente no SQL Editor.

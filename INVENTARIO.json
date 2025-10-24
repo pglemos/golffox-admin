@@ -2,75 +2,112 @@
   "estrutura": {
     "raiz": {
       "tipo": "diretorio",
-      "caminho": "f:\\golffox-replit",
+      "caminho": ".",
       "arquivos": [
-        ".env.example",
-        ".replit",
-        "package.json"
-      ],
-      "diretorios": [
-        "app",
-        "golffox-replit"
-      ]
-    },
-    "app": {
-      "tipo": "diretorio",
-      "caminho": "f:\\golffox-replit\\app",
-      "arquivos": [
-        "layout.tsx",
-        "providers.tsx"
-      ],
-      "diretorios": []
-    },
-    "golffox-replit": {
-      "tipo": "diretorio",
-      "caminho": "f:\\golffox-replit\\golffox-replit",
-      "arquivos": [
-        ".env",
-        ".env.example",
-        ".env.local",
-        ".env.local.example",
+        ".editorconfig",
         ".eslintrc.json",
-        ".gitattributes",
-        ".gitignore",
-        ".replit",
-        "LEIAME.md",
-        "README.md",
-        "RELATORIO_FINAL.md",
-        "SETUP_GUIDE.md",
-        "check-db-schema.js",
-        "check-user-auth.js",
-        "config.ts",
-        "constants.ts",
-        "create-test-user.js",
-        "debug-data.js",
-        "index.css",
-        "metadata.json",
-        "next-env.d.ts",
-        "next.config.js",
-        "package-lock.json",
+        ".prettierrc",
         "package.json",
-        "projeto-consolidado.md",
-        "replit.md",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
+        "README.md",
         "tsconfig.json",
-        "tsconfig.tsbuildinfo",
-        "update-user-company.js"
+        "tailwind.config.js",
+        "theme.config.js"
       ],
       "diretorios": [
-        ".local",
-        ".next",
+        "api",
         "app",
-        "assets",
+        "apps",
         "components",
         "docs",
         "hooks",
         "lib",
+        "packages",
         "public",
+        "scripts",
         "services",
         "src",
+        "static-site",
+        "static-solution",
         "supabase",
-        "utils",
-        "views"
+        "views",
+        "dist",
+        "golffox-admin-new"
+      ]
+    },
+    "app": {
+      "tipo": "diretorio",
+      "caminho": "./app",
+      "arquivos": [
+        "layout.tsx",
+        "page.tsx",
+        "providers.tsx",
+        "globals.css",
+        "theme.js"
+      ],
+      "diretorios": [
+        "admin",
+        "administrador",
+        "api",
+        "golffox",
+        "hooks",
+        "login",
+        "map",
+        "motorista",
+        "operador",
+        "passageiro",
+        "transportadora"
+      ]
+    },
+    "components": {
+      "tipo": "diretorio",
+      "caminho": "./components",
+      "arquivos": [
+        "README.md"
+      ],
+      "diretorios": [
+        "admin",
+        "analytics",
+        "auth",
+        "carrier",
+        "charts",
+        "common",
+        "driver",
+        "operator",
+        "passenger"
+      ]
+    },
+    "scripts": {
+      "tipo": "diretorio",
+      "caminho": "./scripts",
+      "arquivos": [
+        "README.md",
+        "README_SUPABASE_SETUP.md",
+        "build-workspace.js",
+        "check-db-schema.js",
+        "check-user-auth.js",
+        "create-database.js",
+        "create-test-user.js",
+        "debug-data.js",
+        "deploy-vercel.ps1",
+        "push-to-github.sh",
+        "setup-project.js",
+        "update-user-company.js",
+        "verify-supabase.js"
+      ],
+      "diretorios": []
+    },
+    "supabase": {
+      "tipo": "diretorio",
+      "caminho": "./supabase",
+      "arquivos": [
+        "README.md"
+      ],
+      "diretorios": [
+        "functions",
+        "migrations",
+        "seed"
       ]
     }
   },
@@ -80,50 +117,37 @@
   ],
   "frameworks": [
     "Next.js",
-    "React"
+    "React",
+    "Hono"
   ],
   "gerenciadores": [
+    "pnpm",
     "npm"
   ],
   "entrypoints": {
-    "desenvolvimento": "npm run dev",
-    "producao": "npm run start"
+    "desenvolvimento": "pnpm dev",
+    "producao": "pnpm start",
+    "api": "pnpm --filter api dev"
   },
   "dependencias": {
     "raiz": {
       "dependencies": {
-        "@supabase/auth-helpers-nextjs": "^0.8.1",
-        "@supabase/supabase-js": "^2.38.0",
-        "next": "13.5.4",
-        "react": "^18",
-        "react-dom": "^18",
-        "react-google-maps-api": "^2.19.2",
-        "tailwindcss": "^3.3.3"
-      },
-      "devDependencies": {
-        "@types/node": "^20",
-        "@types/react": "^18",
-        "@types/react-dom": "^18",
-        "autoprefixer": "^10",
-        "eslint": "^8",
-        "eslint-config-next": "13.5.4",
-        "postcss": "^8",
-        "typescript": "^5"
-      }
-    },
-    "aninhado": {
-      "dependencies": {
         "@google/genai": "^1.20.0",
         "@supabase/supabase-js": "^2.57.4",
+        "@tailwindcss/postcss": "^4.1.14",
+        "@tailwindcss/typography": "^0.5.19",
         "@vercel/speed-insights": "^1.2.0",
+        "autoprefixer": "^10.4.21",
         "chart.js": "^4.5.0",
+        "clsx": "^2.1.1",
         "dotenv": "^17.2.2",
         "framer-motion": "^12.23.21",
         "lucide-react": "^0.544.0",
         "next": "^15.5.4",
         "react": "^19.1.1",
         "react-chartjs-2": "^5.3.0",
-        "react-dom": "^19.1.1"
+        "react-dom": "^19.1.1",
+        "tailwindcss": "^4.1.14"
       },
       "devDependencies": {
         "@types/google.maps": "^3.58.1",
@@ -141,13 +165,14 @@
     "linters": [
       "eslint"
     ],
-    "formatters": [],
+    "formatadores": [
+      "prettier"
+    ],
     "testes": []
   },
   "problemas": [
-    "Estrutura duplicada com pasta aninhada",
-    "Dois arquivos package.json com versões diferentes",
-    "Inconsistência entre README (menciona Vite) e configuração (Next.js)",
-    "Versões incompatíveis de dependências (React 19, Next.js 15)"
+    "Scripts JavaScript legados coexistem com versões TypeScript e precisam de migração gradual",
+    "Protótipos históricos ainda vivem em 'golffox-admin-new', 'static-site' e 'static-solution' aguardando decisão de arquivamento",
+    "O design system em 'packages/shared/ui' requer automação de publicação quando estabilizado"
   ]
 }
