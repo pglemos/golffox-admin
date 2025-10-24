@@ -7,7 +7,7 @@ Este guia reúne os arquivos que alimentam dashboards, tabelas e protótipos com
 - Exporta enumeradores de views (`APP_VIEWS`, `VIEWS`) e listas como `ALL_ACCESS_AREAS`, garantindo consistência entre modais e filtros.【F:constants.ts†L7-L44】
 
 ## Seeds e verificações Supabase
-- `debug-data.js` conecta-se ao projeto Supabase via service role e imprime contagens de usuários, empresas, motoristas, veículos e passageiros — útil para auditorias rápidas em ambientes de homologação.【F:debug-data.js†L1-L71】
+- `debug-data.js` conecta-se ao projeto Supabase via service role e imprime contagens de usuários, empresas, motoristas, veículos e passageiros — útil para auditorias rápidas em ambientes de homologação.【F:scripts/debug-data.js†L1-L93】
 - O diretório `supabase/` contém scripts SQL (`schema.sql`, `migrations/*`) e um guia completo de configuração em `supabase/README.md` para provisionar tabelas, políticas RLS e dados iniciais.【F:supabase/README.md†L1-L88】
 
 ## Metadados da aplicação

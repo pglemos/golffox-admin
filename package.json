@@ -20,7 +20,12 @@
     "setup-project": "node scripts/setup-project.js",
     "db:status": "node scripts/verify-supabase.js",
     "db:setup": "node scripts/setup-project.js",
-    "db:create": "node scripts/create-database.js"
+    "db:create": "node scripts/create-database.js",
+    "db:inspect": "node scripts/check-db-schema.js",
+    "auth:check": "node scripts/check-user-auth.js",
+    "db:debug-data": "node scripts/debug-data.js",
+    "db:create-test-user": "node scripts/create-test-user.js",
+    "user:update-company": "node scripts/update-user-company.js"
   },
   "dependencies": {
     "@google/genai": "^1.20.0",

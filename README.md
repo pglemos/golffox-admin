@@ -166,6 +166,18 @@ npm run db:setup
 # Criar banco de dados (verifica dependências)
 pnpm db:create
 npm run db:create
+
+# Auditoria e suporte (Supabase)
+pnpm db:inspect
+npm run db:inspect
+pnpm auth:check
+npm run auth:check
+pnpm db:debug-data
+npm run db:debug-data
+pnpm db:create-test-user
+npm run db:create-test-user
+pnpm user:update-company
+npm run user:update-company
 ```
 
 ## 🔄 Publicando no GitHub
