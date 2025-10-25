@@ -28,7 +28,7 @@ O GolfFox é uma plataforma web desenvolvida com Next.js e TypeScript para geren
 - Análise de dados e relatórios
 - Configurações do sistema e orquestração das políticas de acesso
 
-### Painel da Transportadora (Carrier)
+### Painel da Transportadora
 - Visão consolidada da frota e do status dos veículos
 - Painel de eficiência com indicadores alimentados pela IA Gemini
 - Acompanhamento dos motoristas em campo com atualizações Realtime
